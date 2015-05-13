@@ -1,4 +1,5 @@
 ReturnMockup::Application.routes.draw do
+  root to: 'returns#index'
   get "home/index"
 
 
