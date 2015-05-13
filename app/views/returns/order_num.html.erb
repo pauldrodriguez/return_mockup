@@ -1,0 +1,92 @@
+<style type="text/css">
+	#sidebar {
+		width: 20em;
+		border: solid 1px gray;
+		position: fixed;
+		display: block;
+	}
+	#main-container {
+		margin-left: 20em;
+	}
+	#links-top li {
+		float: left;
+		padding: 0 0.8em;
+	}
+	#links-top {
+		display: inline-block;
+		list-style: none;
+	}
+	#links-top li.active {
+		border: solid 1px blue;
+		background-color: #B2FFFF;
+	}
+	.red {
+		color: red;
+	}
+	#content {
+		padding-left: 2.4em;
+	} 
+	.inline-block {
+		display: inline-block;
+	}
+	.product-order-item {
+		padding-right: 3.5em;
+	}
+
+	.text-center {
+		text-align: center;
+	}
+</style>
+<h1 class="text-center">Returns and Exchanges</h1>
+<div id="sidebar">
+	Order#: <%= @order[:order_num] %>
+	<br>
+	Order Date: <%= @order.created_at.strftime("%m/%d/%Y") %>
+	<br>
+	Name: <%=  @order.full_name %>
+	<br>
+	Total: <%= number_to_currency(@order[:amount]) %>
+</div>
+<div id="main-container">
+	<div id="header">
+		<ul id="links-top">
+			<li class="active"><span class="number">1</span> Choose Items to Return</li>
+			<li><span class="number">2</span> Review and Confirm</li>
+			<li><span class="number">3</span> Print Shipping Label</li>
+		</ul>
+	</div>
+	<div id="content">
+		<div class="red">Select Items you would like to return</div>
+
+		<%= form_tag({controller:"returns", action: "review"},method: "post",id: "items-form") do %>
+			<input type="hidden" name="order_id" value="<%= @order[:id] %>" />
+			<input type="hidden" name="order_num" value="<%= @order[:order_num] %>" />
+			<% @order.order_items.each do |item| %>
+				<div class="inline-block product-order-item">
+					<input type="checkbox" name="order_item[]" value="<%= item[:id] %>" />
+					<div><%= item.product_name %></div>
+					<div class="red"><%= number_to_currency(item[:price]) %></div>
+					<div>Size: <%= item[:size]%></div>
+				</div>
+			<% end %>
+			<button type="submit" disabled="disabled">Continue and Review Items</button>
+		<% end %>
+	</div>
+</div>
+
+<script type="text/javascript">
+	$("#items-form").on("change","input[type='checkbox']",function(e) {
+		console.log($("#items-form").find("input[type='checkbox']:checked"));
+		if($("#items-form").find("input[type='checkbox']:checked").length) {
+			$("#items-form button").prop("disabled",false);
+		}
+		else {
+			$("#items-form button").prop("disabled",true);
+		}
+		//if($(this).find("input["))
+	});
+</script>
+
+
+
+

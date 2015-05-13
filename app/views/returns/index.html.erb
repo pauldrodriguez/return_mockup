@@ -1,0 +1,15 @@
+<h1>Home#index</h1>
+<p>Returns and Exchanges</p>
+
+<div>Enter your order number below</div>
+<% if(flash[:error]) %>
+<div style="color:red">The Order Number is Invalid</div>
+<% end %>
+<%= form_tag({controller:"returns", action: "order_num"},method: "post") do %>
+<input type="text" name="order_num" />
+<button type="submit">Go</button>
+<% end %>
+
+
+</div>
+

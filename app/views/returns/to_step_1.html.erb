@@ -1,0 +1,9 @@
+<%= form_tag({controller:"returns", action: "order_num"},method: "post", id: "autosubmit") do  do %>
+<input type="hidden" name="order_num" value="<%= @order[:order_num]%>" />
+<% end %>
+
+<script type="text/javascript">
+window.onload = function() {
+	document.getElementById("autosubmit").submit();
+}
+</script>
