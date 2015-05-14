@@ -1,3 +1,119 @@
-<% @order_items.each do |item| %>
+<style type="text/css">
+	#sidebar {
+		width: 20em;
+		border: solid 1px gray;
+		position: fixed;
+		display: block;
+	}
+	#main-container {
+		margin-left: 20em;
+	}
+	#links-top li {
+		float: left;
+		padding: 0 0.8em;
+	}
+	#links-top {
+		display: inline-block;
+		list-style: none;
+	}
+	#links-top li.active {
+		border: solid 1px blue;
+		background-color: #B2FFFF;
+	}
+	.red {
+		color: red;
+	}
+	#content {
+		padding-left: 2.4em;
+	} 
+	.inline-block {
+		display: inline-block;
+	}
+	.product-order-item {
+		padding-right: 3.5em;
+	}
 
-<% end %>
+	.text-center {
+		text-align: center;
+	}
+
+	#options, #options ul {
+		list-style: none;
+	}
+
+</style>
+
+<h1 class="text-center">Returns and Exchanges</h1>
+<div id="sidebar">
+	Order#: <%= @order[:order_num] %>
+	<br>
+	Order Date: <%= @order.created_at.strftime("%m/%d/%Y") %>
+	<br>
+	Name: <%=  @order.full_name %>
+	<br>
+	Total: <%= number_to_currency(@order[:amount]) %>
+</div>
+<div id="main-container">
+	<div id="header">
+		<ul id="links-top">
+			<li><span class="number">1</span> Choose Items to Return</li>
+			<li class="active"><span class="number">2</span> Review and Confirm</li>
+			<li><span class="number">3</span> Print Shipping Label</li>
+		</ul>
+	</div>
+	<div id="content">
+		<% if (flash[:error]) %>
+		<div class="red"><%= flash[:error] %></div>
+		<% end %>
+		
+		<div class="red">why are you returning this shirt?</div>
+
+		<%= form_tag({controller:"returns", action: "review"},method: "post",id: "review-form") do %>
+			<input type="hidden" name="order_id" value="<%= @order[:id] %>" />
+			<input type="hidden" name="order_num" value="<%= @order[:order_num] %>" />
+			<% @order_items.each do |item| %>
+				<div class="inline-block product-order-item">
+					<input type="hidden" name="order_item[]" value="<%= item[:id] %>" />
+					<div><%= item.product_name %></div>
+					<div class="red"><%= number_to_currency(item[:price]) %></div>
+					<div>Size: <%= item[:size]%></div>
+				</div>
+			<% end %>
+			<div>
+				<ul id="options">
+				<% @options.each do |opt,index| %>
+				<li>
+					<% if(opt.kind_of?(Array)) %>
+						<ul class="sub-options">
+							<% opt.each do |sub_opt,sub_index| %>
+								<li><input type="checkbox" name="return_reasons[]" value="<%= sub_index %>" /><%= sub_opt%></li>
+							<% end %>
+						</ul>
+					<% else %>
+						<input type="checkbox" name="return_reasons[]" value="<%= index %>" /><%= opt %>
+					<% end %>
+				</li>
+				<% end %>
+			</ul>
+			</div>
+			<button type="submit" disabled="disabled">Finish and Print Label</button>
+		<% end %>
+	</div>
+</div>
+
+<script type="text/javascript">
+	$("#items-form").on("change","input[type='checkbox']",function(e) {
+		console.log($("#items-form").find("input[type='checkbox']:checked"));
+		if($("#items-form").find("input[type='checkbox']:checked").length) {
+			$("#items-form button").prop("disabled",false);
+		}
+		else {
+			$("#items-form button").prop("disabled",true);
+		}
+		//if($(this).find("input["))
+	});
+</script>
+
+
+
+

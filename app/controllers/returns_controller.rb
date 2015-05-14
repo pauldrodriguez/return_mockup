@@ -13,7 +13,8 @@ class ReturnsController < ApplicationController
   end
 
   def review
-  	
+  	@options = ["Wrong item shipped","Not as pictured","I didn't like it",
+  		['the fabric','the details','the style','the color','other'],'i changed my mind','Any comments?']
   	@order = Order.where("order_num = ? ",params[:order_num]).take
   	if(@order.nil?)
   		flash[:error] = "The order number is invalid";
@@ -32,6 +33,7 @@ class ReturnsController < ApplicationController
   		#render :to_step_1 #this will be used in case we want to redirect
   		render :order_num
   	end
+  	flash[:order_item] = params[:order_item]
 
 
   end #end validate_step_one

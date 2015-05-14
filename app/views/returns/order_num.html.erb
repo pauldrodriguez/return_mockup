@@ -36,7 +36,7 @@
 	.text-center {
 		text-align: center;
 	}
-	
+
 </style>
 <h1 class="text-center">Returns and Exchanges</h1>
 <div id="sidebar">
@@ -57,6 +57,10 @@
 		</ul>
 	</div>
 	<div id="content">
+		<% if (flash[:error]) %>
+		<div class="red"><%= flash[:error] %></div>
+		<% end %>
+		
 		<div class="red">Select Items you would like to return</div>
 
 		<%= form_tag({controller:"returns", action: "review"},method: "post",id: "items-form") do %>
