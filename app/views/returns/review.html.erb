@@ -62,30 +62,44 @@
 		</ul>
 	</div>
 	<div id="content">
-		<% if (flash[:error]) %>
-		<div class="red"><%= flash[:error] %></div>
+		<% if (@all_errors.length>1) %>
+		<div class="red"><%= @all_errors %></div>
 		<% end %>
 		
-		<div class="red">why are you returning this shirt?</div>
+		
 
-		<%= form_tag({controller:"returns", action: "review"},method: "post",id: "review-form") do %>
+		<%= form_tag({controller:"returns", action: "final_step"},method: "post",id: "review-form") do %>
 			<input type="hidden" name="order_id" value="<%= @order[:id] %>" />
 			<input type="hidden" name="order_num" value="<%= @order[:order_num] %>" />
+			<div style="text-decoration:underline">
+				Items to be returned
+			</div>
 			<% @order_items.each do |item| %>
 				<div class="inline-block product-order-item">
-					<input type="hidden" name="order_item[]" value="<%= item[:id] %>" />
+					<input type="hidden" name="return_type[<%= item[:id] %>]" value="<%= params[:return_type][item[:id].to_s] %>" />
+
+					<input type="hidden" name="other_size[<%= item[:id] %>]" value="<%= params[:other_size][item[:id].to_s] %>" />
+
 					<div><%= item.product_name %></div>
 					<div class="red"><%= number_to_currency(item[:price]) %></div>
 					<div>Size: <%= item[:size]%></div>
 				</div>
 			<% end %>
+			<div class="red" style="margin-top:15px">
+				<% if @order_items.length==1 %>
+				why are you returning this item?
+				<% else %>
+				why are you returning these items?
+				<% end %>
+			</div>
+			<span>You feedback will greatly help us in the future to make better products</span>
 			<div>
 				<ul id="options">
-				<% @options.each do |opt,index| %>
+				<% @options.each do |index,opt| %>
 				<li>
-					<% if(opt.kind_of?(Array)) %>
+					<% if(opt.kind_of?(Hash)) %>
 						<ul class="sub-options">
-							<% opt.each do |sub_opt,sub_index| %>
+							<% opt.each do |sub_index,sub_opt| %>
 								<li><input type="checkbox" name="return_reasons[]" value="<%= sub_index %>" /><%= sub_opt%></li>
 							<% end %>
 						</ul>
@@ -102,13 +116,19 @@
 </div>
 
 <script type="text/javascript">
-	$("#items-form").on("change","input[type='checkbox']",function(e) {
+	$("#review-form").on("change","input[type='checkbox']",function(e) {
+		if($(this).closest("ul.sub-options").length) {
+
+			if($(this).closest("ul.sub-options").find("input[type='checkbox']:checked").length) {
+				$(this).closest("ul.sub-options").prev("ul li").prop("checked",true);
+			}
+		}
 		console.log($("#items-form").find("input[type='checkbox']:checked"));
-		if($("#items-form").find("input[type='checkbox']:checked").length) {
-			$("#items-form button").prop("disabled",false);
+		if($("#review-form").find("input[type='checkbox']:checked").length) {
+			$("#review-form button").prop("disabled",false);
 		}
 		else {
-			$("#items-form button").prop("disabled",true);
+			$("#review-form button").prop("disabled",true);
 		}
 		//if($(this).find("input["))
 	});

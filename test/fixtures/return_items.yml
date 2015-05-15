@@ -1,0 +1,23 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  return_order_id: 1
+  order_num: 1
+  order_id: 1
+  product_name: 1
+  return_type: 1
+  return_reasons: MyString
+  amount_refunded: 1
+  original_size: MyString
+  new_size: MyString
+
+two:
+  return_order_id: 1
+  order_num: 1
+  order_id: 1
+  product_name: 1
+  return_type: 1
+  return_reasons: MyString
+  amount_refunded: 1
+  original_size: MyString
+  new_size: MyString

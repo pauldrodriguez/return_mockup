@@ -7,6 +7,8 @@ ReturnMockup::Application.routes.draw do
     get :index
     post :order_num
     post :review
+    post :final_step
+    get :all_returns
   end
 
 

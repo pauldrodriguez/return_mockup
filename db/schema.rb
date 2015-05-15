@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150513210822) do
+ActiveRecord::Schema.define(version: 20150514170919) do
 
   create_table "order_items", force: true do |t|
     t.integer  "order_num"
@@ -33,6 +33,29 @@ ActiveRecord::Schema.define(version: 20150513210822) do
     t.decimal  "discounts"
     t.decimal  "tax"
     t.decimal  "subtotal"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "return_items", force: true do |t|
+    t.integer  "return_order_id"
+    t.integer  "order_num"
+    t.integer  "order_id"
+    t.integer  "product_name"
+    t.integer  "return_type"
+    t.string   "return_reasons"
+    t.integer  "amount_refunded"
+    t.string   "original_size"
+    t.string   "new_size"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "return_orders", force: true do |t|
+    t.integer  "order_num"
+    t.integer  "order_id"
+    t.decimal  "amount_refunded"
+    t.integer  "return_status"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
