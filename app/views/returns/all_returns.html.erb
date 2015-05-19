@@ -1,0 +1,28 @@
+<%= debug(@return_orders) %>
+<br />
+
+<%= debug(@return_items) %>
+
+
+<br />
+
+<%= debug(@orders) %>
+
+<br />
+<%
+@order_items.find(1).assign_attributes(amount_returned: 5)
+%>
+<%= debug(@order_items) %>
+
+<hr />
+
+<% @return_orders.each do |obj| %>
+	<h1><%= obj.id%></h1>
+
+	<% #!obj.return_order_attributes.any? %>
+		<% obj.return_order_attributes.each do |cobj| %>
+		<span><%= cobj.return_reason_attrbiute_id %> (<%= cobj.return_reason_attribute.attr_name %>)</span> --
+		<span><%= cobj.return_order_id%></span><br />
+	<% end %>
+<% end %>
+

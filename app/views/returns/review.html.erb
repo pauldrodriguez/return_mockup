@@ -76,6 +76,8 @@
 			</div>
 			<% @order_items.each do |item| %>
 				<div class="inline-block product-order-item">
+					<input type="hidden" name="amount_to_return[<%= item[:id]%>]" value="<%= params[:amount_to_return][item[:id].to_s]%>" />
+
 					<input type="hidden" name="return_type[<%= item[:id] %>]" value="<%= params[:return_type][item[:id].to_s] %>" />
 
 					<input type="hidden" name="other_size[<%= item[:id] %>]" value="<%= params[:other_size][item[:id].to_s] %>" />
@@ -83,6 +85,7 @@
 					<div><%= item.product_name %></div>
 					<div class="red"><%= number_to_currency(item[:price]) %></div>
 					<div>Size: <%= item[:size]%></div>
+					<div>Quantity: <%= params[:amount_to_return][item[:id].to_s] %></div>
 				</div>
 			<% end %>
 			<div class="red" style="margin-top:15px">
@@ -95,16 +98,17 @@
 			<span>You feedback will greatly help us in the future to make better products</span>
 			<div>
 				<ul id="options">
-				<% @options.each do |index,opt| %>
+				<% @options.each do |obj| %>
 				<li>
-					<% if(opt.kind_of?(Hash)) %>
+					<input type="checkbox" name="return_attributes[]" value="<%= obj[:id] %>" /><%= obj[:attr_name] %>
+					<% if(obj.child_attributes.any?) %>
 						<ul class="sub-options">
-							<% opt.each do |sub_index,sub_opt| %>
-								<li><input type="checkbox" name="return_reasons[]" value="<%= sub_index %>" /><%= sub_opt%></li>
+							<% obj.child_attributes.each do |cobj| %>
+								<li><input type="checkbox" name="return_attributes[]" value="<%= cobj[:id] %>" /><%= cobj[:attr_name] %></li>
 							<% end %>
 						</ul>
 					<% else %>
-						<input type="checkbox" name="return_reasons[]" value="<%= index %>" /><%= opt %>
+						
 					<% end %>
 				</li>
 				<% end %>

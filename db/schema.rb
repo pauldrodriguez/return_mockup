@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150514170919) do
+ActiveRecord::Schema.define(version: 20150518190138) do
 
   create_table "order_items", force: true do |t|
     t.integer  "order_num"
@@ -23,6 +23,8 @@ ActiveRecord::Schema.define(version: 20150514170919) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "order_id"
+    t.string   "status"
+    t.integer  "amount_returned", default: 0, null: false
   end
 
   create_table "orders", force: true do |t|
@@ -41,14 +43,22 @@ ActiveRecord::Schema.define(version: 20150514170919) do
     t.integer  "return_order_id"
     t.integer  "order_num"
     t.integer  "order_id"
-    t.integer  "product_name"
+    t.string   "product_name"
     t.integer  "return_type"
     t.string   "return_reasons"
-    t.integer  "amount_refunded"
+    t.decimal  "amount_refunded"
     t.string   "original_size"
     t.string   "new_size"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "status"
+    t.integer  "quantity"
+    t.integer  "return_order_item_id"
+  end
+
+  create_table "return_order_attributes", force: true do |t|
+    t.integer "return_reason_attrbiute_id"
+    t.integer "return_order_id"
   end
 
   create_table "return_orders", force: true do |t|
@@ -58,6 +68,14 @@ ActiveRecord::Schema.define(version: 20150514170919) do
     t.integer  "return_status"
     t.datetime "created_at"
     t.datetime "updated_at"
+  end
+
+  create_table "return_reason_attributes", force: true do |t|
+    t.integer "parent_id"
+    t.string  "code_name"
+    t.string  "attr_name"
+    t.integer "display_order"
+    t.integer "attr_type"
   end
 
 end

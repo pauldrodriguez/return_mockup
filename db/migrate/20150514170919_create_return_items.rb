@@ -1,4 +1,4 @@
-class CreateReturnItems < ActiveRecord::Migration
+  class CreateReturnItems < ActiveRecord::Migration
   def change
     create_table :return_items do |t|
       t.integer :return_order_id

@@ -9,7 +9,16 @@ ReturnMockup::Application.routes.draw do
     post :review
     post :final_step
     get :all_returns
+    get :success
   end
+
+  resource :attributes do
+    get "/"=>"attributes#index"
+    get 'all'=>"attributes#all"
+    get 'edit/:id'=>"attributes#edit", :as=>"edit"
+    patch '/:id', to: "attributes#update", :as=>"update"
+  end
+
 
 
   # The priority is based upon order of creation: first created -> highest priority.

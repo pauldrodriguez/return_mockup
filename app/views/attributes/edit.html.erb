@@ -1,0 +1,15 @@
+<%= form_for @attribute,url: update_attributes_path(@attribute[:id]) do |f| %>
+<%= f.label :attr_name, :name %>
+<%= f.text_field :attr_name %>
+<br>
+<%= f.label :parent_id, :parent_attribute %>
+<%= f.collection_select :parent_id, @parent_attributes, :id, :attr_name, :include_blank=>"Select an option or leave blank" %>
+<br>
+<%= f.label :display_order %>
+<%= f.text_field :display_order %>
+<br />
+<%= f.label :attr_type, :type %>
+<%= f.select( :attr_type, [["Return Order",1],["Product",2]]) %>
+<br />
+<%= f.submit "Save" %>
+<% end %>

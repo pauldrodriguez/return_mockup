@@ -68,8 +68,14 @@
 			<input type="hidden" name="order_id" value="<%= @order[:id] %>" />
 			<input type="hidden" name="order_num" value="<%= @order[:order_num] %>" />
 			<% @order.order_items.each do |item| %>
+				<% if((item.quantity-item.amount_returned)>0) %>
 				<div class="inline-block product-order-item">
-
+					<select name="amount_to_return[<%= item[:id]%>]">
+						<option value="">Select a quantity</option>
+						<% (1..(item.quantity-item.amount_returned)).to_a.each do |qty| %>
+						<option value="<%= qty%>"><%= qty %></option>
+						<% end %>
+					</select>
 
 					<!--<input type="checkbox" name="order_item[]" value="<%= item[:id] %>" />-->
 					<select name="return_type[<%= item[:id]%>]">
@@ -86,7 +92,9 @@
 					<div><%= item.product_name %></div>
 					<div class="red"><%= number_to_currency(item[:price]) %></div>
 					<div>Size: <%= item[:size]%></div>
+
 				</div>
+				<% end %>
 			<% end %>
 			<div>
 				<button type="submit">Continue and Review Items</button>
