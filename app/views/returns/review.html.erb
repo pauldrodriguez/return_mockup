@@ -1,69 +1,15 @@
-<style type="text/css">
-	#sidebar {
-		width: 20em;
-		border: solid 1px gray;
-		position: fixed;
-		display: block;
-	}
-	#main-container {
-		margin-left: 20em;
-	}
-	#links-top li {
-		float: left;
-		padding: 0 0.8em;
-	}
-	#links-top {
-		display: inline-block;
-		list-style: none;
-	}
-	#links-top li.active {
-		border: solid 1px blue;
-		background-color: #B2FFFF;
-	}
-	.red {
-		color: red;
-	}
-	#content {
-		padding-left: 2.4em;
-	} 
-	.inline-block {
-		display: inline-block;
-	}
-	.product-order-item {
-		padding-right: 3.5em;
-	}
-
-	.text-center {
-		text-align: center;
-	}
-
-	#options, #options ul {
-		list-style: none;
-	}
-
-</style>
-
-<h1 class="text-center">Returns and Exchanges</h1>
-<div id="sidebar">
-	Order#: <%= @order[:order_num] %>
-	<br>
-	Order Date: <%= @order.created_at.strftime("%m/%d/%Y") %>
-	<br>
-	Name: <%=  @order.full_name %>
-	<br>
-	Total: <%= number_to_currency(@order[:amount]) %>
+<div id="header">
+	<ul id="links-top">
+		<li class="active link-one"><a class="button"><span class="number">1</span> Choose Items to Return</a></li>
+		<li class=" active link-two content-before"><span class="number">2</span> Review and Confirm</li>
+		<li class="link-three content-before content-after"><span class="number">3</span> Print Shipping Label</li>
+	</ul>
 </div>
 <div id="main-container">
-	<div id="header">
-		<ul id="links-top">
-			<li><span class="number">1</span> Choose Items to Return</li>
-			<li class="active"><span class="number">2</span> Review and Confirm</li>
-			<li><span class="number">3</span> Print Shipping Label</li>
-		</ul>
-	</div>
-	<div id="content">
+	
+	<div id="review-content">
 		<% if (@all_errors.length>1) %>
-		<div class="red"><%= @all_errors %></div>
+			<div class="red"><%= @all_errors %></div>
 		<% end %>
 		
 		
@@ -71,53 +17,63 @@
 		<%= form_tag({controller:"returns", action: "final_step"},method: "post",id: "review-form") do %>
 			<input type="hidden" name="order_id" value="<%= @order[:id] %>" />
 			<input type="hidden" name="order_num" value="<%= @order[:order_num] %>" />
-			<div style="text-decoration:underline">
-				Items to be returned
-			</div>
+
+			
 			<% @order_items.each do |item| %>
-				<div class="inline-block product-order-item">
-					<input type="hidden" name="amount_to_return[<%= item[:id]%>]" value="<%= params[:amount_to_return][item[:id].to_s]%>" />
+			
+			<% (1..@counts[item[:id].to_s]).to_a.each do |times| %>
+			<div class="product-container">
+			<div class="product-sidebar">
+				<div class="product-sidebar-wrapper">
+					<input type="hidden" name="order_items[]" value="<%= item[:id]%>" />
 
-					<input type="hidden" name="return_type[<%= item[:id] %>]" value="<%= params[:return_type][item[:id].to_s] %>" />
-
-					<input type="hidden" name="other_size[<%= item[:id] %>]" value="<%= params[:other_size][item[:id].to_s] %>" />
-
-					<div><%= item.product_name %></div>
-					<div class="red"><%= number_to_currency(item[:price]) %></div>
-					<div>Size: <%= item[:size]%></div>
-					<div>Quantity: <%= params[:amount_to_return][item[:id].to_s] %></div>
+					<img width="260" height="390" src="<%= image_url("image.jpg") %>" />
+					<div class="order-item-desc">
+						<p><b><%= item.product_name %></b></p>
+						<p>Refund: <%= number_to_currency(item[:price]) %></p>
+						<p>To card ending in 5002</p>
+					</div>
 				</div>
-			<% end %>
-			<div class="red" style="margin-top:15px">
-				<% if @order_items.length==1 %>
-				why are you returning this item?
-				<% else %>
-				why are you returning these items?
-				<% end %>
 			</div>
-			<span>You feedback will greatly help us in the future to make better products</span>
-			<div>
-				<ul id="options">
+			<div class="product-content">
+				<h2>Reason for returning this item:</h2>
+				<span>Please select all that apply. Your answers help us improve our products.</span>
+				<ul class="options">
 				<% @options.each do |obj| %>
 				<li>
-					<input type="checkbox" name="return_attributes[]" value="<%= obj[:id] %>" /><%= obj[:attr_name] %>
+					<% if(obj[:attr_type]==1) %>
+					<b><%= obj[:attr_name] %></b>
+					<% else %>
+					<input type="checkbox" name="return_attributes[<%= item[:id]%>][<%= times %>][]" value="<%= obj[:id] %>" /><%= obj[:attr_name] %>
+					<% end %>
+					
 					<% if(obj.child_attributes.any?) %>
 						<ul class="sub-options">
 							<% obj.child_attributes.each do |cobj| %>
-								<li><input type="checkbox" name="return_attributes[]" value="<%= cobj[:id] %>" /><%= cobj[:attr_name] %></li>
+								<li><input type="checkbox" name="return_attributes[<%= item[:id]%>][<%= times %>][]" value="<%= cobj[:id] %>" /><%= cobj[:attr_name] %></li>
 							<% end %>
-						</ul>
-					<% else %>
-						
+						</ul>	
 					<% end %>
 				</li>
 				<% end %>
-			</ul>
+				</ul>
 			</div>
-			<button type="submit" disabled="disabled">Finish and Print Label</button>
+			</div>
+			<% end %>
+			
+			<% end %>
+
+			<div id="footer">
+			<a href="#" class='previous-options'>Previous Options</a>
+			<button type="submit" disabled="disabled">Finish and Print Label</button></div>
 		<% end %>
 	</div>
 </div>
+
+<%= form_tag({controller:"returns", action: "order_num"},method: "post",id: "step-one-form") do %>
+<input type="hidden" name="order_num" value="<%= @order[:order_num] %>" />
+<% end %>
+
 
 <script type="text/javascript">
 	$("#review-form").on("change","input[type='checkbox']",function(e) {
@@ -135,6 +91,13 @@
 			$("#review-form button").prop("disabled",true);
 		}
 		//if($(this).find("input["))
+	});
+
+	$("a.previous-options").on("click",function(e) {
+		e.preventDefault();
+		if($("#step-one-form").length) {
+			$("#step-one-form").submit();
+		}
 	});
 </script>
 

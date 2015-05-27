@@ -3,13 +3,13 @@
 <%= f.text_field :attr_name %>
 <br>
 <%= f.label :parent_id, :parent_attribute %>
-<%= collection_select :return_reason_attribute, :parent_id, @parent_attributes, :id, :attr_name, :prompt=>"Select an option or leave blank" %>
+<%= f.collection_select :parent_id, @parent_attributes, :id, :attr_name, :prompt=>"Select an option or leave blank" %>
 <br>
 <%= f.label :display_order %>
 <%= f.text_field :display_order %>
 <br />
 <%= f.label :attr_type, :type %>
-<%= select(:return_reason_attribute, :attr_type, [["Return Order",1],["Product",2]],prompt: "select type") %>
+<%= f.select(:attr_type, [["Group",1],["Selection",2]],prompt: "select type") %>
 <br />
 <%= f.submit "Add" %>
 <% end %>

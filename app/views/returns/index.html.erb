@@ -1,15 +1,36 @@
 
-<h1>Returns and Exchanges</h1>
-
-<div>Enter your order number below</div>
+<div class="form-wrapper">
+<p>Enter your order number below</p>
 <% if(flash[:error]) %>
-<div style="color:red">The Order Number is Invalid</div>
+<div class="red flash-error"><p>The Order Number is Invalid</p></div>
 <% end %>
-<%= form_tag({controller:"returns", action: "order_num"},method: "post") do %>
-<input type="text" name="order_num" />
-<button type="submit">Go</button>
+<div class="error red"></div>
+<%= form_tag({controller:"returns", action: "order_num"},method: "post",id: "order-return-form") do %>
+<input type="text" name="order_num" placeholder="Order Number" />
+
+<button type="submit">Submit</button>
 <% end %>
-
-
+<p>Or Sign in to find your order</p>
+<p>Help me find my order</p>
 </div>
+
+
+
+<script type="text/javascript">
+	$("#order-return-form").on("submit",function() {
+		var input = $(this).find("input[name='order_num']");
+		if(input.length) {
+			if(input.val()=="") {
+				$("div.flash-error").empty();
+				$("div.error").html("field cannot be blank");
+				return false;
+			} else if(!input.val().match(/[0-9]{1,}/)) {
+				$("div.flash-error").empty();
+				$("div.error").html("enter a valid order number");
+				return false;
+			}
+
+		}
+	});
+</script>
 

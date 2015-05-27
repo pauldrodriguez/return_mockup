@@ -1,108 +1,70 @@
-<style type="text/css">
-	#sidebar {
-		width: 20em;
-		border: solid 1px gray;
-		position: fixed;
-		display: block;
-	}
-	#main-container {
-		margin-left: 20em;
-	}
-	#links-top li {
-		float: left;
-		padding: 0 0.8em;
-	}
-	#links-top {
-		display: inline-block;
-		list-style: none;
-	}
-	#links-top li.active {
-		border: solid 1px blue;
-		background-color: #B2FFFF;
-	}
-	.red {
-		color: red;
-	}
-	#content {
-		padding-left: 2.4em;
-	} 
-	.inline-block {
-		display: inline-block;
-	}
-	.product-order-item {
-		padding-right: 3.5em;
-	}
 
-	.text-center {
-		text-align: center;
-	}
 
-</style>
-
-<h1 class="text-center">Returns and Exchanges</h1>
-<div id="sidebar">
-	Order#: <%= @order[:order_num] %>
-	<br>
-	Order Date: <%= @order.created_at.strftime("%m/%d/%Y") %>
-	<br>
-	Name: <%=  @order.full_name %>
-	<br>
-	Total: <%= number_to_currency(@order[:amount]) %>
-</div>
-<div id="main-container">
-	<div id="header">
+<div id="header">
 		<ul id="links-top">
-			<li class="active"><span class="number">1</span> Choose Items to Return</li>
-			<li><span class="number">2</span> Review and Confirm</li>
-			<li><span class="number">3</span> Print Shipping Label</li>
+			<li class="active link-one"><a class="button"><span class="number">1</span> Choose Items to Return</a></li>
+			<li class="link-two content-before"><span class="number">2</span> Review and Confirm</li>
+			<li class="link-three content-before content-after"><span class="number">3</span> Print Shipping Label</li>
 		</ul>
 	</div>
+
+<div id="main-container" class="main-cont-step-one">
+	
+<div id="sidebar">
+	<p>
+		<b>Order #<%= @order[:order_num] %></b>
+		<br>
+		<%= @order.created_at.strftime("%m/%d/%Y") %>
+	</p>
+	<p>
+		<b>Sent to:</b>
+		<br>
+		<%=  @order.full_name %>
+	</p>
+	<p>
+		<b>Payment Method</b>
+		<br />
+		Card ending in 5002
+		<br />
+		Total <%= number_to_currency(@order[:amount]) %>
+	</p>
+</div>
 	<div id="content">
 		<% if (@all_errors) %>
 		<div class="red"><%= @all_errors.join("<br />").html_safe %></div>
 		<% end %>
 
-		<div class="red">Select Items you would like to return</div>
+		<h3>Select the items you'd like to return</h3>
 
 		<%= form_tag({controller:"returns", action: "review"},method: "post",id: "items-form") do %>
 			<input type="hidden" name="order_id" value="<%= @order[:id] %>" />
 			<input type="hidden" name="order_num" value="<%= @order[:order_num] %>" />
 			<% @order.order_items.each do |item| %>
 				<% if((item.quantity-item.amount_returned)>0) %>
-				<div class="inline-block product-order-item">
-					<select name="amount_to_return[<%= item[:id]%>]">
-						<option value="">Select a quantity</option>
-						<% (1..(item.quantity-item.amount_returned)).to_a.each do |qty| %>
-						<option value="<%= qty%>"><%= qty %></option>
-						<% end %>
-					</select>
+					<% (1..(item.quantity-item.amount_returned)).to_a.each do |times| %>
+					<div class="inline-block product-order-item">
+						<div class="img-container">
+						<img width="260" height="390" src="<%= image_url("image.jpg") %>" />
+						<input type="checkbox" name="order_items[]" value="<%= item[:id] %>" />
+						</div>
+						<div class="prod-desc">
+							<b><%= item.product_name %></b><br />
+							<%= number_to_currency(item[:price]) %>
 
-					<!--<input type="checkbox" name="order_item[]" value="<%= item[:id] %>" />-->
-					<select name="return_type[<%= item[:id]%>]">
-						<option value="">Select return type</option>
-						<option value="1">Refund</option>
-						<option value="2">Exchange for another size</option>
-					</select>
-					<select name="other_size[<%= item[:id] %>]" class="size-select">
-						<option value="">Select your size</option>
-						<option value="14Q">14Q</option>
-						<option value="16Q">16Q</option>
-						<option value="18Q">18Q</option>
-					</select>
-					<div><%= item.product_name %></div>
-					<div class="red"><%= number_to_currency(item[:price]) %></div>
-					<div>Size: <%= item[:size]%></div>
-
-				</div>
+						</div>
+					</div>
+					<% end %>
 				<% end %>
 			<% end %>
-			<div>
-				<button type="submit">Continue and Review Items</button>
-			</div>
-		<% end %>
-	</div>
-</div>
 
+		<% end %>
+
+	</div>
+	
+</div>
+<div id="footer">
+<button type="submit" id="submit-btn" disabled>Continue and Review</button>
+</div>
 <script type="text/javascript">
 	
 	$("#items-form select.size-select").hide();
@@ -125,6 +87,8 @@
 			$(this).next("select.size-select").hide();
 		}
 
+		
+
 		/*if($("#items-form").find("select").length) {
 			$("#items-form button").prop("disabled",false);
 		}
@@ -132,6 +96,19 @@
 			$("#items-form button").prop("disabled",true);
 		}*/
 
+	});
+
+	$("#items-form input[type='checkbox']").on("change",function(e) {
+		// there is some checked checkboxes
+		if($("#items-form input[type='checkbox']:checked").length) {
+			$("#submit-btn").prop("disabled",false);
+		} else {
+			$("#submit-btn").prop("disabled",true);
+		}
+	});
+
+	$("#submit-btn").on("click",function() {
+		$("#items-form").submit();
 	});
 </script>
 

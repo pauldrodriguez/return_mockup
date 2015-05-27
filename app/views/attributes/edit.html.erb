@@ -9,7 +9,8 @@
 <%= f.text_field :display_order %>
 <br />
 <%= f.label :attr_type, :type %>
-<%= f.select( :attr_type, [["Return Order",1],["Product",2]]) %>
+
+<%= f.select( :attr_type, [["Group",1],["Selection",2]]) %>
 <br />
 <%= f.submit "Save" %>
 <% end %>

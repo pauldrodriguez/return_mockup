@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150518190138) do
+ActiveRecord::Schema.define(version: 20150526231759) do
 
   create_table "order_items", force: true do |t|
     t.integer  "order_num"
@@ -57,8 +57,8 @@ ActiveRecord::Schema.define(version: 20150518190138) do
   end
 
   create_table "return_order_attributes", force: true do |t|
-    t.integer "return_reason_attrbiute_id"
-    t.integer "return_order_id"
+    t.integer "return_reason_attribute_id"
+    t.integer "return_item_id"
   end
 
   create_table "return_orders", force: true do |t|

@@ -10,6 +10,7 @@ ReturnMockup::Application.routes.draw do
     post :final_step
     get :all_returns
     get :success
+    get :truncate_tables
   end
 
   resource :attributes do

@@ -1,64 +1,14 @@
-<style type="text/css">
-	#sidebar {
-		width: 20em;
-		border: solid 1px gray;
-		position: fixed;
-		display: block;
-	}
-	#main-container {
-		margin-left: 20em;
-	}
-	#links-top li {
-		float: left;
-		padding: 0 0.8em;
-	}
-	#links-top {
-		display: inline-block;
-		list-style: none;
-	}
-	#links-top li.active {
-		border: solid 1px blue;
-		background-color: #B2FFFF;
-	}
-	.red {
-		color: red;
-	}
-	#content {
-		padding-left: 2.4em;
-	} 
-	.inline-block {
-		display: inline-block;
-	}
-	.product-order-item {
-		padding-right: 3.5em;
-	}
 
-	.text-center {
-		text-align: center;
-	}
 
-	#options, #options ul {
-		list-style: none;
-	}
+<h1 class="text-center">Returns &amp; Exchanges</h1>
+<hr />
 
-</style>
-
-<h1 class="text-center">Returns and Exchanges</h1>
-<div id="sidebar">
-	Order#: <%= @order[:order_num] %>
-	<br>
-	Order Date: <%= @order.created_at.strftime("%m/%d/%Y") %>
-	<br>
-	Name: <%=  @order.full_name %>
-	<br>
-	Total: <%= number_to_currency(@order[:amount]) %>
-</div>
 <div id="main-container">
 	<div id="header">
 		<ul id="links-top">
-			<li><span class="number">1</span> Choose Items to Return</li>
-			<li><span class="number">2</span> Review and Confirm</li>
-			<li class="active"><span class="number">3</span> Print Shipping Label</li>
+			<li class="active link-one"><a class="button"><span class="number">1</span> Choose Items to Return</a></li>
+			<li class="active link-two content-before"><span class="number">2</span> Review and Confirm</li>
+			<li class="active link-three content-before content-after"><span class="number">3</span> Print Shipping Label</li>
 		</ul>
 	</div>
 	<div id="content">
