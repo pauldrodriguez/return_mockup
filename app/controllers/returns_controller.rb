@@ -1,4 +1,5 @@
 class ReturnsController < ApplicationController
+	protect_from_forgery :only=>[:order_num,:review,:final_step,:success]
 	def index
 
 	end
@@ -17,10 +18,15 @@ class ReturnsController < ApplicationController
 	def review
 
   		@options = ReturnReasonAttribute.where("parent_id=?",0)
+  		#make sure order number was passed
+  		if(!params.has_key?(:order_num))
+  			flash[:error] = "the order number is invalid."
+  			redirect_to actionL "index",controller: "returns"
+  		end
 
 	  	@order = Order.where("order_num = ? ",params[:order_num]).take
 	  	if(@order.nil?)
-	  		flash[:error] = "The order number is invalid";
+	  		flash[:error] = "The order number is invalid."
 	  		redirect_to action:"index", controller:"returns"
 	  	end
 
@@ -46,8 +52,9 @@ class ReturnsController < ApplicationController
 	  			errors << "some selected items do not exist for the order "+params[:order_num]
 	  		end
 	  		# make sure number of items to be returned is less than or equal to the quantity bought minus items already returned for the same product
-	  		if (item.quantity-item.amount_returned)<@counts[item[:id]]
+	  		if (item[:quantity]-item[:amount_returned])<@counts[item[:id].to_s]
 	  			errors << "invalid quantity amount for " + item[:product_name];
+	  			render_order_num = true
 	  		end
 	  	end
 
@@ -64,9 +71,7 @@ class ReturnsController < ApplicationController
 	  	end
 	  	flash[:order_num] = params[:order_num]
   		flash[:order_item] = params[:order_item]
-  		#flash[:return_type] = params[:return_type]
-  		#flash[:other_size] = params[:other_size]
-  		#flash[:amount_to_return] = params[:amount_to_return]
+  	
 
 
 	end #end validate_step_one
@@ -75,8 +80,22 @@ class ReturnsController < ApplicationController
 
 	end
 
-	def final_step
 
+
+
+	def final_step
+		return_attributes = params[:return_attributes]
+		@return_attributes_ids = []
+		return_attributes.each do |key,list|
+			list.each do |skey, slist|
+				@return_attributes_ids += slist.map(&:to_i)
+			end
+		end
+		# need to find out if they chose fit issues checkbox so we can render the checkbox
+		@reasons_selected = ReturnReasonAttribute.where("id IN (:ids) and code_name = :cd",{ids: @return_attributes_ids,cd: "fitissues"})
+		if(@reasons_selected.any? && !params.has_key?("fit_change_submit"))
+			render :fit_issues and return
+		end
 		#options for review
 	 	@options = ReturnReasonAttribute.where("parent_id=?",0)
 
@@ -91,14 +110,14 @@ class ReturnsController < ApplicationController
 		@counts = Hash.new(0)
 	  	return_items.each {|oid| @counts[oid]+=1}
 	  	
-	  	return_attributes = params[:return_attributes]
+	  	
 	  	
 
 		total_amount = 0.00;
 		order_items_to_save = []
 		@order_items.each do |item|
 
-			if(@counts[item[:id]] > item[:quantity]-item[:amount_returned])
+			if(@counts[item[:id].to_s] > item[:quantity]-item[:amount_returned])
 				@all_errors << "invalid quantity amount returned for product " + item[:product_name]
 				break 
 			end
@@ -120,32 +139,28 @@ class ReturnsController < ApplicationController
 				total_amount += item[:price]
 			end
 
-			# if no break then that means ther where no errors
-			item[:amount_returned] = @counts[item[:id].to_s]
+			# if no break then that means there where no errors
+			item[:amount_returned] += @counts[item[:id].to_s]
 			order_items_to_save << item
 			
 			
 		end
 		
 		return_order[:amount_refunded] = total_amount
-		#render json: return_order and return
-		#@option_attributes = ReturnReasonAttribute.find(params[:return_attributes])
-		#@option_attributes.each do |item|
-		#	return_order.return_order_attributes << ReturnOrderAttribute.new(return_reason_attrbiute_id: item[:id])
-		#end
+	
 
 		if(@all_errors.length<=0)
-			return_order.save
+			if(return_order.save)
+				return_order.save
 
-			OrderItem.transaction do
-				order_items_to_save.each(&:save)
+				OrderItem.transaction do
+					order_items_to_save.each(&:save)
+				end
+				flash[:csrf_token] = params[:authenticity_token]
+				redirect_to success_returns_path(:roid=>return_order[:id], :authenticity_token=>params[:authenticity_token])
+			else
+				#redirect_to all_returns_returns_path
 			end
-
-			redirect_to success_returns_path
-			#return_items.each do |ri|
-			#	ri.
-			#	ri.save
-			#end
 		else
 			render :review
 		end
@@ -154,7 +169,17 @@ class ReturnsController < ApplicationController
 	end
 
 	def success
-
+		
+		if(params.has_key?(:roid) && params.has_key?(:authenticity_token) && flash.key?(:csrf_token))
+			if(params[:authenticity_token]!=flash[:csrf_token] || !ReturnOrders.exists?(params[:roid]))
+				redirect_to all_returns_returns_path
+				#@msg = "invalid return order id or csrf token"
+			end
+		session.delete(:csrf_token)
+		else
+			redirect_to all_returns_returns_path
+			#@msg = "invalid params"
+		end
 	end
 
 	def all_returns
@@ -171,7 +196,7 @@ class ReturnsController < ApplicationController
 	end
 
 	def truncate_tables
-		tables = ['return_items','return_order_attributes','return_orders','return_reason_attributes',
+		tables = ['return_items','return_order_attributes','return_orders',
 			'order_items','orders']
 
 		tables.each do |table|
@@ -181,5 +206,6 @@ class ReturnsController < ApplicationController
 
 	end
 
+	protected
   
 end

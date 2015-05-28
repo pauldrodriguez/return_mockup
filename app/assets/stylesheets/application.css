@@ -39,10 +39,12 @@
 
 	#links-top li {
 		float: left;
-		padding: 0 0.8em;
+		padding: 0.2em 0.8em;
 		border: 1px solid #bbb;
 		
 		border-right: none;
+
+		text-transform: uppercase;
 
 
 	}
@@ -64,8 +66,8 @@
 	}
 	#links-top li.content-before:before {
 		content:"";
-     width:14.9px;
-     height:16px;
+     width:20px;
+     height:20px;
      background: white;
      
      -moz-transform: rotate(45deg);
@@ -73,8 +75,8 @@
      display:block;
      float: left;
      /*position: absolute;*/
-     margin-top: 2.63px;
-     margin-left: -21px;
+     /*margin-top: 2.63px;*/
+     margin-left: -23px;
      /*position: absolute;*/
       border:1px solid  #bbb;
       border-left: none;
@@ -84,8 +86,8 @@
 	
 	#links-top li.content-after:after {
 		content:"";
-     width:16.3px;
-     height:16.3px;
+     width:20.27px;
+     height:20.8px;
      background: white;
      
      -moz-transform: rotate(45deg);
@@ -93,8 +95,8 @@
      display:inline;
      float: right;
      /*position: absolute;*/
-     margin-top: 2.62px;
-     margin-left: 0.25%;
+     /*margin-top: 2.62px;*/
+     margin-left: 1.5px;
      position: absolute;
       border:1px solid  #bbb;
       border-left: none;
@@ -105,6 +107,25 @@
 		background: #eee;
 	}
 
+
+	.next-btn:after {
+		content:"";
+     	width:25.4558px;
+		height:25.4558px;
+		background: black;
+
+		-moz-transform: rotate(45deg);
+		-webkit-transform: rotate(45deg);
+		display:inline;
+		float: right;
+		/*position: absolute;*/
+		margin-top: -4.6px;
+		margin-left: -2px;
+		position: absolute;
+		border: none;
+		z-index: -1;
+	}
+
 	
 	
 	.red {
@@ -112,6 +133,7 @@
 	}
 	#content {
 		padding-left: 2.4em;
+		margin-top: 17.28px;
 		display: inline-block;
 		border-left: solid 1px #bbb;
 		vertical-align: top;
@@ -224,6 +246,9 @@ div.form-wrapper {
 ul.options {
 	list-style:none;
 }
+ul.options li {
+	padding: 5px 0;
+}
 ul.sub-options {
 	list-style: none;
 	padding-left: 10px;
@@ -250,6 +275,7 @@ div.product-sidebar-wrapper {
 	background: black;
 	color: white;
 	border: none;
+	margin-right: 18px; /*changes depending on button size*/
 }
 
 #footer button:hover {
@@ -265,9 +291,37 @@ div.product-sidebar-wrapper {
 	color: white;
 	border: none;
 	text-decoration: none;
+	margin-left: 18px;
 }
+
+#footer .previous-options:before {
+		content:"";
+     width:25px;
+     height:25px;
+     background: black;
+     
+     -moz-transform: rotate(45deg);
+     -webkit-transform: rotate(45deg);
+     display:inline;
+     float: left;
+     /*position: absolute;*/
+     margin-top: -5px;
+     margin-left: -23px;
+     position: absolute;
+    border: none;
+    z-index: -1;
+}
+
 
 .main-cont-step-one {
 	border: 1px solid #bbb;
 	background: #eee;
+}
+
+#success-content {
+	
+		display: block;
+	
+		vertical-align: top;
+		text-align: center;	
 }

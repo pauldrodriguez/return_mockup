@@ -22,7 +22,7 @@ class AttributesController < ApplicationController
 		if(@attribute.parent_id=="" || @attribute.parent_id.nil?)
 			@attribute.parent_id = 0;
 		end
-		@attribute.code_name = @attribute.attr_name.gsub(/[^A-Za-z0-9]/i,"")
+		@attribute.code_name = @attribute.attr_name.gsub(/[^A-Za-z0-9]/i,"").downcase
 		if(@attribute.save)
 			redirect_to attributes_path
 		else
@@ -38,7 +38,7 @@ class AttributesController < ApplicationController
 		if(@attribute.parent_id=="" || @attribute.parent_id.nil?)
 			@attribute.parent_id = 0;
 		end
-		@attribute.code_name = @attribute.attr_name.gsub(/[^A-Za-z0-9]/i,"")
+		@attribute.code_name = @attribute.attr_name.gsub(/[^A-Za-z0-9]/i,"").downcase
 		if(@attribute.save)
 			redirect_to attributes_path
 		else
