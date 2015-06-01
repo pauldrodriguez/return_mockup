@@ -10,6 +10,13 @@ class ReturnsController < ApplicationController
 	  	if(@order.nil?)
 	  		flash[:error] = "The order number is invalid";
 	  		redirect_to action:"index", controller:"returns"
+  			#add another check for when time of when order was created is more than 40 days
+  			#add another check if all items have been returned
+		elsif @order[:created_at] > 0.days.ago
+			flash[:error] = "You cannot return items for orders from 40+ days ago"
+			redirect_to action:"index", controller:"returns"
+  		else
+  			ReturnItems.where("order_num=?",params[:order_num]).select("order_num,o")
 	  	end
 
 
@@ -92,10 +99,10 @@ class ReturnsController < ApplicationController
 			end
 		end
 		# need to find out if they chose fit issues checkbox so we can render the checkbox
-		@reasons_selected = ReturnReasonAttribute.where("id IN (:ids) and code_name = :cd",{ids: @return_attributes_ids,cd: "fitissues"})
-		if(@reasons_selected.any? && !params.has_key?("fit_change_submit"))
-			render :fit_issues and return
-		end
+		#@reasons_selected = ReturnReasonAttribute.where("id IN (:ids) and code_name = :cd",{ids: @return_attributes_ids,cd: "fitissues"})
+		#if(@reasons_selected.any? && !params.has_key?("fit_change_submit"))
+		#	render :fit_issues and return
+		#end
 		#options for review
 	 	@options = ReturnReasonAttribute.where("parent_id=?",0)
 
