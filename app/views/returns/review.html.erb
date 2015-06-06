@@ -1,16 +1,31 @@
+<%= @counts.inspect %>
+<%= @inches.inspect %>
+<style type="text/css">
+	#test-canvas-front {
+	
+	border: 1px solid black;
+	background: url("<%= image_path('img_test_front.jpeg') %>");
+	}
+
+	#test-canvas-back {
+	
+	border: 1px solid black;
+	background: url("<%= image_path('img_test_back.jpeg') %>");
+	}
+
+</style>
 <div id="header">
+	<img src="<%= image_url("stepBar_2.gif") %>" />
+	<!--
 	<ul id="links-top">
 		<li class="active link-one"><a class="button"><span class="number">1</span> Choose Items to Return</a></li>
 		<li class=" active link-two content-before"><span class="number">2</span> Review and Confirm</li>
 		<li class="link-three content-before content-after"><span class="number">3</span> Print Shipping Label</li>
-	</ul>
+	</ul>-->
 </div>
 <div id="main-container">
 	
 	<div id="review-content">
-		<% if (@all_errors.length>1) %>
-			<div class="red"><%= @all_errors %></div>
-		<% end %>
 		
 		
 
@@ -18,54 +33,74 @@
 			<input type="hidden" name="order_id" value="<%= @order[:id] %>" />
 			<input type="hidden" name="order_num" value="<%= @order[:order_num] %>" />
 
-			
+			<div id="review-product-container">		
+			<div class="review-box height-box can-show" id="height_box">
+				Every body is unique. Your ansers greatly help us improve our fit
+				<h3>Height</h3>
+				<%= select_tag(:feet, options_for_select(@feet)) %>
+				<%= select_tag(:inches, options_for_select(@inches)) %>
+				<h3>Heel Height</h3>
+				<%= select_tag(:heel_height, options_for_select(@inches)) %>
+
+			</div>	
 			<% @order_items.each do |item| %>
 			
-			<% (1..@counts[item[:id].to_s]).to_a.each do |times| %>
-			<div class="product-container">
-			<div class="product-sidebar">
-				<div class="product-sidebar-wrapper">
-					<input type="hidden" name="order_items[]" value="<%= item[:id]%>" />
+			<% (1..@counts[item[:id]]).to_a.each do |times| %>
 
-					<img width="260" height="390" src="<%= image_url("image.jpg") %>" />
-					<div class="order-item-desc">
-						<p><b><%= item.product_name %></b></p>
-						<p>Refund: <%= number_to_currency(item[:price]) %></p>
-						<p>To card ending in 5002</p>
+			
+			<div class="product-container review-box" id="<%= "product_"+item[:id].to_s+"_"+times.to_s %>">
+				<div class="product-sidebar">
+					<div class="product-sidebar-wrapper">
+						<input type="hidden" name="order_items[]" value="<%= item[:id]%>" />
+
+						<img width="260" height="390" src="<%= image_url("image.jpg") %>" />
+						<div class="order-item-desc">
+							<p><b><%= item.product_name %></b></p>
+							<p>Refund: <%= number_to_currency(item[:price]) %></p>
+							<p>To card ending in 5002</p>
+						</div>
 					</div>
 				</div>
-			</div>
-			<div class="product-content">
-				<h2>Reason for returning this item:</h2>
-				<span>Please select all that apply. Your answers help us improve our products.</span>
-				<ul class="options">
-				<% @options.each do |obj| %>
-				<li>
-					<% if(obj[:attr_type]==1) %>
-					<b><%= obj[:attr_name] %></b>
-					<% else %>
-					<input type="checkbox" name="return_attributes[<%= item[:id]%>][<%= times %>][]" value="<%= obj[:id] %>" /><%= obj[:attr_name] %>
+				<div class="product-content">
+					<h2>Reason for returning this item:</h2>
+					<span>Please select all that apply. Your answers help us improve our products.</span>
+					<ul class="options">
+					<% @options.each do |obj| %>
+					<li>
+						<% if(obj[:attr_type]==1) %>
+						<b><%= obj[:attr_name] %></b>
+						<% else %>
+						<input type="checkbox" name="return_attributes[<%= item[:id]%>][<%= times %>][]" value="<%= obj[:id] %>" data-attr_name="<%= obj[:code_name] %>" /><%= obj[:attr_name] %>
+						<% end %>
+						
+						<% if(obj.child_attributes.any?) %>
+							<ul class="sub-options">
+								<% obj.child_attributes.each do |cobj| %>
+									<li><input type="checkbox" name="return_attributes[<%= item[:id]%>][<%= times %>][]" value="<%= cobj[:id] %>" data-attr_name="<%= cobj[:code_name] %>" /><%= cobj[:attr_name] %></li>
+								<% end %>
+							</ul>	
+						<% end %>
+					</li>
 					<% end %>
-					
-					<% if(obj.child_attributes.any?) %>
-						<ul class="sub-options">
-							<% obj.child_attributes.each do |cobj| %>
-								<li><input type="checkbox" name="return_attributes[<%= item[:id]%>][<%= times %>][]" value="<%= cobj[:id] %>" /><%= cobj[:attr_name] %></li>
-							<% end %>
-						</ul>	
-					<% end %>
-				</li>
-				<% end %>
-				</ul>
+					</ul>
+				</div>
 			</div>
+
+			<div class="fit-issues-container review-box" id="<%= "fit_issues_"+item[:id].to_s+"_"+times.to_s %>">
+				
+				<canvas class="test-canvas-front" id="test-canvas-front" width="480" height="720"></canvas>
+
+				<canvas class="test-canvas-back" id="test-canvas-back" width="480" height="720"></canvas>
 			</div>
+
+
 			<% end %>
 			
 			<% end %>
-
+			</div>
 			<div id="footer">
-			<a href="#" class='previous-options'>Previous Options</a>
-			<button type="submit" disabled="disabled" class="next-btn">Continue to next step</button></div>
+			<a href="#" class='previous-options'><img src="<%= image_url("arrow_PreviousOptions.gif") %>" /></a>
+			<button id="continue-btn" class="next-btn"><img src="<%= image_url("arrow_ContinueNextStep.gif") %>" /></button></div>
 		<% end %>
 	</div>
 </div>
@@ -76,6 +111,10 @@
 
 
 <script type="text/javascript">
+$(document).ready(function () {
+	var previous_items_ids = Array();
+	$("div.product-container").first().addClass("review-box-active");
+	$("div.product-container").last().addClass("last-container");
 	$("#review-form").on("change","input[type='checkbox']",function(e) {
 		if($(this).closest("ul.sub-options").length) {
 
@@ -95,10 +134,159 @@
 
 	$("a.previous-options").on("click",function(e) {
 		e.preventDefault();
-		if($("#step-one-form").length) {
+		
+
+		if(previous_items_ids.length<=0) {
 			$("#step-one-form").submit();
 		}
+		var curr_box = $("div.review-box-active");
+		curr_box.removeClass("review-box-active");
+		var prev_box_id = previous_items_ids.pop();
+		$("#"+prev_box_id).addClass("review-box-active");
 	});
+
+	// if active box is for product checkbox review, check if at least one is filled out
+	// if at least one checkbox and fit issue, go to fit issue box for that item, else go to next item
+	$("#continue-btn").on("click",function(e) {
+		e.preventDefault();
+		var curr_box = $("div.review-box-active");
+		
+		if(curr_box.hasClass("product-container")) {
+			if(curr_box.find("input[type='checkbox']:checked").length) {
+				var show_fit_issues = false;
+				// check if fit issues is checked
+				curr_box.find("input[type='checkbox']:checked").each(function(i,e) {
+					console.log($(e).data("attr_name"));
+					if($(e).data("attr_name")=="fitissues") {
+						show_fit_issues = true;
+						return false;		
+					}
+				});
+
+				if(show_fit_issues) {
+					// show fit issues
+					curr_box.next("div.fit-issues-container").addClass("review-box-active");
+					curr_box.removeClass("review-box-active");
+					previous_items_ids.push(curr_box.attr("id"));
+				} else {
+					if(curr_box.hasClass("last-container")) {
+						// need to submit form here
+					} else {
+						curr_box.next("div.fit-issues-container").next("div.product-container").addClass("review-box-active");
+						
+						curr_box.removeClass("review-box-active");
+						previous_items_ids.push(curr_box.attr("id"));
+					}
+				}
+			}
+		} else if(curr_box.hasClass("height-box")) {
+			curr_box.removeClass("can-show");
+		}
+	});
+
+});
+</script>
+
+
+<script type="text/javascript">
+var pins = Array();
+$(document).ready(function() {
+
+	var canvas_front = document.getElementById("test-canvas-front");
+	var canvas_back = document.getElementById("test-canvas-back");
+
+	var context_front = canvas_front.getContext("2d");
+	var context_back = canvas_back.getContext("2d");
+
+	function inside_existing_pin(posx,posy) {
+		var inside_pin = false;
+		$.each(pins,function(i,e) {
+			if(Math.sqrt((posx-e.x)*(posx-e.x) + (posy-e.y)*(posy-e.y)) < e.rad) {
+				console.log("clicked inside circle");
+				console.log(e);
+				inside_pin = true;
+				return false;
+			}
+		});
+		return inside_pin;
+	}
+
+
+	/*function move_options_box(canvas,evt) {
+		var canvas_left = 0;
+		if($(canvas).attr("id")=="test-canvas-back") {
+			canvas_left = parseInt($("#test-canvas-back").css("width"));
+		}
+		console.log($("#options").css("padding-left"));
+		box_width = (parseInt($("#options").css("width")) +20 );
+	    	box_height = parseInt($("#options").css("height"));
+	    	console.log(box_width);
+	    	console.log(evt.clientX);
+	    	$("#options").css({"left":evt.clientX+20,"top":evt.clientY-box_height/2});
+	    	$("#options").show();
+	    	$("#options").addClass("options-visible");
+	}*/
+
+	function draw(e,canvas,context) {
+		var radius = 8;
+	    var pos = get_mouse_pos(canvas, e);
+	    console.log(pos);
+	    posx = pos.x;
+	    posy = pos.y;
+
+	    if(!$("#options").hasClass("options-visible")) {
+	    	//move_options_box(canvas,e);
+		} else {
+			return;
+		}
+
+	    if(inside_existing_pin(posx,posy)) {
+	    	
+	
+	    } else {
+	    	
+		    pins.push({x: posx,y:posy,rad: radius});
+
+		    context.fillStyle = "#FD0000";
+		    context.beginPath();
+		    context.arc(posx, posy, radius, 0, 2*Math.PI);
+		    context.fill();
+		    console.log(pins);
+		}
+	}
+
+	function get_mouse_pos(canvas, evt) {
+	    var rect = canvas.getBoundingClientRect();
+	    return {
+	      x: evt.clientX - rect.left,
+	      y: evt.clientY - rect.top
+	    };
+	}
+
+	window.onresize = function(event) {
+		console.log($("#test-canvas-front").css("margin-left"));
+	}
+	//window.draw = draw;
+	$("#test-canvas-front,#test-canvas-back").on("click",function(event) {
+
+		if($(this).attr("id")=="test-canvas-front") {
+			var context = context_front;
+		} else {
+			var context = context_back;
+		}
+		draw(event,this,context);
+	});
+
+	$("#options a").on("click",function() {
+		$("#options").hide();
+		$("#options").removeClass("options-visible");
+	});
+
+	$("#options").hide();
+
+	
+
+});
 </script>
 
 

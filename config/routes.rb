@@ -1,4 +1,6 @@
 ReturnMockup::Application.routes.draw do
+  resources :pin_attributes
+
   root to: 'returns#index'
   get "home/index"
 
@@ -6,11 +8,13 @@ ReturnMockup::Application.routes.draw do
   resource :returns do
     get :index
     post :order_num
-    post :review
+    get :review
     post :final_step
     get :all_returns
     get :success
     get :truncate_tables
+    post :validate_orders
+    get :canvas_test
   end
 
   resource :attributes do

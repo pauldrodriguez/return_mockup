@@ -1,0 +1,152 @@
+<style type="text/css">
+	#test-canvas-front {
+	
+	border: 1px solid black;
+	background: url("<%= image_path('img_test_front.jpeg') %>");
+	}
+
+	#test-canvas-back {
+	
+	border: 1px solid black;
+	background: url("<%= image_path('img_test_back.jpeg') %>");
+	}
+
+	ul {
+		position: absolute;
+		
+		text-decoration: none;
+		list-style: none;
+		padding: 0;
+		background: white;
+		border-top: 1px solid #DEDEDE;
+		border-left: 1px solid #DEDEDE;
+		border-right: 1px solid #DEDEDE;
+	}
+	ul li {
+		padding:10px 20px;
+		border-bottom: 1px solid #DEDEDE;
+		text-transform: uppercase;
+	}
+	ul li:hover, ul li:hover a {
+		background: black;
+		color: white;
+	}
+	ul li:hover:after {
+		content: "X";
+		margin-left: 20px;
+	}
+	ul li a {
+		text-decoration: none;
+		text-align: right;
+
+	}
+</style>
+<ul id="options">
+	<li>Waist too tight</li>
+	<li>waist too loose</li>
+	<li><a href="#">Submit</a></li>
+</ul>
+<canvas id="test-canvas-front" width="480" height="720"></canvas>
+
+<canvas id="test-canvas-back" width="480" height="720"></canvas>
+
+<script type="text/javascript">
+var pins = Array();
+$(document).ready(function() {
+
+	var canvas_front = document.getElementById("test-canvas-front");
+	var canvas_back = document.getElementById("test-canvas-back");
+
+	var context_front = canvas_front.getContext("2d");
+	var context_back = canvas_back.getContext("2d");
+
+	function inside_existing_pin(posx,posy) {
+		var inside_pin = false;
+		$.each(pins,function(i,e) {
+			if(Math.sqrt((posx-e.x)*(posx-e.x) + (posy-e.y)*(posy-e.y)) < e.rad) {
+				console.log("clicked inside circle");
+				console.log(e);
+				inside_pin = true;
+				return false;
+			}
+		});
+		return inside_pin;
+	}
+
+
+	function move_options_box(canvas,evt) {
+		var canvas_left = 0;
+		if($(canvas).attr("id")=="test-canvas-back") {
+			canvas_left = parseInt($("#test-canvas-back").css("width"));
+		}
+		console.log($("#options").css("padding-left"));
+		box_width = (parseInt($("#options").css("width")) +20 );
+	    	box_height = parseInt($("#options").css("height"));
+	    	console.log(box_width);
+	    	console.log(evt.clientX);
+	    	$("#options").css({"left":evt.clientX+20,"top":evt.clientY-box_height/2});
+	    	$("#options").show();
+	    	$("#options").addClass("options-visible");
+	}
+
+	function draw(e,canvas,context) {
+		var radius = 8;
+	    var pos = get_mouse_pos(canvas, e);
+	    console.log(pos);
+	    posx = pos.x;
+	    posy = pos.y;
+
+	    if(!$("#options").hasClass("options-visible")) {
+	    	move_options_box(canvas,e);
+		} else {
+			return;
+		}
+
+	    if(inside_existing_pin(posx,posy)) {
+	    	
+	
+	    } else {
+	    	
+		    pins.push({x: posx,y:posy,rad: radius});
+
+		    context.fillStyle = "#FD0000";
+		    context.beginPath();
+		    context.arc(posx, posy, radius, 0, 2*Math.PI);
+		    context.fill();
+		    console.log(pins);
+		}
+	}
+
+	function get_mouse_pos(canvas, evt) {
+	    var rect = canvas.getBoundingClientRect();
+	    return {
+	      x: evt.clientX - rect.left,
+	      y: evt.clientY - rect.top
+	    };
+	}
+
+	window.onresize = function(event) {
+		console.log($("#test-canvas-front").css("margin-left"));
+	}
+	//window.draw = draw;
+	$("#test-canvas-front,#test-canvas-back").on("click",function(event) {
+
+		if($(this).attr("id")=="test-canvas-front") {
+			var context = context_front;
+		} else {
+			var context = context_back;
+		}
+		draw(event,this,context);
+	});
+
+	$("#options a").on("click",function() {
+		$("#options").hide();
+		$("#options").removeClass("options-visible");
+	});
+
+	//$("#options").hide();
+
+	
+
+});
+</script>

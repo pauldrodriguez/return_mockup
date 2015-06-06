@@ -1,52 +1,75 @@
 class ReturnsController < ApplicationController
 	protect_from_forgery :only=>[:order_num,:review,:final_step,:success]
 	def index
-
+		session.delete(:order_num)
 	end
 
 	def order_num
+		if(params.has_key?(:order_num))
+			order_number = params[:order_num]
+		elsif(session.has_key?(:order_num))
+			order_number = session[:order_num]
+		else
+			order_number = 0;
+		end
+
 	  	@order = Order.where("order_num = ?", params[:order_num]).take
 	  
 	  	if(@order.nil?)
-	  		flash[:error] = "The order number is invalid";
-	  		redirect_to action:"index", controller:"returns"
+	  		flash[:error] = "The order number is invalid"
+	  		redirect_to action:"index", controller:"returns" and return
   			#add another check for when time of when order was created is more than 40 days
   			#add another check if all items have been returned
-		elsif @order[:created_at] > 0.days.ago
-			flash[:error] = "You cannot return items for orders from 40+ days ago"
-			redirect_to action:"index", controller:"returns"
+		elsif (DateTime.now.to_date-@order[:created_at].to_date).to_i > 40
+			flash[:error] = "You cannot return items for orders older than 40 days"
+			redirect_to action:"index", controller:"returns" and return
   		else
-  			ReturnItems.where("order_num=?",params[:order_num]).select("order_num,o")
+  			# in here, want to get all items that have been put for return and all items that have shipped to compare
+  			ReturnItems.select("return_items.order_item_id").where("order_num=?",params[:order_num]).group(:order_item_id).count
+  			#ReturnItems.select("return_items.order_item_id,order_items.quantity").where("return_items.order_num=?",params[:order_num]).joins(:order_item).group("return_items.order_item_id").count("return_items.order_item_id")
 	  	end
 
+	  	# if everything is valid, then we should be able to get here
+
+	  	#save order number in session
+	  	session[:order_num] = params[:order_num]
 
   	end
-
-	def review
-
-  		@options = ReturnReasonAttribute.where("parent_id=?",0)
+  	def validate_orders
+  		errors = Array.new
+ 		#@options = ReturnReasonAttribute.where("parent_id=?",0)
   		#make sure order number was passed
-  		if(!params.has_key?(:order_num))
-  			flash[:error] = "the order number is invalid."
-  			redirect_to actionL "index",controller: "returns"
+  		if(!session.has_key?(:order_num))
+  			errors << "the order number is invalid."
+  			flash[:errors] = errors
+  			redirect_to actionL "index",controller: "returns" and return
   		end
 
-	  	@order = Order.where("order_num = ? ",params[:order_num]).take
+	  	@order = Order.where("order_num = ? ",session[:order_num]).take
 	  	if(@order.nil?)
-	  		flash[:error] = "The order number is invalid."
-	  		redirect_to action:"index", controller:"returns"
+	  		errors << "The order number is invalid."
+	  		flash[:errors] = errors
+	  		redirect_to action:"index", controller:"returns" and return
 	  	end
 
-	  	render_order_num = false;
+	  	if(params[:order_items].empty?)
+	  		errors << "you must select at least one item to return"
+	  		flash[:errors] = errors
+	  		redirect_to action:"order_num", controller:"returns" and return
+	  	end
+
+	  	redirect_back = false;
 	  	valid_items = true;
 	  	#only want the items that actually have a value in them
-	  	return_items = params[:order_items]
-	  	@order_items = OrderItem.find(return_items)
-	  	@counts = Hash.new(0)
-	  	return_items.each {|oid| @counts[oid]+=1}
-	  	
+	  	return_order_items = params[:order_items]
+	  	@order_items = OrderItem.find(return_order_items)
 
-	  	errors = Array.new
+	  	@counts = Hash.new(0)
+	  	return_order_items.each {|oid| @counts[oid.to_i]+=1}
+	  	
+	  	#gets all the returned items for the order
+	  	@return_items = ReturnItems.select("return_items.order_item_id").where("order_num=?",session[:order_num]).group(:order_item_id).count
+	  	
 	  	# only return amount for items that want to be returned, 
 	  	# since array contains all order item keys regardless if they want to be returned or not
 	  	#amount_to_return = params[:amount_to_return].delete_if {|k,v| return_items.keys.index(k).nil?}
@@ -55,30 +78,69 @@ class ReturnsController < ApplicationController
 	  		# make sure order item exists for the order
 	  		if item[:order_id]!=@order[:id] && valid_items 
 	  			valid_items = false;
-	  			render_order_num = true;
-	  			errors << "some selected items do not exist for the order "+params[:order_num]
+	  			redirect_back = true;
+	  			errors << "some selected items do not exist for the order "+session[:order_num]
 	  		end
 	  		# make sure number of items to be returned is less than or equal to the quantity bought minus items already returned for the same product
-	  		if (item[:quantity]-item[:amount_returned])<@counts[item[:id].to_s]
+	  		if (item[:quantity] - (@return_items[item[:id]] || 0) ) < @counts[item[:id]]
 	  			errors << "invalid quantity amount for " + item[:product_name];
-	  			render_order_num = true
+	  			redirect_back = true
 	  		end
 	  	end
 
-	  	if(return_items.empty?)
+	  	if(return_order_items.empty?)
 	  		errors << "you must select at least one item to return"
-	  		render_order_num = true;
+	  		redirect_back = true;
 	  	end
-	  	@all_errors = errors
+	  	
 	  	#render_order_num = true;
-	  	if(render_order_num)
-	  		#flash[:error] = errors
+	  	if(redirect_back)
+	  		flash[:errors] = errors
 	  		#render :to_step_1 #this will be used in case we want to redirect
-	  		render :order_num
+	  		redirect_to action:"order_num",controller:"returns" and return
 	  	end
-	  	flash[:order_num] = params[:order_num]
-  		flash[:order_item] = params[:order_item]
+	  	# order items have been validated, store in session
+	  	session[:order_items_count] = @counts
+	  	session[:return_items] = return_order_items
+	  	session[:review_redirect] = true
+	  	redirect_to action:"review",controller:"returns" and return
   	
+  	end
+
+	def review
+
+  		@options = ReturnReasonAttribute.where("parent_id=?",0)
+  		#make sure order number was passed
+  		if(!session.has_key?(:order_num))
+  			flash[:error] = "the order number is invalid."
+  			redirect_to action: "index",controller: "returns" and return
+  		end
+
+	  	@order = Order.where("order_num = ? ",session[:order_num]).take
+	  	if(@order.nil?)
+	  		flash[:error] = "The order number is invalid."
+	  		redirect_to action:"index", controller:"returns" and return
+	  	end
+
+	  	if(session.has_key?(:review_redirect) && session[:review_redirect]==true) || session.has_key?(:return_items)
+	  		#oiid, tqtynum = session[:order_items_count].first
+	  		session.delete(:review_redirect)
+	  	else
+	  	
+	  		redirect_to action:"index", controller: "returns" and return
+	  	end
+	  	#render_order_num = false;
+	  	#valid_items = true;
+	  	#only want the items that actually have a value in them
+	  	#return_items = params[:order_items]
+	  	@order_items = OrderItem.find(session[:return_items])
+	  	@counts = session[:order_items_count]
+	  	@inches = Array.new
+	  	@inches << ["Inches",0]
+	  	(1..12).to_a.each {|inch| @inches << [inch,inch]} 
+		#@inches = (1..12).to_a
+		@feet  = [["Feet",0]]
+		(1..7).to_a.each {|feet| @feet << [feet,feet]}
 
 
 	end #end validate_step_one
@@ -121,10 +183,10 @@ class ReturnsController < ApplicationController
 	  	
 
 		total_amount = 0.00;
-		order_items_to_save = []
+		#order_items_to_save = []
 		@order_items.each do |item|
 
-			if(@counts[item[:id].to_s] > item[:quantity]-item[:amount_returned])
+			if(@counts[item[:id].to_s] > item[:quantity])
 				@all_errors << "invalid quantity amount returned for product " + item[:product_name]
 				break 
 			end
@@ -132,9 +194,8 @@ class ReturnsController < ApplicationController
 			(1..@counts[item[:id].to_s]).to_a.each do |times| 
 				return_item = ReturnItems.new(order_num: @order[:order_num],
 					order_id: @order[:id], product_name: item[:product_name],
-					return_type: 1, return_reasons: "",
-					amount_refunded: item[:price], original_size: item[:size], new_size: "",
-					status: "pending", quantity: 1)
+					amount_refunded: item[:price],
+					status: "pending", quantity: 1,order_item_id: item[:id])
 				#for each attribute selected for this product
 				if(!return_attributes[item[:id].to_s][times.to_s].nil?)
 					return_attributes[item[:id].to_s][times.to_s].each do |attr_id|
@@ -147,22 +208,22 @@ class ReturnsController < ApplicationController
 			end
 
 			# if no break then that means there where no errors
-			item[:amount_returned] += @counts[item[:id].to_s]
-			order_items_to_save << item
+			#item[:amount_returned] += @cofunts[item[:id].to_s]
+			#order_items_to_save << item
 			
 			
 		end
 		
-		return_order[:amount_refunded] = total_amount
+		return_order[:amount_to_refund] = total_amount
 	
 
 		if(@all_errors.length<=0)
 			if(return_order.save)
 				return_order.save
 
-				OrderItem.transaction do
-					order_items_to_save.each(&:save)
-				end
+				#OrderItem.transaction do
+				#	order_items_to_save.each(&:save)
+				#end
 				flash[:csrf_token] = params[:authenticity_token]
 				redirect_to success_returns_path(:roid=>return_order[:id], :authenticity_token=>params[:authenticity_token])
 			else
@@ -189,6 +250,11 @@ class ReturnsController < ApplicationController
 		end
 	end
 
+	def canvas_test
+
+		
+	end
+
 	def all_returns
 		@return_orders = ReturnOrders.all
 		@return_items = ReturnItems.all
@@ -212,7 +278,5 @@ class ReturnsController < ApplicationController
 		end
 
 	end
-
-	protected
   
 end

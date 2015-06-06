@@ -2,13 +2,13 @@
 <div class="form-wrapper">
 <p>Enter your order number below</p>
 <% if(flash[:error]) %>
-<div class="red flash-error"><p>The Order Number is Invalid</p></div>
+<div class="red flash-error"><p><%= flash[:error] %></p></div>
 <% end %>
 <div class="error red"></div>
 <%= form_tag({controller:"returns", action: "order_num"},method: "post",id: "order-return-form") do %>
 <input type="text" name="order_num" placeholder="Order Number" />
 
-<button type="submit">Submit</button>
+<button type="submit"><img src="<%= image_url("arrow_Submit.gif")%>" /></button>
 <% end %>
 <p>Or Sign in to find your order</p>
 <p>Help me find my order</p>
