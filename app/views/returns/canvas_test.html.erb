@@ -1,14 +1,11 @@
 <style type="text/css">
 	#test-canvas-front {
-	
-	border: 1px solid black;
-	background: url("<%= image_path('img_test_front.jpeg') %>");
+		border: 1px solid black;
+
 	}
 
 	#test-canvas-back {
-	
-	border: 1px solid black;
-	background: url("<%= image_path('img_test_back.jpeg') %>");
+		border: 1px solid black;
 	}
 
 	ul {
@@ -31,83 +28,132 @@
 		background: black;
 		color: white;
 	}
-	ul li:hover:after {
+
+	ul li:after {
 		content: "X";
+		visibility: hidden;
 		margin-left: 20px;
+	}
+	ul li:hover:after {
+		visibility: visible;
 	}
 	ul li a {
 		text-decoration: none;
 		text-align: right;
 
 	}
+
+	
 </style>
 <ul id="options">
-	<li>Waist too tight</li>
-	<li>waist too loose</li>
-	<li><a href="#">Submit</a></li>
-</ul>
-<canvas id="test-canvas-front" width="480" height="720"></canvas>
 
-<canvas id="test-canvas-back" width="480" height="720"></canvas>
+</ul>
+
+<canvas id="test-canvas-front" width="480" height="720" data-order-item-id="1" data-repeated-counter="1" data-type-canvas="front"></canvas>
+
+<canvas id="test-canvas-back" width="480" height="720" data-order-item-id="1" data-repeated-counter="1" data-type-canvas="back">></canvas>
+
+ <%= javascript_include_tag "options_ctrl", "data-turbolinks-track" => true %>
+
 
 <script type="text/javascript">
-var pins = Array();
+var images = {1: {front: "<%= image_path('img_test_front.jpeg')%>",back:"<%= image_path('img_test_back.jpeg') %>"}};
+var pins = {};
+var options = {'group1': {1:"Waist Too Tight",2: "Waist Too Loose"}, 'group2':{1: "neck too tight",2:"neck Too Loose"}};
+var groups_selected = Array();
+</script>
+
+<script type="text/javascript">
 $(document).ready(function() {
 
-	var canvas_front = document.getElementById("test-canvas-front");
-	var canvas_back = document.getElementById("test-canvas-back");
+	var options_ctrl = new OptionsCtrl();
+	options_ctrl.options = options;
+	options_ctrl.options_elem = $("#options");
+	options_ctrl.init();
 
-	var context_front = canvas_front.getContext("2d");
-	var context_back = canvas_back.getContext("2d");
+	function draw_images(canvas_front,canvas_back) {
+		order_id = canvas_front.data("order-item-id");
+		if( !(order_id in images) ) {
+			return;
+		}
+		canvas_front_width = canvas_front.attr("width");
+		canvas_front_height = canvas_front.attr("height");
+		canvas_front.css({"background":"url('"+images[order_id].front+"')","background-repeat":"no-repeat"});
+		canvas_front.css({"background-size": canvas_front_width+"px "+canvas_front_height+"px"});
 
-	function inside_existing_pin(posx,posy) {
+		canvas_back_width = canvas_back.attr("width");
+		canvas_back_height = canvas_back.attr("height");
+		canvas_back.css({"background":"url('"+images[order_id].back+"')","background-repeat":"no-repeat"});
+		canvas_back.css({"background-size": canvas_back_width+"px "+canvas_back_height+"px"});
+	
+
+	}
+
+
+	function inside_existing_pin(posx,posy,canvas) {
 		var inside_pin = false;
-		$.each(pins,function(i,e) {
-			if(Math.sqrt((posx-e.x)*(posx-e.x) + (posy-e.y)*(posy-e.y)) < e.rad) {
-				console.log("clicked inside circle");
-				console.log(e);
-				inside_pin = true;
-				return false;
+		var order_item_id = $(canvas).data("order-item-id");
+		var repeated_counter = $(canvas).data("repeated-counter");
+		var type_canvas = $(canvas).data("type-canvas");
+		if(order_item_id in pins) {
+			if(repeated_counter in pins[order_item_id]) {
+
+				$.each(pins[order_item_id][repeated_counter][type_canvas],function(i,e) {
+					
+					if(Math.sqrt((posx-e.x)*(posx-e.x) + (posy-e.y)*(posy-e.y)) < e.rad) {
+						console.log("clicked inside circle");
+						options_ctrl.set_pin_info(order_item_id,repeated_counter,type_canvas,i);
+						inside_pin = true;
+						return false;
+					}
+				});
 			}
-		});
+		}
 		return inside_pin;
 	}
 
 
-	function move_options_box(canvas,evt) {
-		var canvas_left = 0;
-		if($(canvas).attr("id")=="test-canvas-back") {
-			canvas_left = parseInt($("#test-canvas-back").css("width"));
-		}
-		console.log($("#options").css("padding-left"));
-		box_width = (parseInt($("#options").css("width")) +20 );
-	    	box_height = parseInt($("#options").css("height"));
-	    	console.log(box_width);
-	    	console.log(evt.clientX);
-	    	$("#options").css({"left":evt.clientX+20,"top":evt.clientY-box_height/2});
-	    	$("#options").show();
-	    	$("#options").addClass("options-visible");
-	}
 
-	function draw(e,canvas,context) {
+
+	function draw(e,canvas) {
 		var radius = 8;
 	    var pos = get_mouse_pos(canvas, e);
-	    console.log(pos);
+
 	    posx = pos.x;
 	    posy = pos.y;
 
+	    context = $(canvas)[0].getContext("2d");
+
+	    var order_item_id = $(canvas).data("order-item-id");
+	    var repeated_counter = $(canvas).data("repeated-counter");
+	    var canvas_type = $(canvas).data("type-canvas");
+
 	    if(!$("#options").hasClass("options-visible")) {
-	    	move_options_box(canvas,e);
+    		options_ctrl.move_options_box(canvas,e);
 		} else {
 			return;
 		}
 
-	    if(inside_existing_pin(posx,posy)) {
-	    	
+	    if(inside_existing_pin(posx,posy,canvas)) {
+			//options_ctrl.move_options_box(canvas,e);   	
 	
 	    } else {
 	    	
-		    pins.push({x: posx,y:posy,rad: radius});
+
+			order_item_id = $(canvas).data("order-item-id");
+			repeated_counter = $(canvas).data("repeated-counter");
+
+			if(!(order_item_id in pins)) {
+				pins[order_item_id] = {};
+			}
+			if(!(repeated_counter in pins[order_item_id])) {
+				pins[order_item_id][repeated_counter] = {front:Array(), back:Array()};
+			}
+
+		    pins[order_item_id][repeated_counter][canvas_type].push({x: posx,y:posy,rad: radius,canvas_width: parseFloat($(canvas).attr("width")),canvas_height: parseFloat($(canvas).attr("height")) });
+
+		    var arr_length = pins[order_item_id][repeated_counter][canvas_type].length-1;
+		    options_ctrl.set_pin_info(order_item_id,repeated_counter,canvas_type,arr_length);
 
 		    context.fillStyle = "#FD0000";
 		    context.beginPath();
@@ -125,28 +171,113 @@ $(document).ready(function() {
 	    };
 	}
 
-	window.onresize = function(event) {
-		console.log($("#test-canvas-front").css("margin-left"));
-	}
-	//window.draw = draw;
-	$("#test-canvas-front,#test-canvas-back").on("click",function(event) {
+	/**
+	this function will redraw all pins for the specified canvas by recomputing their positions on the canvas
+	@param scalex: the amount to scale x coordinate by
+	@param scaley: the amount to scale the y coordinate by
+	@param canvas_width: the canvas width that conains the pins
+	@param canvas_height: the canvas height that contains the pins
+	@param canvas_id: the id attribute of the canvas element
+	*/
+	function redraw(scalex,scaley,canvas_width,canvas_height,canvas_id) {
+		var canvas = $("#"+canvas_id);
+			var ctx = canvas[0].getContext("2d");
 
-		if($(this).attr("id")=="test-canvas-front") {
-			var context = context_front;
-		} else {
-			var context = context_back;
+		order_item_id = canvas.data("order-item-id");
+		repeated_counter = canvas.data("repeated-counter");
+		type_img = canvas.data("type-canvas");
+
+		if(order_item_id in pins) {
+
+			if(repeated_counter in pins[order_item_id]) {
+				var new_pin_arr = Array();
+				$.each(pins[order_item_id][repeated_counter][type_img],function(i,e) {
+					console.log(e);
+					e.x *= scalex;
+					e.y *= scaley;
+					e.canvas_width = canvas_width;
+					e.canvas_height = canvas_height;
+					new_pin_arr.push(e);
+
+					ctx.fillStyle = "#FD0000";
+		    		ctx.beginPath();
+		   
+		    		ctx.arc(e.x,e.y, 8, 0, 2*Math.PI);
+		    		ctx.fill();
+
+		    		console.log(e);
+				
+
+
+				});
+				pins[order_item_id][repeated_counter][type_img] = new_pin_arr;
+			}
 		}
-		draw(event,this,context);
-	});
+		console.log(pins);
+	}
 
-	$("#options a").on("click",function() {
-		$("#options").hide();
-		$("#options").removeClass("options-visible");
-	});
 
-	//$("#options").hide();
+	function resize_canvas() {
+		var widthToHeight = 480/720;
+		var newWidth = window.innerWidth;
+		var newHeight = window.innerHeight;
+		var newWidthToHeight = newWidth / newHeight;
+
+		var old_canvas_front_width  = parseFloat($("#test-canvas-front").attr("width"));
+		var old_canvas_front_height = parseFloat($("#test-canvas-front").attr("height"));
+
+		container_width = parseInt($(".container").css("width"));
+
+
+		var ctx = $("#test-canvas-front")[0].getContext("2d");
+		var img_data = ctx.getImageData(0,0,old_canvas_front_width-1,old_canvas_front_height-1);
+		if(newWidth<980) {
+
+			newHeight = newWidth / widthToHeight;
+			$("#test-canvas-front").attr("width",container_width);
+			$("#test-canvas-front").attr("height",newHeight);
+			$("#test-canvas-back").attr("width",container_width);
+			$("#test-canvas-back").attr("height",newHeight);
+
+		
+		} else {
+			$("#test-canvas-front").attr("width",480);
+			$("#test-canvas-front").attr("height",720);
+			$("#test-canvas-back").attr("width",480);
+			$("#test-canvas-back").attr("height",720);
+		}
+		var new_canvas_front_width = parseFloat($("#test-canvas-front").attr("width"));
+		var new_canvas_front_height = parseFloat($("#test-canvas-front").attr("height"));
+
+		//console.log(new_canvas_front_width/old_canvas_front_width);
+		//console.log(new_canvas_front_height/old_canvas_front_height);
+
+		
+		scalex = new_canvas_front_width/old_canvas_front_width;
+		scaley = new_canvas_front_height/old_canvas_front_height;
+
+		//redraws points for both canvas
+		redraw(scalex,scaley,new_canvas_front_width,new_canvas_front_height, "test-canvas-front");
+		redraw(scalex,scaley,new_canvas_front_width,new_canvas_front_height, "test-canvas-back");
+
+		draw_images($("#test-canvas-front"),$("#test-canvas-back"));
+	}
+
+	window.onresize = function(event) {
+
+		resize_canvas();
+	}
+	
+	// click event for the canvas
+	$("#test-canvas-front,#test-canvas-back").on("click",function(event) {
+		draw(event,this);
+	});
 
 	
+	
+
+	resize_canvas();
+	draw_images($("#test-canvas-front"),$("#test-canvas-back"));
 
 });
 </script>

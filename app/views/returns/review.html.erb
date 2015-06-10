@@ -4,13 +4,22 @@
 	#test-canvas-front {
 	
 	border: 1px solid black;
-	background: url("<%= image_path('img_test_front.jpeg') %>");
+	/*background: url("<%= image_path('img_test_front.jpeg') %>");*/
+	margin-left: 10%;
+
 	}
 
 	#test-canvas-back {
 	
 	border: 1px solid black;
-	background: url("<%= image_path('img_test_back.jpeg') %>");
+	/*background: url("<%= image_path('img_test_back.jpeg') %>");*/
+	/*margin-left: 10%;*/
+	}
+
+	@media only screen and (max-width:767px) {
+		#test-canvas-front {
+			margin-left: 0px;
+		}
 	}
 
 </style>
@@ -34,7 +43,7 @@
 			<input type="hidden" name="order_num" value="<%= @order[:order_num] %>" />
 
 			<div id="review-product-container">		
-			<div class="review-box height-box can-show" id="height_box">
+			<div class="review-box height-box can-show" id="height_box" data-order-item-id="" data-quantity-counter="">
 				Every body is unique. Your ansers greatly help us improve our fit
 				<h3>Height</h3>
 				<%= select_tag(:feet, options_for_select(@feet)) %>
@@ -43,12 +52,13 @@
 				<%= select_tag(:heel_height, options_for_select(@inches)) %>
 
 			</div>	
+
 			<% @order_items.each do |item| %>
 			
 			<% (1..@counts[item[:id]]).to_a.each do |times| %>
 
 			
-			<div class="product-container review-box" id="<%= "product_"+item[:id].to_s+"_"+times.to_s %>">
+			<div class="product-container review-box" id="<%= "product_"+item[:id].to_s+"_"+times.to_s %>" data-order-item-id="<%= item[:id]%>" data-quantity-counter="<%= times%>">
 				<div class="product-sidebar">
 					<div class="product-sidebar-wrapper">
 						<input type="hidden" name="order_items[]" value="<%= item[:id]%>" />
@@ -86,22 +96,26 @@
 				</div>
 			</div>
 
-			<div class="fit-issues-container review-box" id="<%= "fit_issues_"+item[:id].to_s+"_"+times.to_s %>">
-				
-				<canvas class="test-canvas-front" id="test-canvas-front" width="480" height="720"></canvas>
-
-				<canvas class="test-canvas-back" id="test-canvas-back" width="480" height="720"></canvas>
-			</div>
-
-
 			<% end %>
 			
 			<% end %>
+
+
+			<div class="fit-issues-container review-box" id="fit-issues-box" data-order-item-id="" data-quantity-counter="">
+				
+				<canvas class="test-canvas-front" id="test-canvas-front" width="480" height="720" data-order-item-id="" data-repeated-counter="" data-type-canvas="front"></canvas>
+
+				<canvas class="test-canvas-back" id="test-canvas-back" width="480" height="720" data-order-item-id="" data-repeated-counter="" data-type-canvas="back"></canvas>
+			</div>
+
+
 			</div>
 			<div id="footer">
 			<a href="#" class='previous-options'><img src="<%= image_url("arrow_PreviousOptions.gif") %>" /></a>
 			<button id="continue-btn" class="next-btn"><img src="<%= image_url("arrow_ContinueNextStep.gif") %>" /></button></div>
 		<% end %>
+
+		
 	</div>
 </div>
 
@@ -110,11 +124,41 @@
 <% end %>
 
 
+ <%= javascript_include_tag "options_ctrl", "data-turbolinks-track" => true %>
+
+
 <script type="text/javascript">
+var images = {1: {front: "<%= image_path('img_test_front.jpeg')%>",back:"<%= image_path('img_test_back.jpeg') %>"},2: {front: "<%= image_path('img_test_front2.jpeg')%>",back:"<%= image_path('img_test_back2.jpeg') %>"},3: {front: "<%= image_path('img_test_front3.jpeg')%>",back:"<%= image_path('img_test_back3.jpeg') %>"}};
+var pins = {};
+var options = {'group1': {1:"Waist Too Tight",2: "Waist Too Loose"}, 'group2':{1: "neck too tight",2:"neck Too Loose"}};
+//var groups_selected = Ar;
+</script>
+
+
+<script type="text/javascript">
+
+
+
+	var options_ctrl = new OptionsCtrl();
+	options_ctrl.options = options;
+	options_ctrl.options_elem = $("#options");
+	options_ctrl.init();
+
+	var canvas_ctrl = new CanvasCtrl($(".fit-issues-container"));
+	canvas_ctrl.canvas_front_id = "test-canvas-front";
+	canvas_ctrl.canvas_back_id = "test-canvas-back";
+	canvas_ctrl.init();
+
+
+
 $(document).ready(function () {
 	var previous_items_ids = Array();
 	$("div.product-container").first().addClass("review-box-active");
 	$("div.product-container").last().addClass("last-container");
+
+		
+
+
 	$("#review-form").on("change","input[type='checkbox']",function(e) {
 		if($(this).closest("ul.sub-options").length) {
 
@@ -139,10 +183,28 @@ $(document).ready(function () {
 		if(previous_items_ids.length<=0) {
 			$("#step-one-form").submit();
 		}
+
+
 		var curr_box = $("div.review-box-active");
-		curr_box.removeClass("review-box-active");
 		var prev_box_id = previous_items_ids.pop();
+
+		if(curr_box.hasClass("product-container") && prev_box_id=="fit-issues-box") {
+
+			console.log(curr_box.prev("div.product-container"));
+			canvas_ctrl.set_data(curr_box.prev("div.product-container").data("order-item-id"),curr_box.prev("div.product-container").data("quantity-counter"));
+
+			
+		}
+
+		curr_box.removeClass("review-box-active");
+		
 		$("#"+prev_box_id).addClass("review-box-active");
+		//canvas_ctrl.resize_canvas();
+		canvas_ctrl.resize_canvas();
+		canvas_ctrl.recompute_pos();
+		canvas_ctrl.clear_canvas();
+		canvas_ctrl.redraw();
+		canvas_ctrl.draw_images();
 	});
 
 	// if active box is for product checkbox review, check if at least one is filled out
@@ -164,15 +226,31 @@ $(document).ready(function () {
 				});
 
 				if(show_fit_issues) {
-					// show fit issues
-					curr_box.next("div.fit-issues-container").addClass("review-box-active");
-					curr_box.removeClass("review-box-active");
-					previous_items_ids.push(curr_box.attr("id"));
+					// if height box has not been shown
+					if($("#height_box").hasClass("can-show")) {
+						curr_box.removeClass("review-box-active");
+						$("#height_box").addClass("review-box-active");
+						previous_items_ids.push(curr_box.attr("id"));
+						$("#height_box").attr("data-order-item-id",curr_box.data("order-item-id"));
+						$("#height_box").attr("data-quantity-counter",curr_box.data("quantity-counter"));
+					} else {
+						// show fit issues
+						
+						canvas_ctrl.set_data(curr_box.data("order-item-id"),curr_box.data("quantity-counter"));
+						$("#fit-issues-box").addClass("review-box-active");
+
+						curr_box.removeClass("review-box-active");
+						previous_items_ids.push(curr_box.attr("id"));
+						canvas_ctrl.resize_canvas();
+						canvas_ctrl.draw_images();
+						//draw_images($("#test-canvas-front"),$("#test-canvas-back"));
+					}
+
 				} else {
 					if(curr_box.hasClass("last-container")) {
 						// need to submit form here
 					} else {
-						curr_box.next("div.fit-issues-container").next("div.product-container").addClass("review-box-active");
+						curr_box.next("div.product-container").addClass("review-box-active");
 						
 						curr_box.removeClass("review-box-active");
 						previous_items_ids.push(curr_box.attr("id"));
@@ -181,114 +259,50 @@ $(document).ready(function () {
 			}
 		} else if(curr_box.hasClass("height-box")) {
 			curr_box.removeClass("can-show");
+			
+
+			canvas_ctrl.set_data(curr_box.data("order-item-id"),curr_box.data("quantity-counter"));
+
+			$("#fit-issues-box").addClass("review-box-active");
+			curr_box.removeClass("review-box-active");
+			previous_items_ids.push(curr_box.attr("id"));
+			canvas_ctrl.resize_canvas();
+			canvas_ctrl.draw_images();
+			//resize_canvas();
+			//draw_images($("#test-canvas-front"),$("#test-canvas-back"));
+
+		} else if(curr_box.hasClass("fit-issues-container")) {
+			order_item_id = curr_box.attr("data-order-item-id");
+			quantity_counter = curr_box.attr("data-quantity-counter");
+			container_id = "#product_"+order_item_id+"_"+quantity_counter;
+			if($(container_id).length) {
+				canvas_ctrl.save_last_dim();
+				curr_box.removeClass("review-box-active");
+				$(container_id).next("div.product-container").addClass("review-box-active");
+				previous_items_ids.push(curr_box.attr("id"));
+			}
 		}
 	});
 
 });
 </script>
+
+
 
 
 <script type="text/javascript">
-var pins = Array();
 $(document).ready(function() {
 
-	var canvas_front = document.getElementById("test-canvas-front");
-	var canvas_back = document.getElementById("test-canvas-back");
-
-	var context_front = canvas_front.getContext("2d");
-	var context_back = canvas_back.getContext("2d");
-
-	function inside_existing_pin(posx,posy) {
-		var inside_pin = false;
-		$.each(pins,function(i,e) {
-			if(Math.sqrt((posx-e.x)*(posx-e.x) + (posy-e.y)*(posy-e.y)) < e.rad) {
-				console.log("clicked inside circle");
-				console.log(e);
-				inside_pin = true;
-				return false;
-			}
-		});
-		return inside_pin;
-	}
 
 
-	/*function move_options_box(canvas,evt) {
-		var canvas_left = 0;
-		if($(canvas).attr("id")=="test-canvas-back") {
-			canvas_left = parseInt($("#test-canvas-back").css("width"));
-		}
-		console.log($("#options").css("padding-left"));
-		box_width = (parseInt($("#options").css("width")) +20 );
-	    	box_height = parseInt($("#options").css("height"));
-	    	console.log(box_width);
-	    	console.log(evt.clientX);
-	    	$("#options").css({"left":evt.clientX+20,"top":evt.clientY-box_height/2});
-	    	$("#options").show();
-	    	$("#options").addClass("options-visible");
-	}*/
-
-	function draw(e,canvas,context) {
-		var radius = 8;
-	    var pos = get_mouse_pos(canvas, e);
-	    console.log(pos);
-	    posx = pos.x;
-	    posy = pos.y;
-
-	    if(!$("#options").hasClass("options-visible")) {
-	    	//move_options_box(canvas,e);
-		} else {
-			return;
-		}
-
-	    if(inside_existing_pin(posx,posy)) {
-	    	
-	
-	    } else {
-	    	
-		    pins.push({x: posx,y:posy,rad: radius});
-
-		    context.fillStyle = "#FD0000";
-		    context.beginPath();
-		    context.arc(posx, posy, radius, 0, 2*Math.PI);
-		    context.fill();
-		    console.log(pins);
-		}
-	}
-
-	function get_mouse_pos(canvas, evt) {
-	    var rect = canvas.getBoundingClientRect();
-	    return {
-	      x: evt.clientX - rect.left,
-	      y: evt.clientY - rect.top
-	    };
-	}
 
 	window.onresize = function(event) {
-		console.log($("#test-canvas-front").css("margin-left"));
+
+		canvas_ctrl.resize_canvas();
 	}
-	//window.draw = draw;
-	$("#test-canvas-front,#test-canvas-back").on("click",function(event) {
-
-		if($(this).attr("id")=="test-canvas-front") {
-			var context = context_front;
-		} else {
-			var context = context_back;
-		}
-		draw(event,this,context);
-	});
-
-	$("#options a").on("click",function() {
-		$("#options").hide();
-		$("#options").removeClass("options-visible");
-	});
-
-	$("#options").hide();
-
 	
+
 
 });
 </script>
-
-
-
 
