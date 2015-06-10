@@ -1,0 +1,399 @@
+/*
+ * This is a manifest file that'll be compiled into application.css, which will include all the files
+ * listed below.
+ *
+ * Any CSS and SCSS file within this directory, lib/assets/stylesheets, vendor/assets/stylesheets,
+ * or vendor/assets/stylesheets of plugins, if any, can be referenced here using a relative path.
+ *
+ * You're free to add application-wide styles to this file and they'll appear at the top of the
+ * compiled file, but it's generally better to create a new file per style scope.
+ *
+
+
+ */
+
+
+.container {
+	margin: 0 auto;
+	width: 100%;
+}
+
+@media only sceen and (max-width:767px) {
+		div.container {
+			width: 100%;
+		}
+
+	}
+
+	#sidebar {
+		width: 30%;
+		
+		/*position: fixed;*/
+		display: inline-block;
+		padding: 20px 0 0 20px;
+	}
+	/*#main-container {
+		margin-left: 20em;
+	}*/
+	#main-container {
+		width: 100%;
+		/*border: 1px solid #bbb;
+		background: #eee;*/
+	}
+	#review-content {
+		/*width: 60em;*/
+		margin: 0 auto;
+	}
+
+	#links-top li {
+		float: left;
+		padding: 0.2em 0.8em;
+		border: 1px solid #bbb;
+		
+		border-right: none;
+
+		text-transform: uppercase;
+
+
+	}
+	#links-top li.link-two,#links-top li.link-three {
+		border-left: none;
+	}
+	#links-top {
+		display: inline-block;
+		list-style: none;
+		padding: 0;
+	}
+	#links-top li.active {
+		
+		background-color: #eee;/*#B2FFFF;*/
+		
+	}
+	#links-top li.active + li:before {
+		background: #eee; 
+	}
+	#links-top li.content-before:before {
+		content:"";
+     width:20px;
+     height:20px;
+     background: white;
+     
+     -moz-transform: rotate(45deg);
+     -webkit-transform: rotate(45deg);
+     display:block;
+     float: left;
+     /*position: absolute;*/
+     /*margin-top: 2.63px;*/
+     margin-left: -23px;
+     /*position: absolute;*/
+      border:1px solid  #bbb;
+      border-left: none;
+      border-bottom: none;
+	}
+
+	
+	/*#links-top li.content-after:after {
+		content:"";
+     width:20.27px;
+     height:20.8px;
+     background: white;
+     
+     -moz-transform: rotate(45deg);
+     -webkit-transform: rotate(45deg);
+     display:inline;
+     float: right;
+     /*position: absolute;*/
+     /*margin-top: 2.62px;*/
+     /*margin-left: 1.5px;
+     position: absolute;
+      border:1px solid  #bbb;
+      border-left: none;
+      border-bottom: none;
+	}*/
+
+	/*#links-top li.active:after {
+		background: #eee;
+	}*/
+
+
+
+	
+	
+	.red {
+		color: red;
+	}
+	#content {
+		padding-left: 2.4em;
+		margin-top: 17.28px;
+		display: inline-block;
+		border-left: solid 1px #bbb;
+		vertical-align: top;
+		width: 63%;
+	} 
+	.inline-block {
+		display: inline-block;
+	}
+	.product-order-item {
+		/*padding-right: 3.5em;*/
+		width: 32%;
+		vertical-align: top;
+		display: inline-block;
+	}
+
+	.product-order-item .img-container {
+		padding-bottom: 150%;
+		display: inline-block;
+		width: 100%;
+		position: relative;
+		vertical-align: top;
+	}
+
+	.product-order-item img {
+		max-width: 100%;
+		height: auto;
+		display: block;
+
+		position: absolute;
+	}
+
+	.product-order-item input {
+		z-index: 10;
+		float: right;
+		position: relative;
+	}
+
+	.text-center {
+		text-align: center;
+	}
+	.number {
+		width:20px;
+		height:20px;
+		border-radius: 50%;
+		border: 1px solid gray;
+		display: inline-block;
+		background-color:white;
+		text-align: center;
+		margin-left: 14px;
+		margin-right: 10px;
+	}
+
+	div.wrapper {
+		display: inline-block;
+		margin-left: 20em;
+	}
+
+	div.container > h1 {
+		text-align: center;
+	}
+	div.container > hr {
+		width: 22em;
+		border: 1px solid #F4F2F3;
+		background: rgb(244,242,243);
+	}
+
+div.form-wrapper {
+	margin:	0 auto;
+	width: 25em;
+	border: 1px solid #bbb;
+	text-align: center;
+	background: rgb(244,242,243);/*#F4F2F3;*/
+	margin-top: 29px;
+}
+#order-return-form button {
+	font-size: 10pt;
+	background: rgb(244,242,243);
+	border: none;
+	color: white;
+	padding: 0 10px;
+	cursor: pointer;
+}
+
+#order-return-form input {
+	font-size: 12pt;
+	padding: 3.5px 10px;
+	vertical-align: top;
+}
+
+#header {
+	text-align: center;
+	margin: 20px 0;
+}
+
+#review-form .product-container {
+	border: 1px solid #bbb;
+	background: #F4F2F3;
+}
+
+#review-form .product-container:first {
+	border-top: 1px solid #bbb;
+}
+
+.product-sidebar {
+	display: inline-block;
+	width:40%;
+	border-right: 1px solid #bbb;
+}
+.product-content {
+	display: inline-block;
+	vertical-align: top;
+	width:59%;
+}
+
+ul.options {
+	list-style:none;
+}
+ul.options li {
+	padding: 5px 0;
+}
+ul.sub-options {
+	list-style: none;
+	padding-left: 10px;
+	margin-bottom: 2em;
+}
+
+div.product-sidebar-wrapper {
+	/*display: inline-block;*/
+	padding-top: 20px;
+	width: 260px;
+	margin: 0 auto;
+
+}
+
+#footer {
+	padding-top: 20px;
+}
+
+#footer button {
+	float: right;
+	padding: 0;
+	border: none;
+	background: transparent;
+
+}
+
+#footer button:hover {
+	cursor: pointer;
+}
+
+#footer .previous-options {
+	float: left;
+	background: none;
+}
+
+
+
+.main-cont-step-one {
+	border: 1px solid #bbb;
+	background: #F4F2F3;
+}
+
+#success-content {
+	
+		display: block;
+	
+		vertical-align: top;
+		text-align: center;	
+}
+
+div.review-box {
+	border: 1px solid #bbb;
+	background:	#F4F2F3;
+	position:absolute;
+	z-index: 0;
+	visibility: hidden;
+}
+div.review-box.review-box-active {
+	z-index: 1;
+	position: relative;
+	visibility: visible;x
+}
+div.review-box.height-box {
+	text-align: center;
+	padding: 50px 0;
+}
+div.review-box.height-box h3 {
+	font-style: italic;
+}
+div.review-box.height-box select {
+	margin-left: 10px;
+}
+
+/* line 1, /Users/dannyc/beanstalk/return_mockup/app/assets/stylesheets/scaffolds.css.scss */
+body {
+  background-color: #fff;
+  color: #333;
+  font-family: verdana, arial, helvetica, sans-serif;
+  font-size: 13px;
+  line-height: 18px;
+}
+
+/* line 9, /Users/dannyc/beanstalk/return_mockup/app/assets/stylesheets/scaffolds.css.scss */
+p, ol, ul, td {
+  font-family: verdana, arial, helvetica, sans-serif;
+  font-size: 13px;
+  line-height: 18px;
+}
+
+/* line 15, /Users/dannyc/beanstalk/return_mockup/app/assets/stylesheets/scaffolds.css.scss */
+pre {
+  background-color: #eee;
+  padding: 10px;
+  font-size: 11px;
+}
+
+/* line 21, /Users/dannyc/beanstalk/return_mockup/app/assets/stylesheets/scaffolds.css.scss */
+a {
+  color: #000;
+}
+/* line 23, /Users/dannyc/beanstalk/return_mockup/app/assets/stylesheets/scaffolds.css.scss */
+a:visited {
+  color: #666;
+}
+/* line 26, /Users/dannyc/beanstalk/return_mockup/app/assets/stylesheets/scaffolds.css.scss */
+a:hover {
+  color: #fff;
+  background-color: #000;
+}
+
+/* line 33, /Users/dannyc/beanstalk/return_mockup/app/assets/stylesheets/scaffolds.css.scss */
+div.field, div.actions {
+  margin-bottom: 10px;
+}
+
+/* line 38, /Users/dannyc/beanstalk/return_mockup/app/assets/stylesheets/scaffolds.css.scss */
+#notice {
+  color: green;
+}
+
+/* line 42, /Users/dannyc/beanstalk/return_mockup/app/assets/stylesheets/scaffolds.css.scss */
+.field_with_errors {
+  padding: 2px;
+  background-color: red;
+  display: table;
+}
+
+/* line 48, /Users/dannyc/beanstalk/return_mockup/app/assets/stylesheets/scaffolds.css.scss */
+#error_explanation {
+  width: 450px;
+  border: 2px solid red;
+  padding: 7px;
+  padding-bottom: 0;
+  margin-bottom: 20px;
+  background-color: #f0f0f0;
+}
+/* line 55, /Users/dannyc/beanstalk/return_mockup/app/assets/stylesheets/scaffolds.css.scss */
+#error_explanation h2 {
+  text-align: left;
+  font-weight: bold;
+  padding: 5px 5px 5px 15px;
+  font-size: 12px;
+  margin: -7px;
+  margin-bottom: 0px;
+  background-color: #c00;
+  color: #fff;
+}
+/* line 65, /Users/dannyc/beanstalk/return_mockup/app/assets/stylesheets/scaffolds.css.scss */
+#error_explanation ul li {
+  font-size: 12px;
+  list-style: square;
+}
