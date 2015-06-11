@@ -4,8 +4,16 @@
   <title>ReturnMockup</title>
   <meta name="viewport" content="width=device-width, user-scalable=no" />
   <%= stylesheet_link_tag    "application", media: "all", "data-turbolinks-track" => true %>
+  <%= stylesheet_link_tag    "bootstrap.min", media: "all", "data-turbolinks-track" => true %>
+  <%= stylesheet_link_tag    "style", media: "all", "data-turbolinks-track" => true %>
+
+  <%= javascript_include_tag "modernizr", "data-turbolinks-track" => true %>
   <%= javascript_include_tag "application", "data-turbolinks-track" => true %>
   <%= javascript_include_tag "jquery-1.11.3.min", "data-turbolinks-track" => true %>
+  
+  <%= javascript_include_tag "bootstrap.min", "data-turbolinks-track" => true %>
+  <%= javascript_include_tag "pop", "data-turbolinks-track" => true %>
+
   <%= csrf_meta_tags %>
 </head>
 <body>

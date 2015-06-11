@@ -107,7 +107,7 @@ var CanvasCtrl = function(canvas_container) {
 					e.canvas_height = new_canvas_front_height;
 					pins_front.push(e);
 				});
-				window.pins[order_item_id][repeated_counter]["font"] = pins_front;
+				window.pins[order_item_id][repeated_counter]["front"] = pins_front;
 
 
 				var pins_back = Array();
@@ -261,11 +261,7 @@ var CanvasCtrl = function(canvas_container) {
 	    var repeated_counter = $(canvas).attr("data-repeated-counter");
 	    var canvas_type = $(canvas).attr("data-type-canvas");
 
-	    if(!$("#options").hasClass("options-visible")) {
-    		window.options_ctrl.move_options_box(canvas,e);
-		} else {
-			return;
-		}
+	    
 
 	    if(oThis.inside_existing_pin(posx,posy,canvas)) {
 			
@@ -289,10 +285,15 @@ var CanvasCtrl = function(canvas_container) {
 
 		    window.options_ctrl.set_pin_info(order_item_id,repeated_counter,canvas_type,arr_length);
 
-		    context.fillStyle = "#FD0000";
-		    context.beginPath();
-		    context.arc(posx, posy, radius, 0, 2*Math.PI);
-		    context.fill();
+		    options_available = window.options_ctrl.move_options_box(canvas,e);
+		    if(options_available) {
+		    	context.fillStyle = "#FD0000";
+		    	context.beginPath();
+		    	context.arc(posx, posy, radius, 0, 2*Math.PI);
+		    	context.fill();
+			} else {
+				window.pins[order_item_id][repeated_counter][canvas_type].pop();
+			}
 		    console.log(window.pins);
 		}
 	};
@@ -312,4 +313,4 @@ var CanvasCtrl = function(canvas_container) {
 			oThis.draw(event,this);
 		});
 	};
-}
+};

@@ -110,6 +110,9 @@ class ReturnsController < ApplicationController
 	def review
 
   		@options = ReturnReasonAttribute.where("parent_id=?",0)
+
+  		@attributes = PinAttribute.includes([:child_attributes]).where("parent_id=?",0)
+  		
   		#make sure order number was passed
   		if(!session.has_key?(:order_num))
   			flash[:error] = "the order number is invalid."

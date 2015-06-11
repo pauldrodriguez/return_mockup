@@ -14,6 +14,7 @@
     <% @pin_attributes.each do |pin_attribute| %>
       <tr>
         <td><%= pin_attribute.name %></td>
+        <td><%= pin_attribute.parent_id%></td>
         <td><%= link_to 'Show', pin_attribute %></td>
         <td><%= link_to 'Edit', edit_pin_attribute_path(pin_attribute) %></td>
         <td><%= link_to 'Destroy', pin_attribute, method: :delete, data: { confirm: 'Are you sure?' } %></td>

@@ -15,16 +15,24 @@ class PinAttributesController < ApplicationController
   # GET /pin_attributes/new
   def new
     @pin_attribute = PinAttribute.new
+    @parent_pin_attributes = PinAttribute.where("parent_id=?",0)
   end
 
   # GET /pin_attributes/1/edit
   def edit
+    @parent_pin_attributes = PinAttribute.where("parent_id=?",0)
   end
 
   # POST /pin_attributes
   # POST /pin_attributes.json
   def create
-    @pin_attribute = PinAttribute.new(pin_attribute_params)
+
+    pin_params = pin_attribute_params
+      if pin_params[:parent_id].empty?
+        pin_params[:parent_id]=0
+      end
+
+    @pin_attribute = PinAttribute.new(pin_params)
 
     respond_to do |format|
       if @pin_attribute.save
@@ -41,7 +49,12 @@ class PinAttributesController < ApplicationController
   # PATCH/PUT /pin_attributes/1.json
   def update
     respond_to do |format|
-      if @pin_attribute.update(pin_attribute_params)
+      pin_params = pin_attribute_params
+      if pin_params[:parent_id].empty?
+        pin_params[:parent_id]=0
+      end
+
+      if @pin_attribute.update(pin_params)
         format.html { redirect_to @pin_attribute, notice: 'Pin attribute was successfully updated.' }
         format.json { head :no_content }
       else
@@ -69,6 +82,6 @@ class PinAttributesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def pin_attribute_params
-      params.require(:pin_attribute).permit(:name)
+      params.require(:pin_attribute).permit(:name,:parent_id)
     end
 end

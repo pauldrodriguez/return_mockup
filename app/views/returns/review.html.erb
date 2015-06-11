@@ -1,5 +1,14 @@
-<%= @counts.inspect %>
-<%= @inches.inspect %>
+
+<% attributes_hash = Hash.new %>
+<% @attributes.each do |att| %>
+<% attributes_hash[att[:id].to_i] = {name: att[:name], children: {}} %>
+	<% if(att.child_attributes.any?) %>
+		<% att.child_attributes.each do |catt| %>
+			<% attributes_hash[att[:id]][:children][catt[:id]] = catt[:name] %>	
+		<% end %>
+	<% end %>
+<% end %>
+
 <style type="text/css">
 	#test-canvas-front {
 	
@@ -25,12 +34,6 @@
 </style>
 <div id="header">
 	<img src="<%= image_url("stepBar_2.gif") %>" />
-	<!--
-	<ul id="links-top">
-		<li class="active link-one"><a class="button"><span class="number">1</span> Choose Items to Return</a></li>
-		<li class=" active link-two content-before"><span class="number">2</span> Review and Confirm</li>
-		<li class="link-three content-before content-after"><span class="number">3</span> Print Shipping Label</li>
-	</ul>-->
 </div>
 <div id="main-container">
 	
@@ -119,7 +122,17 @@
 	</div>
 </div>
 
-<%= form_tag({controller:"returns", action: "order_num"},method: "post",id: "step-one-form") do %>
+<div class="cd-popup" role="alert" id="demo-popup">
+	<div class="cd-popup-container">
+	    <ul class="cd-buttons" id="options-list">
+	      <!--<li><a href="#0" class="cd-popup-close">Bust too tight</a></li>
+	      <li><a href="#0" class="cd-popup-close">Bust too Loose</a></li>-->
+	    </ul>
+	</div>
+</div>
+
+
+<%= form_tag({controller:"returns", action: "order_num"},method: "post",id: "review-form") do %>
 <input type="hidden" name="order_num" value="<%= @order[:order_num] %>" />
 <% end %>
 
@@ -130,7 +143,56 @@
 <script type="text/javascript">
 var images = {1: {front: "<%= image_path('img_test_front.jpeg')%>",back:"<%= image_path('img_test_back.jpeg') %>"},2: {front: "<%= image_path('img_test_front2.jpeg')%>",back:"<%= image_path('img_test_back2.jpeg') %>"},3: {front: "<%= image_path('img_test_front3.jpeg')%>",back:"<%= image_path('img_test_back3.jpeg') %>"}};
 var pins = {};
-var options = {'group1': {1:"Waist Too Tight",2: "Waist Too Loose"}, 'group2':{1: "neck too tight",2:"neck Too Loose"}};
+
+var attributes = <%= attributes_hash.to_json.html_safe %>;
+
+var groups_selected= Array();
+
+function validate_measurements() {
+	var height_inches = parseInt($("select[name='inches']").val());
+	var height_feet   = parseInt($("select[name='feet']").val());
+	var heel_height   = parseInt($("select[name='heel_height']").val());
+	var errors = Array();
+	if(height_feet<1 || height_feet>7) {
+		errors.push("choose valid feet measurement for Height");
+	}
+	if(height_inches<1 || height_inches>12) {
+		errors.push("choose valid inches measurement for Height");
+	}
+	if(heel_height<1 || heel_height>7) {
+		errors.push("choose valid inches measurement for Heel Height");
+	}
+	return errors;
+}
+
+function build_fields() {
+	$.each(pins,function(i,e) {
+		$.each(e,function(idx,se) {
+			var options_ids_front = Array();
+			var options_ids_back = Array();
+
+			var position_pins_front = Array();
+			$.each(se["front"],function(i_f,e_f) {
+				if("attribute" in e_f) {
+					options_ids_front.push(e_f["attribute"]);
+				}
+				// continue on this
+				position_pins_front.push(e_f["x"]+"_"+e_f["y"]+"_"+e_f["rad"]+"_"+e_f["canvas_width"]+"_"+e_f["canvas_height"]);
+			});
+
+			$.each(se["back"],function(i_b,e_b) {
+				if("attribute" in e_b) {
+					options_ids_back.push(e_b["attribute"]);
+				}
+			});
+			var options_f = $("<input type='hidden' value='"+options_ids_front.join("_")+"' name='pin_attributes["+i+"]["+idx+"][front]' />");
+
+			var options_b = $("<input type='hidden' value='"+options_ids_back.join("_")+"' name='pin_attributes["+i+"]["+idx+"][back]' />");
+
+			$("#review-form").prepend(options_f,options_b);
+		});
+	});
+}
 //var groups_selected = Ar;
 </script>
 
@@ -140,8 +202,9 @@ var options = {'group1': {1:"Waist Too Tight",2: "Waist Too Loose"}, 'group2':{1
 
 
 	var options_ctrl = new OptionsCtrl();
-	options_ctrl.options = options;
-	options_ctrl.options_elem = $("#options");
+	options_ctrl.options = attributes;
+	options_ctrl.options_original = attributes;
+	options_ctrl.options_elem = $("#options-list");
 	options_ctrl.init();
 
 	var canvas_ctrl = new CanvasCtrl($(".fit-issues-container"));
@@ -194,6 +257,8 @@ $(document).ready(function () {
 			canvas_ctrl.set_data(curr_box.prev("div.product-container").data("order-item-id"),curr_box.prev("div.product-container").data("quantity-counter"));
 
 			
+		} else if(curr_box.hasClass("height-box")) {
+			curr_box.addClass("can-show");
 		}
 
 		curr_box.removeClass("review-box-active");
@@ -249,6 +314,7 @@ $(document).ready(function () {
 				} else {
 					if(curr_box.hasClass("last-container")) {
 						// need to submit form here
+						build_fields();
 					} else {
 						curr_box.next("div.product-container").addClass("review-box-active");
 						
@@ -258,6 +324,12 @@ $(document).ready(function () {
 				}
 			}
 		} else if(curr_box.hasClass("height-box")) {
+
+			errors = validate_measurements();
+			if(errors.length) {
+				alert(errors.join("\n"));
+				return;
+			}
 			curr_box.removeClass("can-show");
 			
 
@@ -278,8 +350,13 @@ $(document).ready(function () {
 			if($(container_id).length) {
 				canvas_ctrl.save_last_dim();
 				curr_box.removeClass("review-box-active");
-				$(container_id).next("div.product-container").addClass("review-box-active");
-				previous_items_ids.push(curr_box.attr("id"));
+
+				if($(container_id).hasClass("last-container")) {
+					build_fields();
+				} else {
+					$(container_id).next("div.product-container").addClass("review-box-active");
+					previous_items_ids.push(curr_box.attr("id"));
+				}
 			}
 		}
 	});
@@ -292,17 +369,10 @@ $(document).ready(function () {
 
 <script type="text/javascript">
 $(document).ready(function() {
-
-
-
-
 	window.onresize = function(event) {
 
 		canvas_ctrl.resize_canvas();
 	}
-	
-
-
 });
 </script>
 
