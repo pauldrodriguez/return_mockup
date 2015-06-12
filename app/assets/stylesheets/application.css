@@ -328,11 +328,16 @@ div.review-box.height-box select {
 
 
 div.instructions {
-	position:absolute;width:100%;text-align:center;
+	position:absolute;
+	width:300px;
+	text-align:center;
+	margin-left: 320px;
+	display: inline-block;
 
 }
 
 div.instructions ul {
 	list-style: decimal inside;
+	padding-left: 0;
 }
 

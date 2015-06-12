@@ -322,6 +322,7 @@ var CanvasCtrl = function(canvas_container) {
 	this.init = function() {
 
 		$("#"+oThis.canvas_front_id+",#"+oThis.canvas_back_id).on("click",function(event) {
+			//console.log("canvas clicked");
 			oThis.draw(event,this);
 		});
 	};

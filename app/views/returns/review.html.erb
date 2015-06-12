@@ -12,22 +12,27 @@
 <style type="text/css">
 	#test-canvas-front {
 	
-	/*border: 1px solid black;*/
+	border: 1px solid black;
 	/*background: url("<%= image_path('img_test_front.jpeg') %>");*/
 	margin-left: 10%;
+	margin-top: 20px;
 
 	}
 
 	#test-canvas-back {
-	
-	/*border: 1px solid black;*/
+	margin-top: 20px;
+	border: 1px solid black;
 	/*background: url("<%= image_path('img_test_back.jpeg') %>");*/
 	/*margin-left: 10%;*/
 	}
 
 	@media only screen and (max-width:767px) {
 		#test-canvas-front {
-			margin-left: 0px;
+			margin-left: 0;
+			margin-top: 0;
+		}
+		#test-canvas-back {
+			margin-top: 0;
 		}
 	}
 
@@ -170,6 +175,11 @@ var attributes = <%= attributes_hash.to_json.html_safe %>;
 console.log(attributes);
 var groups_selected= Array();
 
+
+function validate_pins() {
+
+}
+
 function validate_measurements() {
 	var height_inches = parseInt($("select[name='inches']").val());
 	var height_feet   = parseInt($("select[name='feet']").val());
@@ -243,7 +253,7 @@ function build_fields() {
 	canvas_ctrl.canvas_back_id = "test-canvas-back";
 	canvas_ctrl.init();
 
-	squares_ctrl.recompute_pos();
+	//squares_ctrl.recompute_pos();
 	console.log(squares_ctrl.squares);
 $(document).ready(function () {
 	var previous_items_ids = Array();

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150610172949) do
+ActiveRecord::Schema.define(version: 20150612171240) do
 
   create_table "order_items", force: true do |t|
     t.integer  "order_num"
@@ -44,6 +44,21 @@ ActiveRecord::Schema.define(version: 20150610172949) do
     t.datetime "updated_at"
     t.integer  "parent_id"
   end
+
+  create_table "return_item_pins", force: true do |t|
+    t.integer  "return_item_id"
+    t.float    "pos_x"
+    t.float    "pos_y"
+    t.float    "radius"
+    t.float    "canvas_width"
+    t.float    "canvas_height"
+    t.integer  "pin_attribute_id_id"
+    t.string   "image_type"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "return_item_pins", ["pin_attribute_id_id"], name: "index_return_item_pins_on_pin_attribute_id_id"
 
   create_table "return_items", force: true do |t|
     t.integer  "return_order_id"
