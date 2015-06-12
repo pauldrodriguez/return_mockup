@@ -313,7 +313,7 @@ div.height-box {
 div.review-box.review-box-active {
 	z-index: 1;
 	position: relative;
-	visibility: visible;x
+	visibility: visible;
 }
 div.review-box.height-box {
 	text-align: center;
