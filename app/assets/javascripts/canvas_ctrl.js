@@ -132,7 +132,7 @@ var CanvasCtrl = function(canvas_container) {
 	if window innner width is less than 767, then the canvases have width of 100%.
 	*/
 	this.resize_canvas = function() {
-		console.log("resize canvas");
+		//console.log("resize canvas");
 		var widthToHeight = oThis.widthToHeight;
 		var newWidth = window.innerWidth;
 		var newHeight = window.innerHeight;
@@ -227,14 +227,19 @@ var CanvasCtrl = function(canvas_container) {
 
 	this.inside_existing_pin = function(posx,posy,canvas) {
 		var inside_pin = false;
-		var order_item_id = $(canvas).data("order-item-id");
-		var repeated_counter = $(canvas).data("repeated-counter");
-		var type_canvas = $(canvas).data("type-canvas");
+		var order_item_id = $(canvas).attr("data-order-item-id");
+		var repeated_counter = $(canvas).attr("data-repeated-counter");
+		var type_canvas = $(canvas).attr("data-type-canvas");
+		console.log("inside existing pin function");
+		console.log("ordeer item id " + order_item_id);
+		console.log("repeated counter" + repeated_counter);
+		console.log("type canvas " + type_canvas);
+		console.log(window.pins);
 		if(order_item_id in window.pins) {
 			if(repeated_counter in window.pins[order_item_id]) {
-
+				console.log(window.pins[order_item_id][repeated_counter][type_canvas]);
 				$.each(window.pins[order_item_id][repeated_counter][type_canvas],function(i,e) {
-					
+					//console.log(i);
 					if(Math.sqrt((posx-e.x)*(posx-e.x) + (posy-e.y)*(posy-e.y)) < e.rad) {
 						console.log("clicked inside circle");
 						window.options_ctrl.set_pin_info(order_item_id,repeated_counter,type_canvas,i);
@@ -254,7 +259,7 @@ var CanvasCtrl = function(canvas_container) {
 
 	    posx = pos.x;
 	    posy = pos.y;
-
+	    console.log("pos x: " + posx+ ", pos y: "+posy);
 	    context = $(canvas)[0].getContext("2d");
 
 	    var order_item_id = $(canvas).attr("data-order-item-id");
@@ -264,14 +269,20 @@ var CanvasCtrl = function(canvas_container) {
 	    
 
 	    if(oThis.inside_existing_pin(posx,posy,canvas)) {
-			
-	
-	    } else {
-	    	
+	    	console.log("clicked inside pin");
+	    	groups_to_show = window.squares_ctrl.inside_squares(posx,posy,order_item_id,canvas_type);
+			window.options_ctrl.box_options_existing_circle(groups_to_show);
 
+	    } else {
+	    	console.log("maybe new pin");
+	    	
 			order_item_id = $(canvas).attr("data-order-item-id");
 			repeated_counter = $(canvas).attr("data-repeated-counter");
 
+
+			groups_to_show = window.squares_ctrl.inside_squares(posx,posy,order_item_id,canvas_type);
+			
+			// add object related to order if there is none
 			if(!(order_item_id in window.pins)) {
 				window.pins[order_item_id] = {};
 			}
@@ -285,7 +296,8 @@ var CanvasCtrl = function(canvas_container) {
 
 		    window.options_ctrl.set_pin_info(order_item_id,repeated_counter,canvas_type,arr_length);
 
-		    options_available = window.options_ctrl.move_options_box(canvas,e);
+		    options_available = window.options_ctrl.move_options_box(canvas,e,groups_to_show);
+
 		    if(options_available) {
 		    	context.fillStyle = "#FD0000";
 		    	context.beginPath();

@@ -295,12 +295,21 @@ div.product-sidebar-wrapper {
 }
 
 div.review-box {
+	/*border: 1px solid #bbb;
+	background:	#F4F2F3;*/
+	position:absolute;
+	z-index: 0;
+	visibility: hidden;
+}
+
+div.height-box {
 	border: 1px solid #bbb;
 	background:	#F4F2F3;
 	position:absolute;
 	z-index: 0;
 	visibility: hidden;
 }
+
 div.review-box.review-box-active {
 	z-index: 1;
 	position: relative;
@@ -315,5 +324,15 @@ div.review-box.height-box h3 {
 }
 div.review-box.height-box select {
 	margin-left: 10px;
+}
+
+
+div.instructions {
+	position:absolute;width:100%;text-align:center;
+
+}
+
+div.instructions ul {
+	list-style: decimal inside;
 }
 
