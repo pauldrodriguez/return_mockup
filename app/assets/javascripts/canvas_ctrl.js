@@ -299,6 +299,7 @@ var CanvasCtrl = function(canvas_container) {
 		    options_available = window.options_ctrl.move_options_box(canvas,e,groups_to_show);
 
 		    if(options_available) {
+		    	console.log("options available");
 		    	context.fillStyle = "#FD0000";
 		    	context.beginPath();
 		    	context.arc(posx, posy, radius, 0, 2*Math.PI);
