@@ -297,7 +297,7 @@ var CanvasCtrl = function(canvas_container) {
 		    window.options_ctrl.set_pin_info(order_item_id,repeated_counter,canvas_type,arr_length);
 
 		    options_available = window.options_ctrl.move_options_box(canvas,e,groups_to_show);
-
+		    console.log(window.options_ctrl.options);
 		    if(options_available) {
 		    	console.log("options available");
 		    	context.fillStyle = "#FD0000";
