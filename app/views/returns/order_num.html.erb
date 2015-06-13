@@ -1,5 +1,5 @@
 <% @return_items = ReturnItems.select("return_items.order_item_id").where("order_num=?",params[:order_num]).group(:order_item_id).count %>
-
+<%= @return_items %>
 
 <div id="header">
 	<img src="<%= image_url("stepBar_1.gif") %>" />

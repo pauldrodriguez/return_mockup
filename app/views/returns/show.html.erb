@@ -1,0 +1,120 @@
+<div>
+
+	<%= @return_order.inspect %>
+
+	<table class="table">
+		<tbody>
+			<tr>
+				<td>Return ID</td>
+				<td><%= @return_order.id%></td>
+			</tr>
+			<tr>
+				<td>Order Number</td>
+				<td><%= @return_order.order_num%></td>
+			</tr>
+
+			<tr>
+				<td>amount to refund</td>
+				<td><%= @return_order.amount_to_refund%></td>
+			</tr>
+			<tr>
+				<td>Status</td>
+				<td><%= (@return_order.return_status==1) ? "received" : "pending" %></td>
+			</tr>
+		</tbody>
+	</table>
+
+	<div>
+		<h3>Returned Items</h3>
+		<table class="table">
+
+			<% pins = Hash.new %>
+		<% @return_order.return_items.each do |obj| %>
+
+			<% pins[obj.id.to_i] = obj.return_item_pins %>
+
+			
+			<tr>
+				<td>ID</td>
+				<td><%= obj.id %></td>
+			</tr>
+			<tr>
+				<td>Product Name</td>
+				<td><%= obj.product_name %></td>
+			</tr>
+			<tr><td></td></tr>
+			<tr>
+				<% 
+				if(obj.order_item_id==1)
+					img_name_back = 'img_test_back.jpeg'
+					img_name_front  = 'img_test_front.jpeg'
+				elsif obj.order_item_id==2
+					img_name_back = 'img_test_back2.jpeg'
+					img_name_front  = 'img_test_front2.jpeg'
+				else
+					img_name_back = 'img_test_back3.jpeg'
+					img_name_front  = 'img_test_front3.jpeg'
+				end
+				%>
+				<td>
+					<canvas id="order_item_<%= obj.id %>_front" width="480" height="720" data-return-item-id="<%= obj.id %>" data-type-canvas="front" style="background:url('<%= image_path(img_name_front)%>');"></canvas>
+				</td>
+				<td>
+					<canvas id="order_item_<%= obj.id %>_back" width="480" height="720" data-order-item-id="<%= obj.id %>" data-type-canvas="back" style="background:url('<%= image_path(img_name_back)%>');"></canvas>
+				</td>
+					
+			</tr>
+
+		<% end %>
+		</table>
+
+	</div>
+</div>
+
+<script type="text/javascript">
+var pins = 	<%= pins.to_json.html_safe %>;
+console.log(pins);
+function recompute_pin_pos() {
+
+	
+
+		$.each(pins,function(i,e) {
+			var items = Array();
+			$.each(e,function(idx,obj) {
+				var canvas = $("#order_item_"+i+"_"+obj["image_type"]);
+				scalex = parseFloat(canvas.attr("width"))/parseFloat(obj["canvas_width"]);
+				scaley = parseFloat(canvas.attr("height"))/parseFloat(obj["canvas_height"]);
+				//console.log(scalex);
+				//console.log("before scale " + obj["pos_x"]);
+				obj["pos_x"] *= scalex;
+				obj["pos_y"] *= scaley;
+				//console.log("after scale " + (obj["pos_x"]*scalex));
+				//console.log(obj);
+				//items.push(obj);
+			});
+			//pins[i] = items;
+		});
+
+console.log(pins);
+	
+	}
+
+function draw_pins() {
+	$.each(pins,function(i,e) {
+		$.each(e,function(idx,obj) {
+			var canvas = $("#order_item_"+i+"_"+obj["image_type"]);
+			context = canvas[0].getContext("2d");
+
+			context.fillStyle = "#FD0000";
+		    		context.beginPath();
+		   
+		    		context.arc(obj["pos_x"],obj["pos_y"], 8, 0, 2*Math.PI);
+		    		context.fill();
+		});
+	});
+}
+
+recompute_pin_pos();
+draw_pins();
+</script>
+

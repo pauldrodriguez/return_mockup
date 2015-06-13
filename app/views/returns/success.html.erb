@@ -1,19 +1,93 @@
+<style type="text/css">
+	.final-steps-section {
+		border-top: 1px solid rgb(206,206,206);
+		text-align: justify;
+		padding: 15px 0;
+	}
+
+	.container-left	{
+		display: inline-block;
+		width: 22em;
+		text-align: right;
+		vertical-align: top;
+	}
+	.container-right {
+		display: inline-block;
+		vertical-align: top;
+		width: 50%;
+		padding-left: 4em;
+	}
+	.container-right div:last {
+		margin-top: 8px;
+	}
+
+	#finish-return {
+		float: right;
+	}
+</style>
+
 <div id="main-container">
 	<div id="header">
-		<img src="<%= image_url("stepBar_2.gif") %>" />
-		<!--
-		<ul id="links-top">
-			<li class="active link-one"><a class="button"><span class="number">1</span> Choose Items to Return</a></li>
-			<li class="active link-two content-before"><span class="number">2</span> Review and Confirm</li>
-			<li class="active link-three content-before content-after"><span class="number">3</span> Print Shipping Label</li>
-		</ul>-->
+		<img src="<%= image_url("stepBar_3.gif") %>" />
 	</div>
+
+
 	<div id="success-content">
 		<h3>Final Steps</h3>
 		<div>Follow the below steps to complete your return/exchange</div>
-		(more instructions will go here)
+		<div class="final-steps-section">
+			<div class="container-left">
+				<img src="<%= image_path("icon_ShippingLabel.gif") %>" />
+			</div>
+			<div class="container-right">
+				<div><img src="<%= image_path("arrow_PrintShipping.gif") %>" /></div>
+				<div>Or use the pre-paid shipping label that came with your order.</div>
+
+			</div>
+		</div>
+
+		<div class="final-steps-section">
+			<div class="container-left">
+				<img src="<%= image_path("icon_OpenBox.gif") %>" />
+			</div>
+			<div class="container-right">
+				<div><h5>Put the items your are returning in a box.</h5></div>
+				<div>Seal all sides of the box with packing tape.</div>
+
+			</div>
+		</div>
+
+		<div class="final-steps-section">
+			<div class="container-left">
+				<img src="<%= image_path("icon_ClosedBox.gif") %>" />
+			</div>
+			<div class="container-right">
+				<div><h5>Apply the return label to the outside of the box.</h5></div>
+				<div>Ideally covering any old shipping labels.</div>
+
+			</div>
+		</div>
+
+		<div class="final-steps-section">
+			<div class="container-left">
+				<img src="<%= image_path("icon_UPS.gif") %>" />
+			</div>
+			<div class="container-right">
+				<div><h5>Drop off your package.</h5></div>
+				<div>Find your <a href="#" target="_blank">nearest UPS dropoff.</a></div>
+
+			</div>
+		</div>
+		
+
+		<div id="footer">
+			
+			<a href="<%= success_confirmation_returns_path %>" id="finish-return" class="no-background-color"><img src="<%= image_url("arrow_FinishedReturn.gif") %>" /></a>
+			</div>
 
 	</div>
+
+	
 </div>
 
 

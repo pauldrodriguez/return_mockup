@@ -15,6 +15,9 @@ ReturnMockup::Application.routes.draw do
     get :truncate_tables
     post :validate_orders
     get :canvas_test
+    get :success_confirmation
+    get 'show/:id'=>"returns#show", :as=>"show"
+    get :return_orders
   end
 
   resource :attributes do

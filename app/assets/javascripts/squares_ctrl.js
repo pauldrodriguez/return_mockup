@@ -44,8 +44,6 @@ var SquaresCtrl = function() {
 					scalex = new_canvas_front_width/parseFloat(obj.cw);
 					scaley = new_canvas_front_height/parseFloat(obj.ch);
 
-					//console.log(scalex);
-					//console.log(scaley);
 					obj.x      *= scalex;
 					obj.y      *= scaley;
 					obj.width  *= scalex;

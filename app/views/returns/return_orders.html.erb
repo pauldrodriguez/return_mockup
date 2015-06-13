@@ -1,0 +1,21 @@
+<div>
+
+<table class="table">
+	<thead>
+		<tr>
+			<th>Return ID</th>
+
+			<th>Order Number</th>
+			<th>View</th>
+		</tr>
+	</thead>
+<% @return_orders.each do |obj| %>
+	<tr>
+		<td><%= obj.id %></td>
+		<td><%= obj.order_num %></td>
+		<td><%= link_to 'Show',show_returns_path(obj) %></td>
+	</tr>
+<% end %>
+
+</table>
+</div>

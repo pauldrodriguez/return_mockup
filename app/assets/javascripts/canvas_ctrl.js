@@ -319,6 +319,43 @@ var CanvasCtrl = function(canvas_container) {
 	    };
 	};
 
+
+
+	this.validate_pins = function() {
+
+		var canvas_front = $("#test-canvas-front");
+		var canvas_back = $("#test-canvas-back");
+		order_item_id = canvas_front.attr("data-order-item-id");
+		quantity_counter = canvas_front.attr("data-repeated-counter");
+
+		var errors = Array();
+		if(window.pins !=="undefined") {
+			if(order_item_id in window.pins) {
+				if(quantity_counter in window.pins[order_item_id]) {
+					if(window.pins[order_item_id][quantity_counter]["front"].length==0 
+						&& window.pins[order_item_id][quantity_counter]["back"].length==0) {
+						errors.push("you must add at least one pin on either image");
+					} else {
+						$.each(window.pins[order_item_id][quantity_counter]["front"],function(idx,obj) {
+							if(!("attribute" in obj) || !("group" in obj)) {
+								errors.push("you must select an answer for each pin in front image");
+								return false;
+							}
+						});
+
+						$.each(window.pins[order_item_id][quantity_counter]["back"],function(idx,obj) {
+							if(!("attribute" in obj) || !("group" in obj)) {
+								errors.push("you must select an answer for each pin in back image");
+								return false;
+							}
+						});
+					}
+				} else {errors.push("you must add at least one pin in either image");}
+			} else {errors.push("you must add at least one pin in either image");}
+		} else {errors.push("there was an error with saving your information. contact customer service");}
+		return errors;
+	}
+
 	this.init = function() {
 
 		$("#"+oThis.canvas_front_id+",#"+oThis.canvas_back_id).on("click",function(event) {

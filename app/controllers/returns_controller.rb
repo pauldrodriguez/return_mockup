@@ -24,8 +24,26 @@ class ReturnsController < ApplicationController
 			flash[:error] = "You cannot return items for orders older than 40 days"
 			redirect_to action:"index", controller:"returns" and return
   		else
+  			can_continue = false
   			# in here, want to get all items that have been put for return and all items that have shipped to compare
-  			ReturnItems.select("return_items.order_item_id").where("order_num=?",params[:order_num]).group(:order_item_id).count
+  			return_items_temp = ReturnItems.select("return_items.order_item_id").where("order_num=?",params[:order_num]).group(:order_item_id).count
+  			@order.order_items.each do |obj|
+  				if(return_items_temp.has_key?(obj[:id]))
+	  				if(obj[:quantity] - return_items_temp[obj[:id]] > 0)
+	  					can_continue = true
+	  					break
+	  				end
+  				elsif obj[:quantity]>0
+  					can_continue = true
+  					break
+
+  				end
+  			end
+
+  			if(!can_continue)
+  				flash[:error] = "there are no more items to return"
+  				redirect_to action: "index", controller: "returns" and return
+  			end
   			#ReturnItems.select("return_items.order_item_id,order_items.quantity").where("return_items.order_num=?",params[:order_num]).joins(:order_item).group("return_items.order_item_id").count("return_items.order_item_id")
 	  	end
 
@@ -156,7 +174,12 @@ class ReturnsController < ApplicationController
 
 
 	def final_step
-		dfsd
+		if(params.has_key?(:pin_attributes))
+			pin_attributes = params[:pin_attributes]
+		else
+			pin_attributes = Hash.new
+		end
+		
 		return_attributes = params[:return_attributes]
 		@return_attributes_ids = []
 		return_attributes.each do |key,list|
@@ -172,10 +195,15 @@ class ReturnsController < ApplicationController
 		#options for review
 	 	@options = ReturnReasonAttribute.where("parent_id=?",0)
 
+	 	heel_height = (params.has_key?(:heel_height)) ? params[:heel_height] : 0;
+	 	height_feet = (params.has_key?(:feet)) ? params[:feet] : 0
+	 	height_inches = (params.has_key?(:inches)) ? params[:inches] : 0
+
 		return_items = Array.new
 		@all_errors = Array.new
 		@order = Order.find(params[:order_id])
-		return_order = ReturnOrders.new(order_id: params[:order_id],order_num: params[:order_num],return_status: 0)
+		return_order = ReturnOrders.new(order_id: params[:order_id],order_num: params[:order_num],
+			return_status: 0, heel_height: heel_height, height_feet: height_feet, height_inches: height_inches)
 
 		return_items = params[:order_items]
 		@order_items = OrderItem.find(params[:order_items])
@@ -189,7 +217,7 @@ class ReturnsController < ApplicationController
 		total_amount = 0.00;
 		#order_items_to_save = []
 		@order_items.each do |item|
-
+			iid = item[:id].to_s
 			if(@counts[item[:id].to_s] > item[:quantity])
 				@all_errors << "invalid quantity amount returned for product " + item[:product_name]
 				break 
@@ -201,9 +229,41 @@ class ReturnsController < ApplicationController
 					amount_refunded: item[:price],
 					status: "pending", quantity: 1,order_item_id: item[:id])
 				#for each attribute selected for this product
-				if(!return_attributes[item[:id].to_s][times.to_s].nil?)
+				if(!return_attributes[iid][times.to_s].nil?)
 					return_attributes[item[:id].to_s][times.to_s].each do |attr_id|
 						return_item.return_order_attributes << ReturnOrderAttribute.new(return_reason_attribute_id: attr_id)
+					end
+				end
+				if (pin_attributes.has_key?(iid))
+					if(pin_attributes[iid].has_key?(times.to_s))
+
+						if(pin_attributes[iid][times.to_s].has_key?(:front))
+							pin_attributes[iid][times.to_s][:front].each do |pin|
+								pin_arr = pin.split("_")
+								# after splitting, the array must be length of 6
+								if(pin_arr.length==6) 
+									return_item.return_item_pins << ReturnItemPin.new(pos_x: pin_arr[1],
+										pos_y: pin_arr[2],
+										radius: pin_arr[3],pin_attribute_id_id: pin_arr[0],
+										canvas_width: pin_arr[4], canvas_height: pin_arr[5], image_type: "front")
+								end
+							end
+						end
+
+						if(pin_attributes[iid][times.to_s].has_key?(:back))
+							pin_attributes[iid][times.to_s][:back].each do |pin|
+								pin_arr = pin.split("_")
+								# after splitting, the array must be length of 6
+								if(pin_arr.length==6) 
+									return_item.return_item_pins << ReturnItemPin.new(pos_x: pin_arr[1],
+										pos_y: pin_arr[2],
+										radius: pin_arr[3],pin_attribute_id_id: pin_arr[0],
+										canvas_width: pin_arr[4], canvas_height: pin_arr[5], image_type: "back")
+								end
+							end
+						end
+
+						#return_item.return_item_pins << ReturnItemPin.new()
 					end
 				end
 
@@ -242,21 +302,39 @@ class ReturnsController < ApplicationController
 
 	def success
 		
-		if(params.has_key?(:roid) && params.has_key?(:authenticity_token) && flash.key?(:csrf_token))
-			if(params[:authenticity_token]!=flash[:csrf_token] || !ReturnOrders.exists?(params[:roid]))
-				redirect_to all_returns_returns_path
+		#if(params.has_key?(:roid) && params.has_key?(:authenticity_token) && flash.key?(:csrf_token))
+		#	if(params[:authenticity_token]!=flash[:csrf_token] || !ReturnOrders.exists?(params[:roid]))
+		#		redirect_to all_returns_returns_path
 				#@msg = "invalid return order id or csrf token"
-			end
-		session.delete(:csrf_token)
-		else
-			redirect_to all_returns_returns_path
+		#	end
+		#session.delete(:csrf_token)
+		#else
+		#	redirect_to all_returns_returns_path
 			#@msg = "invalid params"
+		#end
+		flash[:referrer] = "success"
+	end
+
+
+	def success_confirmation
+		if(flash[:referrer]) && (flash[:referrer]=="success")
+			#do something
+		else
+			redirect_to all_returns_returns_path and return
 		end
 	end
 
 	def canvas_test
 
 		
+	end
+
+	def return_orders
+		@return_orders = ReturnOrders.all
+	end
+
+	def show
+		@return_order = ReturnOrders.find(params[:id])
 	end
 
 	def all_returns
@@ -269,12 +347,14 @@ class ReturnsController < ApplicationController
 		@order_items = OrderItem.all
 
 		@return_order_attributes = ReturnOrderAttribute.all
+
+		@return_item_pins = ReturnItemPin.all	
 		
 	end
 
 	def truncate_tables
 		tables = ['return_items','return_order_attributes','return_orders',
-			'order_items','orders']
+			'order_items','orders','return_item_pins']
 
 		tables.each do |table|
 			ActiveRecord::Base.connection.execute("DELETE FROM #{table}")

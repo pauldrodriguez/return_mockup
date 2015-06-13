@@ -341,3 +341,6 @@ div.instructions ul {
 	padding-left: 0;
 }
 
+a.no-background-color:hover {
+	background: transparent !important;
+}

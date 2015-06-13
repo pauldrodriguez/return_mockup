@@ -12,7 +12,7 @@
 <style type="text/css">
 	#test-canvas-front {
 	
-	border: 1px solid black;
+	/*border: 1px solid black;*/
 	/*background: url("<%= image_path('img_test_front.jpeg') %>");*/
 	margin-left: 10%;
 	margin-top: 20px;
@@ -21,7 +21,7 @@
 
 	#test-canvas-back {
 	margin-top: 20px;
-	border: 1px solid black;
+	/*border: 1px solid black;*/
 	/*background: url("<%= image_path('img_test_back.jpeg') %>");*/
 	/*margin-left: 10%;*/
 	}
@@ -126,7 +126,7 @@
 
 			</div>
 			<div id="footer">
-			<a href="#" class='previous-options'><img src="<%= image_url("arrow_PreviousOptions.gif") %>" /></a>
+			<a href="#" class='previous-options no-background-color'><img src="<%= image_url("arrow_PreviousOptions.gif") %>" /></a>
 			<button id="continue-btn" class="next-btn"><img src="<%= image_url("arrow_ContinueNextStep.gif") %>" /></button></div>
 		<% end %>
 
@@ -176,9 +176,7 @@ console.log(attributes);
 var groups_selected= Array();
 
 
-function validate_pins() {
 
-}
 
 function validate_measurements() {
 	var height_inches = parseInt($("select[name='inches']").val());
@@ -364,11 +362,14 @@ $(document).ready(function () {
 						previous_items_ids.push(curr_box.attr("id"));
 					}
 				}
+			} else {
+				alert("you must select at least one option");
+				return;
 			}
 		} else if(curr_box.hasClass("height-box")) {
 
 			errors = validate_measurements();
-			if(errors.length && 1==2) {
+			if(errors.length) {
 
 				//$("#measurements-error-popup .cd-popup-container").html(errors.join("<br />"));
 				//$("#measurements-error-popup").addClass("is-visible");
@@ -386,10 +387,14 @@ $(document).ready(function () {
 			canvas_ctrl.resize_canvas();
 			canvas_ctrl.draw_images();
 			squares_ctrl.draw_areas(curr_box.data("order-item-id"));
-			//resize_canvas();
-			//draw_images($("#test-canvas-front"),$("#test-canvas-back"));
+			
 
 		} else if(curr_box.hasClass("fit-issues-container")) {
+			errors = canvas_ctrl.validate_pins();
+			if(errors.length) {
+				alert(errors.join("\n"));
+				return;
+			}
 			order_item_id = curr_box.attr("data-order-item-id");
 			quantity_counter = curr_box.attr("data-quantity-counter");
 			container_id = "#product_"+order_item_id+"_"+quantity_counter;
