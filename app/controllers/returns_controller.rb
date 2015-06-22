@@ -357,6 +357,7 @@ class ReturnsController < ApplicationController
 		#	'order_items','orders','return_item_pins','products']
 		#tables = ['orders']
 		#ActiveRecord::Base.connection.execute("DELETE FROM orders where id>1")
+		ActiveRecord::Base.connection.execute("DELETE FROM order_items where id>=4")
 		#tables.each do |table|
 			#ActiveRecord::Base.connection.execute("DELETE FROM #{table}")
 			#case self.connection.adapter_name
