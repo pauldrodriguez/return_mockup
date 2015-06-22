@@ -358,14 +358,14 @@ class ReturnsController < ApplicationController
 
 		tables.each do |table|
 			ActiveRecord::Base.connection.execute("DELETE FROM #{table}")
-			case self.connection.adapter_name
-      			when 'MySQL'
+			#case self.connection.adapter_name
+      		#	when 'MySQL'
         			#self.connection.execute "ALTER TABLE #{self.table_name} AUTO_INCREMENT=#{options[:to]}"
-      			when 'PostgreSQL'
-        			ActiveRecord::Base.connection.execute "ALTER SEQUENCE #{table}_id_seq RESTART WITH 1;"
-      			when 'SQLite'
-        			ActiveRecord::Base.connection.execute("DELETE FROM sqlite_sequence where name='#{table}'")
-      		else
+      		#	when 'PostgreSQL'
+        	#		ActiveRecord::Base.connection.execute "ALTER SEQUENCE #{table}_id_seq RESTART WITH 1;"
+      		#	when 'SQLite'
+        	#		ActiveRecord::Base.connection.execute("DELETE FROM sqlite_sequence where name='#{table}'")
+      		#else
     
 			
 		end
