@@ -353,11 +353,12 @@ class ReturnsController < ApplicationController
 	end
 
 	def truncate_tables
-		tables = ['return_items','return_order_attributes','return_orders',
-			'order_items','orders','return_item_pins','products']
-
+		#tables = ['return_items','return_order_attributes','return_orders',
+		#	'order_items','orders','return_item_pins','products']
+		tables = ['orders']
+		ActiveRecord::Base.connection.execute("DELETE FROM orders where id>1")
 		tables.each do |table|
-			ActiveRecord::Base.connection.execute("DELETE FROM #{table}")
+			#ActiveRecord::Base.connection.execute("DELETE FROM #{table}")
 			#case self.connection.adapter_name
       		#	when 'MySQL'
         			#self.connection.execute "ALTER TABLE #{self.table_name} AUTO_INCREMENT=#{options[:to]}"
