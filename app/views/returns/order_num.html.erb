@@ -1,9 +1,5 @@
 <% @return_items = ReturnItems.select("return_items.order_item_id").where("order_num=?",params[:order_num]).group(:order_item_id).count %>
-<% #OrderItemQuantityReturned.find_or_initialize_by(:order_id=>1,:order_item_id=>3) %>
-<% #quantity_returned_by_order = OrderItemQuantityReturned.where(:order_id=>@order.id) %>
-<% #quantity_returned_by_order.inspect %>
-<% #order_item_id = 1%>
-<% #quantity_returned_by_order.where(:order_item_id=>order_item_id).first[:id] %>
+
 <div id="header">
 	<img src="<%= image_url("stepBar_1.gif") %>" />
 		
@@ -53,18 +49,18 @@
 			
 				<% if((item[:quantity] - (quantity_order_item || 0) )>0) %>
 					<% (1..(item[:quantity] - (quantity_order_item || 0) )).to_a.each do |times| %>
-					<div class="inline-block product-order-item">
-						<div class="img-container">
-						<img width="260" height="390" src="<%= image_url("image.jpg") %>" />
-						<input type="checkbox" name="order_items[]" value="<%= item[:id] %>" />
-						</div>
-						<div class="prod-desc">
-							<b><%= item.product_name %></b><br />
-							<% #item.product.sku %><br />
-							<%= number_to_currency(item[:price]) %>
+						<div class="inline-block product-order-item">
+							<div class="img-container">
+							<img width="260" height="390" src="<%= image_url("image.jpg") %>" />
+							<input type="checkbox" name="order_items[]" value="<%= item[:id] %>" />
+							</div>
+							<div class="prod-desc">
+								<b><%= item.product_name %></b><br />
+							
+								<%= number_to_currency(item[:price]) %>
 
+							</div>
 						</div>
-					</div>
 					<% end %>
 				<% end %>
 			<% end %>

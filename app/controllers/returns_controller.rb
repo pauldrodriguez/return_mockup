@@ -355,9 +355,9 @@ class ReturnsController < ApplicationController
 	def truncate_tables
 		#tables = ['return_items','return_order_attributes','return_orders',
 		#	'order_items','orders','return_item_pins','products']
-		tables = ['orders']
-		ActiveRecord::Base.connection.execute("DELETE FROM orders where id>1")
-		tables.each do |table|
+		#tables = ['orders']
+		#ActiveRecord::Base.connection.execute("DELETE FROM orders where id>1")
+		#tables.each do |table|
 			#ActiveRecord::Base.connection.execute("DELETE FROM #{table}")
 			#case self.connection.adapter_name
       		#	when 'MySQL'
@@ -369,7 +369,7 @@ class ReturnsController < ApplicationController
       		#else
     
 			
-		end
+		#end
 
 	end
   
