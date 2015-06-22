@@ -1,9 +1,9 @@
 <% @return_items = ReturnItems.select("return_items.order_item_id").where("order_num=?",params[:order_num]).group(:order_item_id).count %>
-<% OrderItemQuantityReturned.find_or_initialize_by(:order_id=>1,:order_item_id=>3) %>
-<% quantity_returned_by_order = OrderItemQuantityReturned.where(:order_id=>@order.id) %>
-<%= quantity_returned_by_order.inspect %>
-<% order_item_id = 1%>
-<%= quantity_returned_by_order.where(:order_item_id=>order_item_id).first[:id] %>
+<% #OrderItemQuantityReturned.find_or_initialize_by(:order_id=>1,:order_item_id=>3) %>
+<% #quantity_returned_by_order = OrderItemQuantityReturned.where(:order_id=>@order.id) %>
+<% #quantity_returned_by_order.inspect %>
+<% #order_item_id = 1%>
+<% #quantity_returned_by_order.where(:order_item_id=>order_item_id).first[:id] %>
 <div id="header">
 	<img src="<%= image_url("stepBar_1.gif") %>" />
 		
@@ -44,12 +44,12 @@
 			<input type="hidden" name="review_page" value="true" />
 			<% @order.order_items.each do |item| %>
 			
-			<% qty_returned = OrderItemQuantityReturned.where(:order_id=>1,:order_item_id=>1).first %>
+			<% #qty_returned = OrderItemQuantityReturned.where(:order_id=>1,:order_item_id=>1).first %>
 			
 
-			<% qty_r = quantity_returned_by_order.where(:order_item_id=>item[:id].to_i).first %>
-			<% quantity_order_item = (qty_r.nil?) ? 0 : ( (qty_r[:quantity]==nil) ? 0 : qty_r[:quantity] ) %>
-
+			<% #qty_r = quantity_returned_by_order.where(:order_item_id=>item[:id].to_i).first %>
+			<% #quantity_order_item = (qty_r.nil?) ? 0 : ( (qty_r[:quantity]==nil) ? 0 : qty_r[:quantity] ) %>
+			<% quantity_order_item = 0 %>
 			
 				<% if((item[:quantity] - (quantity_order_item || 0) )>0) %>
 					<% (1..(item[:quantity] - (quantity_order_item || 0) )).to_a.each do |times| %>
