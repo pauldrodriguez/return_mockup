@@ -11,15 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150618232550) do
-
-  create_table "order_item_quantity_returned", force: true do |t|
-    t.integer  "order_id"
-    t.integer  "order_item_id"
-    t.integer  "quantity"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
+ActiveRecord::Schema.define(version: 20150622202409) do
 
   create_table "order_items", force: true do |t|
     t.integer  "order_num"
