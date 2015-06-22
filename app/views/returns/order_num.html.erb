@@ -1,13 +1,12 @@
 <% @return_items = ReturnItems.select("return_items.order_item_id").where("order_num=?",params[:order_num]).group(:order_item_id).count %>
-<%= @return_items %>
-
+<% OrderItemQuantityReturned.find_or_initialize_by(:order_id=>1,:order_item_id=>3) %>
+<% quantity_returned_by_order = OrderItemQuantityReturned.where(:order_id=>@order.id) %>
+<%= quantity_returned_by_order.inspect %>
+<% order_item_id = 1%>
+<%= quantity_returned_by_order.where(:order_item_id=>order_item_id).first[:id] %>
 <div id="header">
 	<img src="<%= image_url("stepBar_1.gif") %>" />
-		<!--<ul id="links-top">
-			<li class="active link-one"><a class="button"><span class="number">1</span> Choose Items to Return</a></li>
-			<li class="link-two content-before"><span class="number">2</span> Review and Confirm</li>
-			<li class="link-three content-before content-after"><span class="number">3</span> Print Shipping Label</li>
-		</ul>-->
+		
 	</div>
 
 <div id="main-container" class="main-cont-step-one">
@@ -37,14 +36,23 @@
 		<% end %>
 
 		<h3>Select the items you'd like to return</h3>
+		<% #test_qty_returned = OrderItemQuantityReturned.where(:order_id=>1,:order_item_id=>1).first %>
 
 		<%= form_tag({controller:"returns", action: "validate_orders"},method: "post",id: "items-form") do %>
 			<input type="hidden" name="order_id" value="<%= @order[:id] %>" />
 			<input type="hidden" name="order_num" value="<%= @order[:order_num] %>" />
 			<input type="hidden" name="review_page" value="true" />
 			<% @order.order_items.each do |item| %>
-				<% if((item[:quantity] - (@return_items[item[:id]] || 0) )>0) %>
-					<% (1..(item[:quantity] - (@return_items[item[:id]] || 0) )).to_a.each do |times| %>
+			
+			<% qty_returned = OrderItemQuantityReturned.where(:order_id=>1,:order_item_id=>1).first %>
+			
+
+			<% qty_r = quantity_returned_by_order.where(:order_item_id=>item[:id].to_i).first %>
+			<% quantity_order_item = (qty_r.nil?) ? 0 : ( (qty_r[:quantity]==nil) ? 0 : qty_r[:quantity] ) %>
+
+			
+				<% if((item[:quantity] - (quantity_order_item || 0) )>0) %>
+					<% (1..(item[:quantity] - (quantity_order_item || 0) )).to_a.each do |times| %>
 					<div class="inline-block product-order-item">
 						<div class="img-container">
 						<img width="260" height="390" src="<%= image_url("image.jpg") %>" />
@@ -52,6 +60,7 @@
 						</div>
 						<div class="prod-desc">
 							<b><%= item.product_name %></b><br />
+							<%= item.product.sku %><br />
 							<%= number_to_currency(item[:price]) %>
 
 						</div>
@@ -92,12 +101,6 @@
 
 		
 
-		/*if($("#items-form").find("select").length) {
-			$("#items-form button").prop("disabled",false);
-		}
-		else {
-			$("#items-form button").prop("disabled",true);
-		}*/
 
 	});
 

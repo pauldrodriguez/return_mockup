@@ -354,7 +354,7 @@ class ReturnsController < ApplicationController
 
 	def truncate_tables
 		tables = ['return_items','return_order_attributes','return_orders',
-			'order_items','orders','return_item_pins']
+			'order_items','orders','return_item_pins','products']
 
 		tables.each do |table|
 			ActiveRecord::Base.connection.execute("DELETE FROM #{table}")

@@ -1,0 +1,17 @@
+<h1>Products#edit</h1>
+<p>Find me in app/views/products/edit.html.erb</p>
+
+
+<%= form_for(@product) do |f| %>
+
+	<%= f.label :name %>
+	<%= f.text_field :name %>
+
+	<%= f.label :sku %>
+	<%= f.text_field :sku %>
+
+
+	<canvas id="front-image" width="480" height="720"></canvas>
+
+	<canvas id="back-image" width="480" height="720"></canvas>
+<% end %>

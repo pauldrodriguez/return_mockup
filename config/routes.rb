@@ -1,4 +1,5 @@
 ReturnMockup::Application.routes.draw do
+resources :products
   resources :pin_attributes
 
   root to: 'returns#index'
