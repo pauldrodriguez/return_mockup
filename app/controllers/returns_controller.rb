@@ -366,7 +366,7 @@ class ReturnsController < ApplicationController
       			when 'MySQL'
         			#self.connection.execute "ALTER TABLE #{self.table_name} AUTO_INCREMENT=#{options[:to]}"
       			when 'PostgreSQL'
-        			ActiveRecord::Base.connection.execute("TRUNCATE #{table} RESTART IDENTITY")
+        			ActiveRecord::Base.connection.execute("TRUNCATE TABLE #{table} RESTART IDENTITY")
       			when 'SQLite'
       				ActiveRecord::Base.connection.execute("DELETE FROM #{table}")
         			ActiveRecord::Base.connection.execute("DELETE FROM sqlite_sequence where name='#{table}'")
