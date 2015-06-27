@@ -362,7 +362,7 @@ class ReturnsController < ApplicationController
 		#ActiveRecord::Base.connection.execute("DELETE FROM order_items where id>=4")
 		tables.each do |table|
 			
-			case self.connection.adapter_name
+			case ActiveRecord::Base.connection.adapter_name
       			when 'MySQL'
         			#self.connection.execute "ALTER TABLE #{self.table_name} AUTO_INCREMENT=#{options[:to]}"
       			when 'PostgreSQL'
