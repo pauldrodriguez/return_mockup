@@ -86,13 +86,15 @@ class ReturnsController < ApplicationController
 	  	return_order_items.each {|oid| @counts[oid.to_i]+=1}
 	  	
 	  	#gets all the returned items for the order
-	  	@return_items = ReturnItems.select("return_items.order_item_id").where("order_num=?",session[:order_num]).group(:order_item_id).count
-	  	
+	  	#@return_items = ReturnItems.select("return_items.order_item_id").where("order_num=?",session[:order_num]).group(:order_item_id).count
+	  	#@return_items = @order.quantity_returns
 	  	# only return amount for items that want to be returned, 
 	  	# since array contains all order item keys regardless if they want to be returned or not
 	  	#amount_to_return = params[:amount_to_return].delete_if {|k,v| return_items.keys.index(k).nil?}
 
 	  	@order_items.each do |item|
+	  		qty_r = @order.quantity_returns.where(order_item_id: item.id).first
+	  		quantity = (qty_r.nil?) ? 0 : ( (qty_r[:quantity]==nil) ? 0 : qty_r[:quantity] )
 	  		# make sure order item exists for the order
 	  		if item[:order_id]!=@order[:id] && valid_items 
 	  			valid_items = false;
@@ -100,7 +102,7 @@ class ReturnsController < ApplicationController
 	  			errors << "some selected items do not exist for the order "+session[:order_num]
 	  		end
 	  		# make sure number of items to be returned is less than or equal to the quantity bought minus items already returned for the same product
-	  		if (item[:quantity] - (@return_items[item[:id]] || 0) ) < @counts[item[:id]]
+	  		if (item[:quantity] - (quantity || 0) ) < @counts[item[:id]]
 	  			errors << "invalid quantity amount for " + item[:product_name];
 	  			redirect_back = true
 	  		end
@@ -288,8 +290,8 @@ class ReturnsController < ApplicationController
 				#OrderItem.transaction do
 				#	order_items_to_save.each(&:save)
 				#end
-				flash[:csrf_token] = params[:authenticity_token]
-				redirect_to success_returns_path(:roid=>return_order[:id], :authenticity_token=>params[:authenticity_token])
+				#flash[:csrf_token] = params[:authenticity_token]
+				redirect_to success_returns_path(:roid=>return_order[:id])
 			else
 				#redirect_to all_returns_returns_path
 			end
@@ -353,24 +355,26 @@ class ReturnsController < ApplicationController
 	end
 
 	def truncate_tables
-		#tables = ['return_items','return_order_attributes','return_orders',
-		#	'order_items','orders','return_item_pins','products']
+		tables = ['return_items','return_order_attributes','return_orders',
+			'order_items','orders','return_item_pins','products']
 		#tables = ['orders']
 		#ActiveRecord::Base.connection.execute("DELETE FROM orders where id>1")
-		ActiveRecord::Base.connection.execute("DELETE FROM order_items where id>=4")
-		#tables.each do |table|
-			#ActiveRecord::Base.connection.execute("DELETE FROM #{table}")
-			#case self.connection.adapter_name
-      		#	when 'MySQL'
+		#ActiveRecord::Base.connection.execute("DELETE FROM order_items where id>=4")
+		tables.each do |table|
+			
+			case self.connection.adapter_name
+      			when 'MySQL'
         			#self.connection.execute "ALTER TABLE #{self.table_name} AUTO_INCREMENT=#{options[:to]}"
-      		#	when 'PostgreSQL'
-        	#		ActiveRecord::Base.connection.execute "ALTER SEQUENCE #{table}_id_seq RESTART WITH 1;"
-      		#	when 'SQLite'
-        	#		ActiveRecord::Base.connection.execute("DELETE FROM sqlite_sequence where name='#{table}'")
-      		#else
+      			when 'PostgreSQL'
+        			ActiveRecord::Base.connection.execute("TRUNCATE #{table} RESTART IDENTITY;")
+      			when 'SQLite'
+      				ActiveRecord::Base.connection.execute("DELETE FROM #{table}")
+        			ActiveRecord::Base.connection.execute("DELETE FROM sqlite_sequence where name='#{table}'")
+      		else
+      		end
     
 			
-		#end
+		end
 
 	end
   

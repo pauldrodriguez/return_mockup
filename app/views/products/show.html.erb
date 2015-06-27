@@ -3,23 +3,18 @@
 
 
 
-<%= form_for(@product) do |f| %>
+
 <div>
-<%= f.label :sku %>
-<%= f.text_field :sku %>
+SKU: <%= @product[:sku]%>
 </div>
 
 <div>
-<%= f.label :name %>
-<%= f.text_field :name %>
+NAME: <%= @product[:name]%>
 </div>
 
 <canvas id="image-front" width="480" height="720" style="background:url('<%= image_path(@product.image_front) %>') no-repeat"></canvas>
 
 <canvas id="image-back" width="480" height="720" style="background:url('<%= image_path(@product.image_back) %>') no-repeat"></canvas>
-<% end %>
 
 
-<script type="text/javascript">
 
-</script>

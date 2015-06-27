@@ -7,6 +7,7 @@ var CanvasCtrl = function(canvas_container) {
 	this.widthToHeight = 480/720;
 	this.last_shown_width = null;
 	this.last_shown_height = null;
+	this.radius = 6;
 	this.save_last_dim = function() {
 		oThis.last_shown_width = parseFloat($("#"+oThis.canvas_front_id).attr("width"));
 		oThis.last_shown_height = parseFloat($("#"+oThis.canvas_front_id).attr("height"));
@@ -254,7 +255,7 @@ var CanvasCtrl = function(canvas_container) {
 
 
 	this.draw = function(e,canvas) {
-		var radius = 8;
+		var radius = oThis.radius;
 	    var pos = oThis.get_mouse_pos(canvas, e);
 
 	    posx = pos.x;

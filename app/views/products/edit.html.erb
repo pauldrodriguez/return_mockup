@@ -3,15 +3,122 @@
 
 
 <%= form_for(@product) do |f| %>
+<div>
+<%= f.label :sku %>
+<%= f.text_field :sku %>
+</div>
 
-	<%= f.label :name %>
-	<%= f.text_field :name %>
+<div>
+<%= f.label :name %>
+<%= f.text_field :name %>
+</div>
 
-	<%= f.label :sku %>
-	<%= f.text_field :sku %>
+<canvas id="image-front" width="480" height="720" style="background:url('<%= image_path(@product.image_front) %>') no-repeat"></canvas>
 
-
-	<canvas id="front-image" width="480" height="720"></canvas>
-
-	<canvas id="back-image" width="480" height="720"></canvas>
+<canvas id="image-back" width="480" height="720"  style="background:url('<%= image_path(@product.image_back) %>') no-repeat"></canvas>
 <% end %>
+
+
+<script type="text/javascript">
+var CanvasBlock = function() {
+	var oThis = this;
+	this.curr_point_draw = 0;
+	this.first_point_draw = null;
+	this.second_point_draw = null;
+
+	this.rectangles = Array();
+	this.canvas_id = null;
+	
+
+	this.get_mouse_pos = function(canvas, evt) {
+	    var rect = canvas.getBoundingClientRect();
+	    return {
+	      x: evt.clientX - rect.left,
+	      y: evt.clientY - rect.top
+	    };
+	};
+
+	this.calculate_vector = function(p1,p2) {
+		var vx = p2.x-p1.x;
+		var vy = p2.y-p1.y;
+		return {vecx: vx, vecy: vy};
+	};
+
+	this.calculate_upper_left = function(p1,p2) {
+		var vector = oThis.calculate_vector(p1,p2);
+		var upper_left = {};
+		//  first point is upper left
+		if(vector.vx>0 && vector.vy>0)  {
+			upper_left.x = p1.x;
+			upper_left.y = p1.y;
+			upper_left.canvas_width = $("#"+oThis.canvas_id).attr("width");
+			upper_left.canvas_height = $("#"+oThis.canvas_id).attr("height");
+			upper_left.width = Math.abs(vx);
+			upper_left.height = Math.abs(vy);
+		}
+		// second point is upper left
+		else if(vector.vx<0 && vector.vy<0) {
+			upper_left.x = p2.x;
+			upper_left.y = p2.y;
+			upper_left.canvas_width = $("#"+oThis.canvas_id).attr("width");
+			upper_left.canvas_height = $("#"+oThis.canvas_id).attr("height");
+			upper_left.width = Math.abs(vx);
+			upper_left.height = Math.abs(vy);
+		}
+
+		// points are at lower left and upper right with arrow pointing to upper right
+		else if(vector.vx>0 && vector.vy<0) {
+
+			upper_left.x = p1.x;
+			upper_left.y = p1.y+vector.vy;
+			upper_left.canvas_width = $("#"+oThis.canvas_id).attr("width");
+			upper_left.canvas_height = $("#"+oThis.canvas_id).attr("height");
+			upper_left.width = Math.abs(vx);
+			upper_left.height = Math.abs(vy);
+		}
+		// points are at lower left and upper right with arrow pointing to lower left
+		else if(vector.vx<0 && vector.vy>0) {
+			upper_left.x = p2.x;
+			upper_left.y = p2.y+vector.vy;
+			upper_left.canvas_width = $("#"+oThis.canvas_id).attr("width");
+			upper_left.canvas_height = $("#"+oThis.canvas_id).attr("height");
+			upper_left.width = Math.abs(vx);
+			upper_left.height = Math.abs(vy);
+		}
+	};
+
+
+	this.init = function() {
+		$("#"+oThis.canvas_id).on("click",function(evt) {
+			if(oThis.curr_point_draw === 0 ) {
+				oThis.curr_point_draw++;
+				oThis.first_point_draw = oThis.get_mouse_pos($(this)[0],evt);
+			} else if(oThis.curr_point_draw === 1) {
+				oThis.curr_point_draw++;
+				oThis.second_point_draw = oThis.get_mouse_pos($(this)[0],evt);
+				if(oThis.second_point_draw.x==oThis.first_point_draw.x && oThis.first_point_draw.y==oThis.second_point_draw.y) {
+					oThis.curr_point_draw--;
+					oThis.second_point_draw=null;
+				}
+			}
+
+			if(oThis.curr_point_draw==2) {
+				console.log("need to draw square here");
+				console.log(oThis.first_point_draw);
+				console.log(oThis.second_point_draw);
+				oThis.calculate_upper_left(oThis.first_point_draw,oThis.second_point_draw);
+				oThis.curr_point_draw = 0;
+				oThis.first_point_draw = null;
+				oThis.second_point_draw = null;
+			}
+
+		});
+
+		
+	};
+}
+
+var canvas_front = new CanvasBlock();
+canvas_front.canvas_id = "image-front";
+canvas_front.init();
+</script>
