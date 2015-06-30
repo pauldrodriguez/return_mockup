@@ -12,7 +12,8 @@ resources :products
     get :review
     post :final_step
     get :all_returns
-    get :success
+    #get :success
+    get :shipping_label
     get :truncate_tables
     post :validate_orders
     get :canvas_test

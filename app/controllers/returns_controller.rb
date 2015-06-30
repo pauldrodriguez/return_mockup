@@ -301,7 +301,8 @@ class ReturnsController < ApplicationController
 				#end
 				#flash[:csrf_token] = params[:authenticity_token]
 				session[:return_order_id] = return_order[:id]
-				redirect_to success_returns_path(:roid=>return_order[:id])
+				session[:referrer] = "final_step"
+				redirect_to shipping_label_returns_path(:roid=>return_order[:id]) and return
 			else
 				#redirect_to all_returns_returns_path
 			end
@@ -312,7 +313,7 @@ class ReturnsController < ApplicationController
 
 	end
 
-	def success
+	def shipping_label
 		
 		#if(params.has_key?(:roid) && params.has_key?(:authenticity_token) && flash.key?(:csrf_token))
 		#	if(params[:authenticity_token]!=flash[:csrf_token] || !ReturnOrders.exists?(params[:roid]))
@@ -324,23 +325,25 @@ class ReturnsController < ApplicationController
 		#	redirect_to all_returns_returns_path
 			#@msg = "invalid params"
 		#end
+		if(!session.has_key?(:return_order_id) || !session.has_key?(:referrer) || session[:referrer]!="final_step")
+			redirect_to action:"index", controller:"returns" and return
+		end
+		session.delete(:referrer)
+
 		flash[:referrer] = "success"
 	end
 
 
-	def success_confirmation
-
-		flash[:referrer] = "success"
-		session[:return_order_id] = 1
-		#@order = Order.find(1)
-		#@return = ReturnOrders.find(params[:return_order_id])
+	def success_confirmation		
 		if(flash[:referrer]) && flash[:referrer]=="success" && session.has_key?(:return_order_id)
 			@return = ReturnOrders.find(session[:return_order_id])
 			@order = Order.find(@return.order_id)
+			session.delete(:return_order_id)
 		else
 			redirect_to all_returns_returns_path and return
 		end
 	end
+	
 
 	def canvas_test
 

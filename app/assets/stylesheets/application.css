@@ -286,18 +286,38 @@
 
 	
 	div.container > hr {
-		width: 22em;
+		width: 27em;
 		border: 1px solid #F4F2F3;
 		background: rgb(213,213,213);
 	}
 
 div.form-wrapper {
 	margin:	0 auto;
-	width: 25em;
+	width: 34em;
 	border: 1px solid #bbb;
 	text-align: center;
 	background: rgb(244,242,243);/*#F4F2F3;*/
 	margin-top: 29px;
+}
+
+.links-block {
+	margin-bottom: 1.9em;
+	color: rgb(127,125,126);
+	text-decoration: underline;
+	cursor: pointer;
+}
+.form-header {
+	font-family: AbrilDisplayItalic;
+	margin-top: 1.5em;
+	margin-bottom: 1.5em;	
+}
+.field-container {
+	margin-bottom: 1.7em;
+}
+.index-page-header {
+	text-align: center;
+	font-family: HelveticaNeueRoman;
+	font-size: 16pt;
 }
 #order-return-form button {
 	font-size: 10pt;
@@ -434,6 +454,11 @@ div.product-sidebar-wrapper {
 
 #success-content h2, #success-content h3 {
 	font-family: AbrilDisplayItalic;
+}
+
+#success-content h3 {
+	margin-top: 0;
+	margin-bottom: 25px;
 }
 
 #success-content .returns-policy {
@@ -588,4 +613,7 @@ a.no-background-color:hover {
 		background: transparent;
 	}
 
+.thank-you-header {
+	font-size: 30pt;
+}
 

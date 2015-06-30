@@ -1,17 +1,21 @@
-
+<h4 class="index-page-header">We understand that not ever purchase will be<br /> the perfect fity, so we've made returns easy.</h4>
 <div class="form-wrapper">
-<p>Enter your order number below</p>
+<h3 class="form-header">Enter your order number below:</h3>
 <% if(flash[:error]) %>
 <div class="red flash-error"><p><%= flash[:error] %></p></div>
 <% end %>
 <div class="error red"></div>
 <%= form_tag({controller:"returns", action: "order_num"},method: "post",id: "order-return-form") do %>
+<div class="field-container">
 <input type="text" name="order_num" placeholder="Order Number" />
 
 <button type="submit"><img src="<%= image_url("arrow_Submit.gif")%>" /></button>
+</div>
 <% end %>
-<p>Or Sign in to find your order</p>
-<p>Help me find my order</p>
+<div class="links-block">
+	<p>Or Sign in to Find Your Order</p>
+	<p>Help Me Find My Order Number</p>
+</div>
 </div>
 
 
