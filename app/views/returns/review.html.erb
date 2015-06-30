@@ -9,34 +9,6 @@
 	<% end %>
 <% end %>
 
-<style type="text/css">
-	#test-canvas-front {
-	
-	/*border: 1px solid black;*/
-	/*background: url("<%= image_path('img_test_front.jpeg') %>");*/
-	margin-left: 10%;
-	margin-top: 20px;
-
-	}
-
-	#test-canvas-back {
-	margin-top: 20px;
-	/*border: 1px solid black;*/
-	/*background: url("<%= image_path('img_test_back.jpeg') %>");*/
-	/*margin-left: 10%;*/
-	}
-
-	@media only screen and (max-width:767px) {
-		#test-canvas-front {
-			margin-left: 0;
-			margin-top: 0;
-		}
-		#test-canvas-back {
-			margin-top: 0;
-		}
-	}
-
-</style>
 <div id="header">
 	<img src="<%= image_url("stepBar_2.gif") %>" />
 </div>
@@ -71,35 +43,43 @@
 					<div class="product-sidebar-wrapper">
 						<input type="hidden" name="order_items[]" value="<%= item[:id]%>" />
 
-						<img width="260" height="390" src="<%= image_url("image.jpg") %>" />
+						<img width="260" height="390" src="<%= image_url(item.product.image_front) %>" />
 						<div class="order-item-desc">
+							<br>
 							<p><b><%= item.product_name %></b></p>
+							<p><%= item.product.sku%></p>
 							<p>Refund: <%= number_to_currency(item[:price]) %></p>
 							<p>To card ending in 5002</p>
 						</div>
 					</div>
 				</div>
 				<div class="product-content">
-					<h2>Reason for returning this item:</h2>
-					<span>Please select all that apply. Your answers help us improve our products.</span>
+					<span class="review-header">Reason for returning this item:</span>
+					<span>Please Select All That Apply.</span>
 					<ul class="options">
-					<% @options.each do |obj| %>
-					<li>
-						<% if(obj[:attr_type]==1) %>
-						<b><%= obj[:attr_name] %></b>
-						<% else %>
-						<input type="checkbox" name="return_attributes[<%= item[:id]%>][<%= times %>][]" value="<%= obj[:id] %>" data-attr_name="<%= obj[:code_name] %>" /><%= obj[:attr_name] %>
+						<% @options.each do |obj| %>
+						<li>
+							<% if(obj[:attr_type]==1) %>
+							<b><%= obj[:attr_name] %></b>
+							<% else %>
+							<input type="checkbox" name="return_attributes[<%= item[:id]%>][<%= times %>][]" value="<%= obj[:id] %>" data-attr_name="<%= obj[:code_name] %>" />
+							<%= obj[:attr_name] %>
+							<% end %>
+							
+							<% if(obj.child_attributes.any?) %>
+								<ul class="sub-options">
+									<% obj.child_attributes.each do |cobj| %>
+										<li>
+											<label class="checkbox-label-reason"></label>
+											<span><%= cobj[:attr_name] %></span>
+											<input type="checkbox" name="return_attributes[<%= item[:id]%>][<%= times %>][]" value="<%= cobj[:id] %>" data-attr_name="<%= cobj[:code_name] %>" />
+											
+										</li>
+									<% end %>
+								</ul>	
+							<% end %>
+						</li>
 						<% end %>
-						
-						<% if(obj.child_attributes.any?) %>
-							<ul class="sub-options">
-								<% obj.child_attributes.each do |cobj| %>
-									<li><input type="checkbox" name="return_attributes[<%= item[:id]%>][<%= times %>][]" value="<%= cobj[:id] %>" data-attr_name="<%= cobj[:code_name] %>" /><%= cobj[:attr_name] %></li>
-								<% end %>
-							</ul>	
-						<% end %>
-					</li>
-					<% end %>
 					</ul>
 				</div>
 			</div>
@@ -110,7 +90,7 @@
 
 
 			<div class="fit-issues-container review-box" id="fit-issues-box" data-order-item-id="" data-quantity-counter="">
-				<div class="instructions">Drop a Pin
+				<div class="instructions"><span>Drop a Pin</span>
 					<ul>
 						<li>Click where it doesnt fit to drop a pin.</li>
 						<li>Select fit issue(s) from pop-up menu.</li>
@@ -121,17 +101,20 @@
 				<canvas class="test-canvas-front" id="test-canvas-front" width="480" height="720" data-order-item-id="" data-repeated-counter="" data-type-canvas="front"></canvas>
 
 				<canvas class="test-canvas-back" id="test-canvas-back" width="480" height="720" data-order-item-id="" data-repeated-counter="" data-type-canvas="back"></canvas>
-			</div>
 
 
 			</div>
-			<div id="footer">
-			<a href="#" class='previous-options no-background-color'><img src="<%= image_url("arrow_PreviousOptions.gif") %>" /></a>
-			<button id="continue-btn" class="next-btn"><img src="<%= image_url("arrow_ContinueNextStep.gif") %>" /></button></div>
+
+
+			
 		<% end %>
 
 		
 	</div>
+	<div id="footer">
+			<a href="#" class='previous-options no-background-color'><img src="<%= image_url("arrow_PreviousOptions.gif") %>" /></a>
+			<button id="continue-btn" class="next-btn"><img src="<%= image_url("arrow_ContinueNextStep.gif") %>" /></button></div>
+			</div>
 </div>
 
 <div class="cd-popup" role="alert" id="demo-popup">
@@ -161,9 +144,9 @@
 
 <script type="text/javascript">
 
-var squares = {1: { front: [{x: 152,y: 95,group: 2,width: 83, height: 100,cw: 384.8,ch: 577.2},{x: 152,y: 95,group: 3,width: 83, height: 14,cw: 384.8,ch: 577.2},{x: 152,y: 200,group: 2,width: 83, height: 30,cw: 384.8,ch: 577.2}],back:[] }
+var squares = {1: { front: [{x: 145,y: 95,group: 2,width: 83, height: 100,cw: 384.8,ch: 577.2},{x: 145,y: 95,group: 3,width: 83, height: 14,cw: 384.8,ch: 577.2},{x: 145,y: 200,group: 2,width: 83, height: 30,cw: 384.8,ch: 577.2}],back:[] }
 
-,2: { front: [{x: 152,y: 95,group: 2,width: 83, height: 100,cw: 384.8,ch: 577.2},{x: 153,y: 127,group: 3,width: 87, height: 35,cw: 384.8,ch: 577.2}],back:[] },
+,2: { front: [{x: 140,y: 95,group: 2,width: 104, height: 100,cw: 384.8,ch: 577.2},{x: 140,y: 127,group: 3,width: 104, height: 35,cw: 384.8,ch: 577.2}],back:[] },
 
 	3: { front: [{x: 160,y: 95,group: 2,width: 80, height: 40,cw: 384.8,ch: 577.2},{x: 158,y: 122,group: 3,width: 74, height: 25,cw: 384.8,ch: 577.2}], back:[] },
 };
@@ -251,9 +234,8 @@ function build_fields() {
 	canvas_ctrl.canvas_back_id = "test-canvas-back";
 	canvas_ctrl.init();
 
-	//squares_ctrl.recompute_pos();
-	console.log(squares_ctrl.squares);
 $(document).ready(function () {
+	$("#review-form").find("input[type='checkbox']").prop("checked",false);
 	var previous_items_ids = Array();
 	$("div.product-container").first().addClass("review-box-active");
 	$("div.product-container").last().addClass("last-container");
@@ -295,11 +277,13 @@ $(document).ready(function () {
 			console.log(curr_box.prev("div.product-container"));
 			canvas_ctrl.set_data(curr_box.prev("div.product-container").data("order-item-id"),curr_box.prev("div.product-container").data("quantity-counter"));
 
+			$("#footer .previous-options").addClass("fit-issue-style");
+					$("#continue-btn").addClass("fit-issue-style");
 			
-		} else if(curr_box.hasClass("height-box")) {
-			curr_box.addClass("can-show");
+		} else {
+			$("#footer .previous-options").removeClass("fit-issue-style");
+					$("#continue-btn").removeClass("fit-issue-style");
 		}
-
 		curr_box.removeClass("review-box-active");
 		
 		$("#"+prev_box_id).addClass("review-box-active");
@@ -318,6 +302,7 @@ $(document).ready(function () {
 		var curr_box = $("div.review-box-active");
 		
 		if(curr_box.hasClass("product-container")) {
+			console.log(curr_box.find("input[type='checkbox']:checked"));
 			if(curr_box.find("input[type='checkbox']:checked").length) {
 				var show_fit_issues = false;
 				// check if fit issues is checked
@@ -331,13 +316,7 @@ $(document).ready(function () {
 
 				if(show_fit_issues) {
 					// if height box has not been shown
-					/*if($("#height_box").hasClass("can-show")) {
-						curr_box.removeClass("review-box-active");
-						$("#height_box").addClass("review-box-active");
-						previous_items_ids.push(curr_box.attr("id"));
-						$("#height_box").attr("data-order-item-id",curr_box.data("order-item-id"));
-						$("#height_box").attr("data-quantity-counter",curr_box.data("quantity-counter"));
-					} else {*/
+					
 						// show fit issues
 						
 						canvas_ctrl.set_data(curr_box.data("order-item-id"),curr_box.data("quantity-counter"));
@@ -347,7 +326,12 @@ $(document).ready(function () {
 						previous_items_ids.push(curr_box.attr("id"));
 						canvas_ctrl.resize_canvas();
 						canvas_ctrl.draw_images();
-						squares_ctrl.draw_areas(curr_box.data("order-item-id"));
+						// recompute position of squares based on canvas width
+						squares_ctrl.recompute_pos();
+						//squares_ctrl.draw_areas();
+						$("#footer .previous-options").addClass("fit-issue-style");
+						$("#continue-btn").addClass("fit-issue-style");
+						//squares_ctrl.draw_areas(curr_box.data("order-item-id"));
 						//draw_images($("#test-canvas-front"),$("#test-canvas-back"));
 					//}
 
@@ -361,35 +345,15 @@ $(document).ready(function () {
 						curr_box.removeClass("review-box-active");
 						previous_items_ids.push(curr_box.attr("id"));
 					}
+
+					$("#footer .previous-options").removeClass("fit-issue-style");
+					$("#continue-btn").removeClass("fit-issue-style");
 				}
 			} else {
 				alert("you must select at least one option");
 				return;
 			}
-		} /*else if(curr_box.hasClass("height-box")) {
-
-			errors = validate_measurements();
-			if(errors.length) {
-
-				//$("#measurements-error-popup .cd-popup-container").html(errors.join("<br />"));
-				//$("#measurements-error-popup").addClass("is-visible");
-				alert(errors.join("\n"));
-				return;
-			}
-			curr_box.removeClass("can-show");
-			
-
-			canvas_ctrl.set_data(curr_box.data("order-item-id"),curr_box.data("quantity-counter"));
-
-			$("#fit-issues-box").addClass("review-box-active");
-			curr_box.removeClass("review-box-active");
-			previous_items_ids.push(curr_box.attr("id"));
-			canvas_ctrl.resize_canvas();
-			canvas_ctrl.draw_images();
-			squares_ctrl.draw_areas(curr_box.data("order-item-id"));
-			
-
-		}*/ 
+		}
 		else if(curr_box.hasClass("fit-issues-container")) {
 			errors = canvas_ctrl.validate_pins();
 			if(errors.length) {
@@ -408,10 +372,33 @@ $(document).ready(function () {
 				} else {
 					$(container_id).next("div.product-container").addClass("review-box-active");
 					previous_items_ids.push(curr_box.attr("id"));
+
+					$("#footer .previous-options").removeClass("fit-issue-style");
+					$("#continue-btn").removeClass("fit-issue-style");
 				}
 			}
 		}
 	});
+	
+	$(".checkbox-label-reason").on("click",function() {
+		if($(this).hasClass("active")) {
+			$(this).removeClass("active");
+			$(this).closest("li").find("input").prop("checked",false);
+		} else {
+			$(this).addClass("active");
+			$(this).closest("li").find("input").prop("checked",true);
+		}
+
+		/*if($("#review-form").find("input[type='checkbox']:checked").length) {
+			$("#review-form button").prop("disabled",false);
+		}
+		else {
+			$("#review-form button").prop("disabled",true);
+		}*/
+	});
+
+	//squares_ctrl.recompute_pos();
+	//	squares_ctrl.draw_areas();
 
 });
 </script>
@@ -424,6 +411,8 @@ $(document).ready(function() {
 	window.onresize = function(event) {
 
 		canvas_ctrl.resize_canvas();
+		squares_ctrl.recompute_pos();
+		squares_ctrl.draw_areas();
 	}
 });
 </script>

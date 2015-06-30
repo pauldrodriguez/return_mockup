@@ -166,12 +166,13 @@ var CanvasCtrl = function(canvas_container) {
 
 		
 		} else {
-			newHeight = (container_width/2.5) / widthToHeight;
+			var divider = 2;
+			newHeight = (container_width/divider) / widthToHeight;
 			
-			$("#"+oThis.canvas_front_id).attr("width",container_width/2.5);
+			$("#"+oThis.canvas_front_id).attr("width",container_width/divider);
 			$("#"+oThis.canvas_front_id).attr("height",newHeight);
 
-			$("#"+oThis.canvas_back_id).attr("width",container_width/2.5);
+			$("#"+oThis.canvas_back_id).attr("width",container_width/divider);
 			$("#"+oThis.canvas_back_id).attr("height",newHeight);
 		}
 		var new_canvas_front_width = parseFloat($("#"+oThis.canvas_front_id).attr("width"));
@@ -208,7 +209,7 @@ var CanvasCtrl = function(canvas_container) {
 					ctx_f.fillStyle = "#FD0000";
 		    		ctx_f.beginPath();
 		   
-		    		ctx_f.arc(e.x,e.y, 8, 0, 2*Math.PI);
+		    		ctx_f.arc(e.x,e.y, oThis.radius, 0, 2*Math.PI);
 		    		ctx_f.fill();
 				});
 

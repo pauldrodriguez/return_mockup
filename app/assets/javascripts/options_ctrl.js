@@ -150,7 +150,7 @@ var OptionsCtrl = function() {
 					if(window.canvas_ctrl!=="undefined") {
 						window.canvas_ctrl.clear_canvas();
 						window.canvas_ctrl.redraw();
-						window.squares_ctrl.draw_areas(oThis.order_item_id);
+						//window.squares_ctrl.draw_areas(oThis.order_item_id);
 					}
 					//window.pins[oThis.order_item_id][oThis.repeated_item][oThis.canvas_type] = pins;
 				} else {

@@ -129,7 +129,7 @@ class ReturnsController < ApplicationController
 
 	def review
 
-  		@options = ReturnReasonAttribute.where("parent_id=?",0)
+  		@options = ReturnReasonAttribute.where("parent_id=?",0).order("display_order")
 
   		@attributes = PinAttribute.includes([:child_attributes]).where("parent_id=?",0)
 
@@ -196,7 +196,7 @@ class ReturnsController < ApplicationController
 		#end
 		#options for review
 	 	@options = ReturnReasonAttribute.where("parent_id=?",0)
-
+	 	#this wont be used anymore
 	 	heel_height = (params.has_key?(:heel_height)) ? params[:heel_height] : 0;
 	 	height_feet = (params.has_key?(:feet)) ? params[:feet] : 0
 	 	height_inches = (params.has_key?(:inches)) ? params[:inches] : 0
@@ -287,10 +287,20 @@ class ReturnsController < ApplicationController
 			if(return_order.save)
 				return_order.save
 
+				@counts.each do |k,v|
+					qr = QuantityReturn.find_or_initialize_by(order_id: @order.id, order_item_id: k)
+					if(qr.quantity.nil?)
+						qr.quantity = v
+					else
+						qr.quantity += v
+					end
+					qr.save
+				end
 				#OrderItem.transaction do
 				#	order_items_to_save.each(&:save)
 				#end
 				#flash[:csrf_token] = params[:authenticity_token]
+				session[:return_order_id] = return_order[:id]
 				redirect_to success_returns_path(:roid=>return_order[:id])
 			else
 				#redirect_to all_returns_returns_path
@@ -319,8 +329,14 @@ class ReturnsController < ApplicationController
 
 
 	def success_confirmation
-		if(flash[:referrer]) && (flash[:referrer]=="success")
-			#do something
+
+		flash[:referrer] = "success"
+		session[:return_order_id] = 1
+		#@order = Order.find(1)
+		#@return = ReturnOrders.find(params[:return_order_id])
+		if(flash[:referrer]) && flash[:referrer]=="success" && session.has_key?(:return_order_id)
+			@return = ReturnOrders.find(session[:return_order_id])
+			@order = Order.find(@return.order_id)
 		else
 			redirect_to all_returns_returns_path and return
 		end
@@ -351,12 +367,14 @@ class ReturnsController < ApplicationController
 		@return_order_attributes = ReturnOrderAttribute.all
 
 		@return_item_pins = ReturnItemPin.all	
+
+		@quantity_returns = QuantityReturn.all
 		
 	end
 
 	def truncate_tables
 		tables = ['return_items','return_order_attributes','return_orders',
-			'order_items','orders','return_item_pins','products']
+			'order_items','orders','return_item_pins','products','quantity_returns']
 		#tables = ['orders']
 		#ActiveRecord::Base.connection.execute("DELETE FROM orders where id>1")
 		#ActiveRecord::Base.connection.execute("DELETE FROM order_items where id>=4")

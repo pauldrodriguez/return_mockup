@@ -1,10 +1,6 @@
 <% @return_items = ReturnItems.select("return_items.order_item_id").where("order_num=?",params[:order_num]).group(:order_item_id).count %>
-<% qr = QuantityReturn.find_or_initialize_by(order_id: 1, order_item_id: 1) %>
-<% if qr.quantity.nil?%>
-<% qr.quantity = 0%>
-<span>quantity is nil</span>
-<% end %>
-<%= qr.inspect %>
+
+
 <div id="header">
 	<img src="<%= image_url("stepBar_1.gif") %>" />
 		
@@ -14,17 +10,22 @@
 	
 <div id="sidebar">
 	<p>
-		<b>Order #<%= @order[:order_num] %></b>
+		<b>Order Number:</b>
 		<br>
-		<%= @order.created_at.strftime("%m/%d/%Y") %>
+		<%= @order[:order_num]%>
 	</p>
 	<p>
-		<b>Sent to:</b>
+		<b>Order Date:</b>
+		<br>
+		<%= @order.created_at.strftime("%B %d, %Y") %>
+	</p>
+	<p>
+		<b>Recipient:</b>
 		<br>
 		<%=  @order.full_name %>
 	</p>
 	<p>
-		<b>Payment Method</b>
+		<b>Payment Method:</b>
 		<br />
 		Card ending in 5002
 		<br />
@@ -36,7 +37,7 @@
 		<div class="red"><%= @all_errors.join("<br />").html_safe %></div>
 		<% end %>
 
-		<h3>Select the items you'd like to return</h3>
+		<h3><i>Please Select the Item(s) You Would Like to Return</i></h3>
 		<% #test_qty_returned = OrderItemQuantityReturned.where(:order_id=>1,:order_item_id=>1).first %>
 
 		<%= form_tag({controller:"returns", action: "validate_orders"},method: "post",id: "items-form") do %>
@@ -45,39 +46,36 @@
 			<input type="hidden" name="review_page" value="true" />
 			<% @order.order_items.each do |item| %>
 				<% qty_r = @order.quantity_returns.where(order_item_id: item.id).first %>
-			<% #qty_returned = OrderItemQuantityReturned.where(:order_id=>1,:order_item_id=>1).first %>
-			
-
-			<% #qty_r = quantity_returned_by_order.where(:order_item_id=>item[:id].to_i).first %>
-			<% quantity_order_item = (qty_r.nil?) ? 0 : ( (qty_r[:quantity]==nil) ? 0 : qty_r[:quantity] ) %>
-			<% #quantity_order_item = 0 %>
-			
+		
+				<% quantity_order_item = (qty_r.nil?) ? 0 : ( (qty_r[:quantity]==nil) ? 0 : qty_r[:quantity] ) %>
+		
 				<% if((item[:quantity] - (quantity_order_item || 0) )>0) %>
 					<% (1..(item[:quantity] - (quantity_order_item || 0) )).to_a.each do |times| %>
 						<div class="inline-block product-order-item">
 							<div class="img-container">
-							<img width="260" height="390" src="<%= image_url("image.jpg") %>" />
-							<input type="checkbox" name="order_items[]" value="<%= item[:id] %>" />
+								<img width="260" height="390" src="<%= image_url(item.product.image_front) %>" />
+								<input type="checkbox" name="order_items[]" value="<%= item[:id] %>" />
+								<label class="checkbox-label"></label>
 							</div>
 							<div class="prod-desc">
-								<b><%= item.product_name %></b><br />
-							
-								<%= number_to_currency(item[:price]) %>
-
+								<p><b><%= item.product_name %></b></p>
+								<p><%= item.product.sku%></p>
+								<p><%= number_to_currency(item[:price]) %></p>
+								<br>
 							</div>
 						</div>
 					<% end %>
 				<% end %>
 			<% end %>
-
 		<% end %>
 
 	</div>
-	
+	<div id="footer" class="step-1-footer">
+		<a href="<%= returns_path %>" class='previous-options no-background-color'><img src="<%= image_url("arrow_PreviousOptions.gif") %>" /></a>
+		<button type="submit" id="submit-btn" class="next-btn" disabled><img src="<%= image_url("arrow_ContinueReview.gif") %>" /></button>
+	</div>
 </div>
-<div id="footer">
-<button type="submit" id="submit-btn" class="next-btn" disabled><img src="<%= image_url("arrow_ContinueReview.gif") %>" /></button>
-</div>
+
 <script type="text/javascript">
 	
 	$("#items-form select.size-select").hide();
@@ -116,6 +114,24 @@
 
 	$("#submit-btn").on("click",function() {
 		$("#items-form").submit();
+	});
+
+	$(".checkbox-label").on("click",function() {
+		if($(this).hasClass("active")) {
+			$(this).removeClass("active");
+			$(this).prev("input").prop("checked",false);
+		} else {
+			$(this).addClass("active");
+			$(this).prev("input").prop("checked",true);
+		}
+		console.log($("#items-form").find("input[type='checkbox']:checked").length);
+		if($("#items-form").find("input[type='checkbox']:checked").length) {
+			$("#submit-btn").prop("disabled",false);
+		}
+		else {
+			$("#submit-btn").prop("disabled",true);
+		}
+		//console.log($("#items-form").find("input[type='checkbox']:checked"));
 	});
 </script>
 

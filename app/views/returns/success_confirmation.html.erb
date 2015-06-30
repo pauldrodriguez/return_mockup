@@ -1,24 +1,76 @@
 <div id="main-container">
 	
-
+<div id="header">
+		<img src="<%= image_url("stepBar_2.gif") %>" />
+	</div>
 
 	<div id="success-content">
+		<h2>Thank You</h2>
 		<h3>Your Return has been Processed</h3>
-		<div>Returns take 4-10 business days, including return shipping.</div>
-		<div>More questions about returns? review our <a href="#" target="_blank">Returns &amp; Exchanges Policy.</a></div>
+		<div>Once received, all correctly returned products will be refunded within 10 business days.</div>
+		<div>If you have any questions, please email <a href="mailto:customercare@tadashishoji.com">customercare@tadashishoji.com</a></div>
 		
-		
-
-		<div id="footer">
-			
-			<a href="<%= success_confirmation_returns_path %>" id="continue-btn" class="no-background-color">
-				<img src="<%= image_url("arrow_FinishedReturn.gif") %>" />
-			</a>
+		<p class="returns-policy"><a href="#" target="_blank">Return Policy</a></p>
+		<div class="rma-box">
+			<div id="sidebar">
+<p>
+		<b>Confirmation Number:</b>
+		<br>
+		100874683
+	</p>
+	<p>
+		<b>Tracking Number:</b>
+		<br>
+		100874683
+	</p>
+	<p>
+		<b>Return Date:</b>
+		<br>
+		<%= @return.created_at.strftime("%B %d, %Y") %>
+	</p>
+	<p>
+		<b>Recipient:</b>
+		<br>
+		<%=  @order.full_name %>
+	</p>
+	<p>
+		<b>Payment Method:</b>
+		<br />
+		Card ending in 5002
+		<br />
+		Total <%= number_to_currency(@order[:amount]) %>
+	</p>
 			</div>
+			<div id="content">
+			
+				<% @return.return_items.each do |item| %>
+				<div class="inline-block product-order-item">
+					<div class="img-container">
+					<img width="260" height="390" src="<%= image_url(item.order_item.product.image_front)%>" />
+					</div>
+					<div class="prod-desc">
+						
+						<p><b><%= item.order_item.product.name %></b></p>
+						<p><%= item.order_item.product.sku %></p>
+						<p><%= number_to_currency(item.order_item.price) %></p>
+					</div>
+				
 
+			</div>
+			<% end %>
+
+		</div>
+		
+<div id="footer">			
+		<a href="<%= success_confirmation_returns_path %>" id="continue-btn" class="next-btn no-background-color">
+			<img src="<%= image_url("arrow_FinishedReturn.gif") %>" />
+		</a>
+	</div>
 	</div>
 
 	
+</div>
+
 </div>
 
 

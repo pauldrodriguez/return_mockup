@@ -72,12 +72,14 @@ var SquaresCtrl = function() {
 		});
 	}
 
-	this.draw_areas = function(prod_id) {
+	this.draw_areas = function() {
 		var canvas_front = $("#"+window.canvas_ctrl.canvas_front_id);
 		var canvas_back  = $("#"+window.canvas_ctrl.canvas_back_id);
 
 		ctx_f = canvas_front[0].getContext("2d");
 		ctx_b = canvas_back[0].getContext("2d");
+
+		var prod_id = canvas_front.attr("data-order-item-id");
 
 		if(prod_id in oThis.squares) {
 			$.each(oThis.squares[prod_id]["front"],function(i,e) {
