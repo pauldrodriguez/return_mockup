@@ -558,7 +558,7 @@ div.review-box.height-box select {
 
 div.instructions {
 	position:absolute;
-	width:300px;
+	width:265px;
 	text-align:center;
 	margin-left: 293px;
 	display: inline-block;
@@ -581,6 +581,7 @@ div.instructions li {
 div.instructions ul {
 	list-style: decimal inside;
 	padding-left: 0;
+	margin-top: 10px;
 }
 
 .close-btn-container {
