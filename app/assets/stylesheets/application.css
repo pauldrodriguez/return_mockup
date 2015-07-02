@@ -634,6 +634,7 @@ a.no-background-color:hover {
 		font-family: AbrilDisplayItalic;
 		display: block;
 		font-size: 14.99pt;
+		margin-bottom: 10px;
 	}
 
 	#review-form .product-content {
