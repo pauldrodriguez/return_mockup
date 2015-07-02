@@ -158,12 +158,12 @@ class ReturnsController < ApplicationController
 	  	#return_items = params[:order_items]
 	  	@order_items = OrderItem.find(session[:return_items])
 	  	@counts = session[:order_items_count]
-	  	@inches = Array.new
-	  	@inches << ["Inches",0]
-	  	(1..12).to_a.each {|inch| @inches << [inch,inch]} 
+	  	#@inches = Array.new
+	  	#@inches << ["Inches",0]
+	  	#(1..12).to_a.each {|inch| @inches << [inch,inch]} 
 		#@inches = (1..12).to_a
-		@feet  = [["Feet",0]]
-		(1..7).to_a.each {|feet| @feet << [feet,feet]}
+		#@feet  = [["Feet",0]]
+		#(1..7).to_a.each {|feet| @feet << [feet,feet]}
 
 
 	end #end validate_step_one
@@ -315,16 +315,6 @@ class ReturnsController < ApplicationController
 
 	def shipping_label
 		
-		#if(params.has_key?(:roid) && params.has_key?(:authenticity_token) && flash.key?(:csrf_token))
-		#	if(params[:authenticity_token]!=flash[:csrf_token] || !ReturnOrders.exists?(params[:roid]))
-		#		redirect_to all_returns_returns_path
-				#@msg = "invalid return order id or csrf token"
-		#	end
-		#session.delete(:csrf_token)
-		#else
-		#	redirect_to all_returns_returns_path
-			#@msg = "invalid params"
-		#end
 		if(!session.has_key?(:return_order_id) || !session.has_key?(:referrer) || session[:referrer]!="final_step")
 			redirect_to action:"index", controller:"returns" and return
 		end
@@ -335,6 +325,7 @@ class ReturnsController < ApplicationController
 
 
 	def success_confirmation		
+		#session[:return_order_id] = 1
 		if(flash[:referrer]) && flash[:referrer]=="success" && session.has_key?(:return_order_id)
 			@return = ReturnOrders.find(session[:return_order_id])
 			@order = Order.find(@return.order_id)

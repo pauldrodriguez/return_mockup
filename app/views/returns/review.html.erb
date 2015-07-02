@@ -23,15 +23,7 @@
 			<input type="hidden" name="order_num" value="<%= @order[:order_num] %>" />
 
 			<div id="review-product-container">		
-			<div class="review-box height-box can-show" id="height_box" data-order-item-id="" data-quantity-counter="">
-				Every body is unique. Your answers greatly help us improve our fit
-				<h3>Height</h3>
-				<%= select_tag(:feet, options_for_select(@feet)) %>
-				<%= select_tag(:inches, options_for_select(@inches)) %>
-				<h3>Heel Height</h3>
-				<%= select_tag(:heel_height, options_for_select(@inches)) %>
-
-			</div>	
+		
 
 			<% @order_items.each do |item| %>
 			
@@ -43,10 +35,9 @@
 					<div class="product-sidebar-wrapper">
 						<input type="hidden" name="order_items[]" value="<%= item[:id]%>" />
 
-						<img width="260" height="390" src="<%= image_url(item.product.image_front) %>" />
+						<img width="174" height="262" src="<%= image_url(item.product.image_front) %>" />
 						<div class="order-item-desc">
-							<br>
-							<p><b><%= item.product_name %></b></p>
+							<p class="sub-section-header"><b><%= item.product_name %></b></p>
 							<p><%= item.product.sku%></p>
 							<p>Refund: <%= number_to_currency(item[:price]) %></p>
 							<p>To card ending in 5002</p>
@@ -63,7 +54,7 @@
 							<b><%= obj[:attr_name] %></b>
 							<% else %>
 							<input type="checkbox" name="return_attributes[<%= item[:id]%>][<%= times %>][]" value="<%= obj[:id] %>" data-attr_name="<%= obj[:code_name] %>" />
-							<%= obj[:attr_name] %>
+							<span class="sub-section-header"><%= obj[:attr_name] %></span>
 							<% end %>
 							
 							<% if(obj.child_attributes.any?) %>
@@ -90,7 +81,8 @@
 
 
 			<div class="fit-issues-container review-box" id="fit-issues-box" data-order-item-id="" data-quantity-counter="">
-				<div class="instructions"><span>Drop a Pin</span>
+				<div class="instructions">
+					<span>Drop a Pin</span>
 					<ul>
 						<li>Click where it doesnt fit to drop a pin.</li>
 						<li>Select fit issue(s) from pop-up menu.</li>
@@ -112,8 +104,8 @@
 		
 	</div>
 	<div id="footer">
-			<a href="#" class='previous-options no-background-color'><img src="<%= image_url("arrow_PreviousOptions.gif") %>" /></a>
-			<button id="continue-btn" class="next-btn"><img src="<%= image_url("arrow_ContinueNextStep.gif") %>" /></button></div>
+			<a href="#" class='previous-options review-page no-background-color'><img src="<%= image_url("arrow_Previous.gif") %>" /></a>
+			<button id="continue-btn" class="next-btn review-page"><img src="<%= image_url("arrow_Continue.gif") %>" /></button></div>
 			</div>
 </div>
 
@@ -130,6 +122,21 @@
 <div class="cd-popup" role="alert" id="measurements-error-popup">
 	<div class="cd-popup-container">
 	    
+	</div>
+</div>
+
+<div class="cd-popup" role="alert" id="instructions-popup">
+	<div class="cd-popup-container">
+		<div class="close-btn-container"><span class="cd-popup-close cd-close-popup">X</span></div>
+	    <div class="instructions instructions-popup">
+			<span>Drop a Pin</span>
+			<ul>
+				<li>Click where it doesnt fit to drop a pin.</li>
+				<li>Select fit issue(s) from pop-up menu.</li>
+				<li>Click Submit.</li>
+			</ul>
+			Multiple Fit issues? Drop more pins
+		</div>
 	</div>
 </div>
 
@@ -234,6 +241,8 @@ function build_fields() {
 	canvas_ctrl.canvas_back_id = "test-canvas-back";
 	canvas_ctrl.init();
 
+	var can_show_instructions = true;
+
 $(document).ready(function () {
 	$("#review-form").find("input[type='checkbox']").prop("checked",false);
 	var previous_items_ids = Array();
@@ -315,8 +324,10 @@ $(document).ready(function () {
 				});
 
 				if(show_fit_issues) {
-					// if height box has not been shown
-					
+						if(can_show_instructions) {
+							$("#instructions-popup").addClass("is-visible");
+							can_show_instructions = false;
+						}
 						// show fit issues
 						
 						canvas_ctrl.set_data(curr_box.data("order-item-id"),curr_box.data("quantity-counter"));

@@ -16,7 +16,10 @@
 	font-family: AbrilDisplayItalic;
 	src: url("AbrilDisplayItalic.otf");
 }
-
+@font-face {
+	font-family: AbrilDisplayRegular;
+	src: url("AbrilDisplayRegular.otf");
+}
 @font-face {
 	font-family: HelveticaInseratRoman;
 	src: url("HelveticaInseratRoman.otf");
@@ -41,6 +44,14 @@
 	font-family: HelveticaNeueRoman;
 	src: url("HelveticaNeueLTStd-Roman.otf");
 }
+@font-face {
+	font-family: HelveticaNeueLite;
+	src: url("HelveticaNeueLTStd-Lt.otf");
+}
+@font-face {
+	font-family: HelveticaNeueMedium;
+	src: url("HelveticaNeueLTStd-Md.otf");
+}
 .container {
 	margin: 0 auto;
 	width: 100%;
@@ -62,7 +73,7 @@
 		/*position: fixed;*/
 		display: inline-block;
 		padding: 20px 0 0 20px;
-		font-family: HelveticaNeueEx;
+		
 	}
 
 	#sidebar p {
@@ -70,8 +81,15 @@
 		font-size: 10pt;
 	}
 	#sidebar p > b {
-		font-family: HelveticaInsertaRoman;
-		font-size: 12pt;
+		/*font-family: HelveticaInsertaRoman;
+		font-size: 12pt;*/
+	}
+	.sub-sidebar-section-info {
+		margin-bottom: 15px;
+	}
+	.sub-sidebar-section-info span {
+		font-family: HelveticaNeueLite;
+		font-size: 10.99pt;
 	}
 	/*#main-container {
 		margin-left: 20em;
@@ -177,8 +195,9 @@
 		margin-bottom: 20px;
 		margin-left: 4px;
 		font-family: AbrilDisplayItalic;
-		font-size: 16pt;
+		font-size: 15pt;
 		margin-top: 0;
+		/*font-style: italic;*/
 	}
 	.container > .header {
 		font-family: AbrilDisplayItalic;
@@ -202,15 +221,11 @@
 		padding-bottom: 12px;
 	}
 	
-	.product-order-item .prod-desc p:first-child {
-		font-family: HelveticaInsertaRoman;
+	.prod-desc p {
+		font-family: HelveticaNeueLite;
+		font-size: 10.99pt;
 	}
-	.product-order-item .prod-desc p {
-		font-family: HelveticaNeueEx;
-	}
-	.prod-desc b {
-		font-size:12pt;
-	}
+	
 	.product-order-item .img-container .checkbox-label {
 		z-index: 10;
 		float: right;
@@ -302,12 +317,16 @@ div.form-wrapper {
 
 .links-block {
 	margin-bottom: 1.9em;
-	color: rgb(127,125,126);
+	color: #808080;
 	text-decoration: underline;
 	cursor: pointer;
 }
+.links-block p {
+	font-size: 11pt;
+}
 .form-header {
 	font-family: AbrilDisplayItalic;
+	font-size: 14.99pt;
 	margin-top: 1.5em;
 	margin-bottom: 1.5em;	
 }
@@ -316,8 +335,8 @@ div.form-wrapper {
 }
 .index-page-header {
 	text-align: center;
-	font-family: HelveticaNeueRoman;
-	font-size: 16pt;
+	font-family: AbrilDisplayRegular;
+	font-size: 14.99pt;
 }
 #order-return-form button {
 	font-size: 10pt;
@@ -329,7 +348,7 @@ div.form-wrapper {
 }
 
 #order-return-form input {
-	font-size: 12pt;
+	font-size: 10.1pt;
 	padding: 3.5px 10px;
 	vertical-align: top;
 }
@@ -342,6 +361,8 @@ div.form-wrapper {
 #review-form .product-container {
 	border: 1px solid #bbb;
 	background: #F4F2F3;
+	width: 643px;
+	margin: 0 auto;
 }
 
 #review-form .product-container:first {
@@ -350,32 +371,40 @@ div.form-wrapper {
 
 .product-sidebar {
 	display: inline-block;
-	width:40%;
+	width:205px;
 	border-right: 1px solid #bbb;
 }
 .product-content {
 	display: inline-block;
 	vertical-align: top;
-	width:59%;
+	width:67%;
 }
 
 ul.options {
 	list-style:none;
+
 }
 ul.options li {
-	padding: 5px 0;
+	/*padding: 5px 0;*/
+}
+ul.options li b {
+	font-family: HelveticaNeueMedium;
+	font-size: 10.99pt;
 }
 ul.sub-options {
+
 	list-style: none;
 	padding-left: 10px;
 	margin-bottom: 2em;
+	margin-top: 1em;
 }
 
 div.product-sidebar-wrapper {
 	/*display: inline-block;*/
 	padding-top: 20px;
-	width: 260px;
-	margin: 0 auto;
+	width: 100%;
+	padding-left: 15px;
+	/*margin: 0 auto;*/
 
 }
 
@@ -407,13 +436,20 @@ div.product-sidebar-wrapper {
 	float: right;
 }
 
+#footer .previous-options.review-page {
+	margin-left: 8.5em;
+}
+#footer .next-btn.review-page {
+	margin-right: 8.5em;
+}
+/*
 #footer .previous-options.fit-issue-style {
 	margin-left: 100px;
 }
 
 #footer .next-btn.fit-issue-style {
 	margin-right: 100px;
-}
+}*/
 
 
 .main-cont-step-one {
@@ -454,16 +490,21 @@ div.product-sidebar-wrapper {
 
 #success-content h2, #success-content h3 {
 	font-family: AbrilDisplayItalic;
+	font-size: 40pt;
 }
 
 #success-content h3 {
 	margin-top: 0;
 	margin-bottom: 25px;
+	font-size: 26.99pt;
 }
-
+#success-content .instructions-message {
+	font-size: 10.99pt;
+	font-family: HelveticaNeueLite;
+}
 #success-content .returns-policy {
 	font-size: 10pt;
-	color: rgb(124,124,124);
+	color: #808080;
 	margin-top: 20px;
 	margin-bottom: 30px;
 
@@ -474,6 +515,12 @@ div.product-sidebar-wrapper {
 	text-decoration: underline;
 }
 #success-content .returns-policy a:hover {
+	background: none;
+}
+#success-content .email-link {
+	color: #1eb3ed;
+}
+.no-hover-effect:hover {
 	background: none;
 }
 div.review-box {
@@ -513,23 +560,44 @@ div.instructions {
 	position:absolute;
 	width:300px;
 	text-align:center;
-	margin-left: 290px;
+	margin-left: 293px;
 	display: inline-block;
-	font-family: HelveticaNeueRoman;
-
+	font-family: HelveticaNeueLite;
+	font-size: 10.99pt;
+}
+div.instructions.instructions-popup {
+	position: relative;
+	margin-left: 0;
+	margin-bottom: 24px;
 }
 div.instructions span {
 	font-family: AbrilDisplayItalic;
-	font-size: 16pt;
+	font-size: 20pt;
 }
 div.instructions li {
-	font-family: HelveticaNeueRoman;
+	font-family: HelveticaNeueLite;
+	font-size: 10.99pt;
 }
 div.instructions ul {
 	list-style: decimal inside;
 	padding-left: 0;
 }
 
+.close-btn-container {
+	text-align: right;
+	margin-right: 8px;
+	margin-top: 8px;
+}
+.close-btn-container .cd-close-popup {
+	font-family: HelveticaNeueLite;
+	font-size: 10.99pt;
+	color: #808080;
+	cursor: pointer;
+}
+#instructions-popup .cd-popup-container {
+	max-width: 479px;
+
+}
 a.no-background-color:hover {
 	background: transparent !important;
 }
@@ -565,11 +633,13 @@ a.no-background-color:hover {
 	.product-content .review-header {
 		font-family: AbrilDisplayItalic;
 		display: block;
-		font-size: 16pt;
+		font-size: 14.99pt;
 	}
 
 	#review-form .product-content {
 		padding: 20px 0 0 20px;
+		font-size: 10.99pt;
+		font-family: HelveticaNeueLite;
 	}
 
 	#review-form .product-content .options {
@@ -578,7 +648,7 @@ a.no-background-color:hover {
 	}
 	#review-form .product-content .options > li {
 		float: left;
-		width: 50%;
+		width: 46%;
 	}
 
 	.sub-options {
@@ -591,8 +661,8 @@ a.no-background-color:hover {
 	}
 
 	.checkbox-label-reason+span {
-		font-family: HelveticaNeueEx;
-		font-size: 10pt;
+		font-family: HelveticaNeueLite;
+		font-size: 10.99pt;
 		padding-bottom: 20px;
 		vertical-align: top;
 	}
@@ -617,3 +687,54 @@ a.no-background-color:hover {
 	font-size: 30pt;
 }
 
+.order-item-desc {
+	margin-top: 18px;
+}
+.sub-section-header {
+	font-family: HelveticaNeueMedium !important;
+	font-size: 10.99pt;
+
+}
+.order-item-desc p {
+	font-family: HelveticaNeueLite;
+	font-size: 10.99pt;	
+}
+
+.step-one-bottom-text {
+	font-size: 10.99pt;
+	font-family: HelveticaNeueLite;
+	text-align: center;
+	margin-top: 18px;
+}
+
+.final-steps-section .shipping-instructions-content {
+	font-family: HelveticaNeueLite;
+	font-size: 10.99pt;
+}
+
+
+	.final-steps-section {
+		border-top: 1px solid rgb(206,206,206);
+		text-align: justify;
+		padding: 15px 0;
+	}
+
+	.container-left	{
+		display: inline-block;
+		width: 22em;
+		text-align: right;
+		vertical-align: top;
+	}
+	.container-right {
+		display: inline-block;
+		vertical-align: top;
+		width: 51%;
+		padding-left: 4em;
+	}
+	.container-right div:last {
+		margin-top: 8px;
+	}
+
+	#finish-return {
+		float: right;
+	}
