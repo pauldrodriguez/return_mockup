@@ -8,7 +8,7 @@
 		<% end %>
 	<% end %>
 <% end %>
-
+<%= @quantities.inspect %>
 <div id="header">
 	<img src="<%= image_url("stepBar_2.gif") %>" />
 </div>
@@ -97,7 +97,7 @@
 
 			</div>
 
-
+		
 			
 		<% end %>
 
@@ -241,7 +241,7 @@ function build_fields() {
 	canvas_ctrl.canvas_back_id = "test-canvas-back";
 	canvas_ctrl.init();
 
-	var can_show_instructions = true;
+	//var can_show_instructions = false;
 
 $(document).ready(function () {
 	$("#review-form").find("input[type='checkbox']").prop("checked",false);
@@ -324,10 +324,13 @@ $(document).ready(function () {
 				});
 
 				if(show_fit_issues) {
+						/*
+						Code to show instructions. dont need it now
 						if(can_show_instructions) {
 							$("#instructions-popup").addClass("is-visible");
 							can_show_instructions = false;
 						}
+						*/
 						// show fit issues
 						
 						canvas_ctrl.set_data(curr_box.data("order-item-id"),curr_box.data("quantity-counter"));
@@ -349,6 +352,8 @@ $(document).ready(function () {
 				} else {
 					if(curr_box.hasClass("last-container")) {
 						// need to submit form here
+						$("#confirmation-box").addClass("review-box-active");
+						//curr_box.removeClass("review-box-active");
 						build_fields();
 					} else {
 						curr_box.next("div.product-container").addClass("review-box-active");
@@ -379,6 +384,8 @@ $(document).ready(function () {
 				curr_box.removeClass("review-box-active");
 
 				if($(container_id).hasClass("last-container")) {
+					$("#confirmation-box").addClass("review-box-active");
+					//$("#fit-issues-container").removeClass("review-box-active");
 					build_fields();
 				} else {
 					$(container_id).next("div.product-container").addClass("review-box-active");

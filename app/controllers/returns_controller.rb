@@ -73,7 +73,7 @@ class ReturnsController < ApplicationController
 	  	if(params[:order_items].empty?)
 	  		errors << "you must select at least one item to return"
 	  		flash[:errors] = errors
-	  		redirect_to action:"order_num", controller:"returns" and return
+	  		redirect_to action:"index", controller:"returns" and return
 	  	end
 
 	  	redirect_back = false;
@@ -85,12 +85,6 @@ class ReturnsController < ApplicationController
 	  	@counts = Hash.new(0)
 	  	return_order_items.each {|oid| @counts[oid.to_i]+=1}
 	  	
-	  	#gets all the returned items for the order
-	  	#@return_items = ReturnItems.select("return_items.order_item_id").where("order_num=?",session[:order_num]).group(:order_item_id).count
-	  	#@return_items = @order.quantity_returns
-	  	# only return amount for items that want to be returned, 
-	  	# since array contains all order item keys regardless if they want to be returned or not
-	  	#amount_to_return = params[:amount_to_return].delete_if {|k,v| return_items.keys.index(k).nil?}
 
 	  	@order_items.each do |item|
 	  		qty_r = @order.quantity_returns.where(order_item_id: item.id).first
@@ -122,7 +116,7 @@ class ReturnsController < ApplicationController
 	  	# order items have been validated, store in session
 	  	session[:order_items_count] = @counts
 	  	session[:return_items] = return_order_items
-	  	session[:review_redirect] = true
+	  	session[:validated] = true
 	  	redirect_to action:"review",controller:"returns" and return
   	
   	end
@@ -132,6 +126,9 @@ class ReturnsController < ApplicationController
   		@options = ReturnReasonAttribute.where("parent_id=?",0).order("display_order")
 
   		@attributes = PinAttribute.includes([:child_attributes]).where("parent_id=?",0)
+
+  		
+  		
 
   		#make sure order number was passed
   		if(!session.has_key?(:order_num))
@@ -145,25 +142,24 @@ class ReturnsController < ApplicationController
 	  		redirect_to action:"index", controller:"returns" and return
 	  	end
 
-	  	if(session.has_key?(:review_redirect) && session[:review_redirect]==true) || session.has_key?(:return_items)
-	  		#oiid, tqtynum = session[:order_items_count].first
-	  		session.delete(:review_redirect)
-	  	else
+	  	if((session.has_key?(:validated) || session[:validated]==false))
+  			#validate here
+  			if(session.has_key?(:return_items))
+  				if( !validate_order_items(session[:order_num], session[:return_items]) )
+  					redirect_to action: "index", controller: "returns" and return
+  				end
+  			else
+  				redirect_to action: "index",controller: "returns" and return
+  			end	
+		else
+			session.delete(:validated)	
+  		end
+
 	  	
-	  		redirect_to action:"index", controller: "returns" and return
-	  	end
-	  	#render_order_num = false;
-	  	#valid_items = true;
-	  	#only want the items that actually have a value in them
-	  	#return_items = params[:order_items]
+	  
 	  	@order_items = OrderItem.find(session[:return_items])
 	  	@counts = session[:order_items_count]
-	  	#@inches = Array.new
-	  	#@inches << ["Inches",0]
-	  	#(1..12).to_a.each {|inch| @inches << [inch,inch]} 
-		#@inches = (1..12).to_a
-		#@feet  = [["Feet",0]]
-		#(1..7).to_a.each {|feet| @feet << [feet,feet]}
+	  	
 
 
 	end #end validate_step_one
@@ -217,7 +213,7 @@ class ReturnsController < ApplicationController
 	  	
 
 		total_amount = 0.00;
-		#order_items_to_save = []
+		# here we valdiate that the amount of products being returned is valid
 		@order_items.each do |item|
 			iid = item[:id].to_s
 			if(@counts[item[:id].to_s] > item[:quantity])
@@ -313,19 +309,8 @@ class ReturnsController < ApplicationController
 
 	end
 
-	def shipping_label
-		
-		if(!session.has_key?(:return_order_id) || !session.has_key?(:referrer) || session[:referrer]!="final_step")
-			redirect_to action:"index", controller:"returns" and return
-		end
-		session.delete(:referrer)
-
-		flash[:referrer] = "success"
-	end
-
-
-	def success_confirmation		
-		#session[:return_order_id] = 1
+	def confirm
+			#session[:return_order_id] = 1
 		if(flash[:referrer]) && flash[:referrer]=="success" && session.has_key?(:return_order_id)
 			@return = ReturnOrders.find(session[:return_order_id])
 			@order = Order.find(@return.order_id)
@@ -333,6 +318,21 @@ class ReturnsController < ApplicationController
 		else
 			redirect_to all_returns_returns_path and return
 		end
+	end
+
+	def shipping_label
+		
+		if(!session.has_key?(:return_order_id) || !session.has_key?(:referrer) || session[:referrer]!="final_step")
+			redirect_to action:"index", controller:"returns" and return
+		end
+		session.delete(:referrer)
+		#session.delete(:return_order_id)
+		flash[:referrer] = "success"
+	end
+
+
+	def success_confirmation		
+	
 	end
 	
 
@@ -363,6 +363,8 @@ class ReturnsController < ApplicationController
 		@return_item_pins = ReturnItemPin.all	
 
 		@quantity_returns = QuantityReturn.all
+
+
 		
 	end
 
@@ -390,4 +392,30 @@ class ReturnsController < ApplicationController
 
 	end
   
+  	private
+
+  	def validate_order_items(order_num,order_item_ids)
+  		order = Order.where("order_num = ? ",order_num).take
+  		order_items = OrderItem.find(order_item_ids)
+  		counts = Hash.new(0)
+	  	order_item_ids.each {|oid| counts[oid.to_i]+=1}
+	  	errors = Array.new
+	  	
+		order_items.each do |item|
+	  		qty_r = order.quantity_returns.where(order_item_id: item.id).first
+	  		quantity = (qty_r.nil?) ? 0 : ( (qty_r[:quantity]==nil) ? 0 : qty_r[:quantity] )
+	  	
+	  		# make sure order item exists for the order
+	  		if item[:order_id]!=@order[:id] 
+	  			errors << "some selected items do not exist for the order "+session[:order_num]
+	  		end
+	  		# make sure number of items to be returned is less than or equal to the quantity bought minus items already returned for the same product
+	  		if (item[:quantity] - (quantity || 0) ) < counts[item[:id]]
+	  			errors << "invalid quantity amount for " + item[:product_name];
+	  			
+	  		end
+	  	end
+	  	flash[:errors] = errors
+	  	errors.empty?
+  	end
 end

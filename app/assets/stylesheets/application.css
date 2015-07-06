@@ -590,7 +590,7 @@ div.instructions ul {
 	margin-top: 8px;
 }
 .close-btn-container .cd-close-popup {
-	font-family: HelveticaNeueLite;
+	/*font-family: HelveticaNeueLite;*/
 	font-size: 10.99pt;
 	color: #808080;
 	cursor: pointer;
