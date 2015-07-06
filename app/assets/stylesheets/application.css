@@ -14,43 +14,44 @@
 
 @font-face {
 	font-family: AbrilDisplayItalic;
-	src: url("AbrilDisplayItalic.otf");
+	src: url("https://s3-us-west-1.amazonaws.com/tadashi-rma-fonts/AbrilDisplayItalic.otf");
 }
 @font-face {
 	font-family: AbrilDisplayRegular;
-	src: url("AbrilDisplayRegular.otf");
+	src: url("https://s3-us-west-1.amazonaws.com/tadashi-rma-fonts/AbrilDisplayRegular.otf");
 }
 @font-face {
 	font-family: HelveticaInseratRoman;
-	src: url("HelveticaInseratRoman.otf");
+	src: url("https://s3-us-west-1.amazonaws.com/tadashi-rma-fonts/HelveticaInseratRoman.otf");
 }
 
 @font-face {
 	font-family: HelveticaNeueUltLt;
-	src: url("HelveticaNeueLTStd-UltLt.otf");
+	src: url("https://s3-us-west-1.amazonaws.com/tadashi-rma-fonts/HelveticaNeueLTStd-UltLt.otf");
 }
-
+/*
 @font-face {
 	font-family: HelveticaNeueEx;
-	src: url("HelveticaNeueLTStd-Ex.otf");
-}
-
+	src: url("https://s3-us-west-1.amazonaws.com/tadashi-rma-fonts/HelveticaNeueLTStd-Ex.otf");
+}*/
+/*
 @font-face {
 	font-family: HelveticaNeueThEx;
-	src: url("HelveticaNeueLTStd-ThEx.otf");
-}
-
+	src: url("https://s3-us-west-1.amazonaws.com/tadashi-rma-fonts/HelveticaNeueLTStd-ThEx.otf");
+}*/
+/*
 @font-face {
 	font-family: HelveticaNeueRoman;
-	src: url("HelveticaNeueLTStd-Roman.otf");
-}
+	src: url("https://s3-us-west-1.amazonaws.com/tadashi-rma-fonts/HelveticaNeueLTStd-Roman.otf");
+}*/
+
 @font-face {
 	font-family: HelveticaNeueLite;
-	src: url("HelveticaNeueLTStd-Lt.otf");
+	src: url("https://s3-us-west-1.amazonaws.com/tadashi-rma-fonts/HelveticaNeueLTStd-Lt.otf");
 }
 @font-face {
 	font-family: HelveticaNeueMedium;
-	src: url("HelveticaNeueLTStd-Md.otf");
+	src: url("https://s3-us-west-1.amazonaws.com/tadashi-rma-fonts/HelveticaNeueLTStd-Md.otf");
 }
 .container {
 	margin: 0 auto;
