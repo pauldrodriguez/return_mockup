@@ -60,7 +60,7 @@ class ReturnsController < ApplicationController
   		if(!session.has_key?(:order_num))
   			errors << "the order number is invalid."
   			flash[:errors] = errors
-  			redirect_to actionL "index",controller: "returns" and return
+  			redirect_to action: "index",controller: "returns" and return
   		end
 
 	  	@order = Order.where("order_num = ? ",session[:order_num]).take
