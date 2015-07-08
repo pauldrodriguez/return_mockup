@@ -46,7 +46,7 @@
 		<div class="red"><%= @all_errors.join("<br />").html_safe %></div>
 		<% end %>
 
-		<h3>Please Select the Item(s) You Would Like to Return</h3>
+		<h3><b>Please Select the Item(s) You Would Like to Return</b></h3>
 		<% #test_qty_returned = OrderItemQuantityReturned.where(:order_id=>1,:order_item_id=>1).first %>
 
 		<%= form_tag({controller:"returns", action: "validate_orders"},method: "post",id: "items-form") do %>
@@ -68,7 +68,7 @@
 							</div>
 							<div class="prod-desc">
 								<p class="sub-section-header"><b><%= item.product_name %></b></p>
-								<p><%= item.product.sku%></p>
+								<p class="sku-title"><%= item.product.sku%></p>
 								<p><%= number_to_currency(item[:price]) %></p>
 								<br>
 							</div>

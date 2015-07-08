@@ -90,7 +90,7 @@
 	}
 	.sub-sidebar-section-info span {
 		font-family: HelveticaNeueLite;
-		font-size: 10.99pt;
+		font-size: 8.99pt;
 	}
 	/*#main-container {
 		margin-left: 20em;
@@ -187,7 +187,7 @@
 		padding-left: 9px;
 		/*margin-top: 17.28px;*/
 		display: inline-block;
-		border-left: solid 1px #bbb;
+		border-left: solid 1px #d5d4d4;
 		vertical-align: top;
 		width: 72.6%;
 		padding-top: 20px;
@@ -196,7 +196,7 @@
 		margin-bottom: 20px;
 		margin-left: 4px;
 		font-family: AbrilDisplayItalic;
-		font-size: 15pt;
+		font-size: 13pt;
 		margin-top: 0;
 		/*font-style: italic;*/
 	}
@@ -458,7 +458,7 @@ div.product-sidebar-wrapper {
 
 
 .main-cont-step-one {
-	border: 1px solid #bbb;
+	border: 1px solid #d5d4d4;
 	background: #F4F2F3;
 	text-align: left;
 }
@@ -699,8 +699,8 @@ a.no-background-color:hover {
 }
 .sub-section-header {
 	font-family: HelveticaNeueMedium !important;
-	font-size: 10.99pt;
-
+	font-size: 8.99pt;
+	margin-bottom: -3px;
 }
 .order-item-desc p {
 	font-family: HelveticaNeueLite;
@@ -745,3 +745,10 @@ a.no-background-color:hover {
 	#finish-return {
 		float: right;
 	}
+
+.prod-desc .sub-section-header {
+	margin-bottom: 2px;
+}
+.prod-desc .sku-title {
+	margin-bottom: 2px;
+}
