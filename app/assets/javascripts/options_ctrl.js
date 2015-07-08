@@ -74,7 +74,7 @@ var OptionsCtrl = function() {
 				options_available = oThis.build_list(groups_to_show);
 
 		    	if(options_available) {
-		    		oThis.options_elem.append($("<li />").append($("<a href=\"#0\" class=\"cd-popup-close clear-choice\" data-group-id=\"0\" data-attribute-id=\"0\" />").html("clear")));
+		    		oThis.options_elem.append($("<li />").append($("<a href=\"#0\" class=\"cd-popup-close clear-choice\" data-group-id=\"0\" data-attribute-id=\"0\" />").html("clear X")));
 		    		oThis.options_elem.closest(".cd-popup").addClass("is-visible");
 		    	}
 	    	}
