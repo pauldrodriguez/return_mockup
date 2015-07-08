@@ -322,12 +322,12 @@ class ReturnsController < ApplicationController
 
 	def shipping_label
 		
-		if(!session.has_key?(:return_order_id) || !session.has_key?(:referrer) || session[:referrer]!="final_step")
-			redirect_to action:"index", controller:"returns" and return
-		end
-		session.delete(:referrer)
+		#if(!session.has_key?(:return_order_id) || !session.has_key?(:referrer) || session[:referrer]!="final_step")
+		#	redirect_to action:"index", controller:"returns" and return
+		#end
+		#session.delete(:referrer)
 		#session.delete(:return_order_id)
-		flash[:referrer] = "success"
+		#flash[:referrer] = "success"
 	end
 
 

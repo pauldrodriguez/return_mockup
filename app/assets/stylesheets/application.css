@@ -364,7 +364,7 @@ div.form-wrapper {
 }
 
 #review-form .product-container {
-	border: 1px solid #bbb;
+	border: 1px solid #d5d4d4;
 	background: #F4F2F3;
 	width: 643px;
 	margin: 0 auto;
@@ -377,7 +377,7 @@ div.form-wrapper {
 .product-sidebar {
 	display: inline-block;
 	width:205px;
-	border-right: 1px solid #bbb;
+	border-right: 1px solid #d5d4d4;
 }
 .product-content {
 	display: inline-block;
@@ -487,7 +487,7 @@ div.product-sidebar-wrapper {
 
 #success-content h5 {
 	font-family: AbrilDisplayItalic;
-	font-size: 14pt;
+	font-size: 12pt;
 }
 
 #success-content .container-right img {
@@ -496,7 +496,7 @@ div.product-sidebar-wrapper {
 
 #success-content h2, #success-content h3 {
 	font-family: AbrilDisplayItalic;
-	font-size: 40pt;
+	margin-top: 40px;
 	font-size: 28pt;
 }
 
@@ -570,7 +570,7 @@ div.instructions {
 	margin-left: 293px;
 	display: inline-block;
 	font-family: HelveticaNeueLite;
-	font-size: 10.99pt;
+	font-size: 8.99pt;
 	margin-top: 5px;
 }
 
@@ -643,7 +643,7 @@ a.no-background-color:hover {
 	.product-content .review-header {
 		font-family: AbrilDisplayItalic;
 		display: block;
-		font-size: 13pt
+		font-size: 13pt;
 		margin-bottom: 10px;
 		margin-top: 0;
 	}
@@ -752,6 +752,7 @@ a.no-background-color:hover {
 
 	#finish-return {
 		float: right;
+		margin-right: 8em;
 	}
 
 .prod-desc .sub-section-header {
