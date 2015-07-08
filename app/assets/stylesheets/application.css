@@ -224,7 +224,7 @@
 	
 	.prod-desc p {
 		font-family: HelveticaNeueLite;
-		font-size: 10.99pt;
+		font-size: 8.99pt;
 	}
 	
 	.product-order-item .img-container .checkbox-label {
@@ -639,8 +639,9 @@ a.no-background-color:hover {
 	.product-content .review-header {
 		font-family: AbrilDisplayItalic;
 		display: block;
-		font-size: 14.99pt;
+		font-size: 13pt
 		margin-bottom: 10px;
+		margin-top: 0;
 	}
 
 	#review-form .product-content {
