@@ -410,6 +410,7 @@ div.product-sidebar-wrapper {
 	width: 100%;
 	padding-left: 15px;
 	/*margin: 0 auto;*/
+	padding-bottom: 12px;
 
 }
 
@@ -496,19 +497,20 @@ div.product-sidebar-wrapper {
 #success-content h2, #success-content h3 {
 	font-family: AbrilDisplayItalic;
 	font-size: 40pt;
+	font-size: 28pt;
 }
 
 #success-content h3 {
 	margin-top: 0;
 	margin-bottom: 25px;
-	font-size: 26.99pt;
+	font-size: 19.99pt;
 }
 #success-content .instructions-message {
-	font-size: 10.99pt;
+	font-size: 8.99pt;
 	font-family: HelveticaNeueLite;
 }
 #success-content .returns-policy {
-	font-size: 10pt;
+	font-size: 8pt;
 	color: #808080;
 	margin-top: 20px;
 	margin-bottom: 30px;
@@ -569,7 +571,9 @@ div.instructions {
 	display: inline-block;
 	font-family: HelveticaNeueLite;
 	font-size: 10.99pt;
+	margin-top: 5px;
 }
+
 div.instructions.instructions-popup {
 	position: relative;
 	margin-left: 0;
@@ -577,11 +581,11 @@ div.instructions.instructions-popup {
 }
 div.instructions span {
 	font-family: AbrilDisplayItalic;
-	font-size: 20pt;
+	font-size: 17pt;
 }
 div.instructions li {
 	font-family: HelveticaNeueLite;
-	font-size: 10.99pt;
+	font-size: 8.99pt;
 }
 div.instructions ul {
 	list-style: decimal inside;
@@ -646,7 +650,7 @@ a.no-background-color:hover {
 
 	#review-form .product-content {
 		padding: 20px 0 0 20px;
-		font-size: 10.99pt;
+		font-size: 8.99pt;
 		font-family: HelveticaNeueLite;
 	}
 
@@ -670,7 +674,7 @@ a.no-background-color:hover {
 
 	.checkbox-label-reason+span {
 		font-family: HelveticaNeueLite;
-		font-size: 10.99pt;
+		font-size: 8.99pt;
 		padding-bottom: 20px;
 		vertical-align: top;
 	}
@@ -684,8 +688,8 @@ a.no-background-color:hover {
 		top: 0;
 		left: 0;
 		display: inline-block;
-		width: 15px;
-		height: 15px;
+		width: 14px;
+		height: 14px;
 		border: 1px solid rgb(167,167,167);
 		border-radius: 4px;
 		background: transparent;
@@ -705,7 +709,8 @@ a.no-background-color:hover {
 }
 .order-item-desc p {
 	font-family: HelveticaNeueLite;
-	font-size: 10.99pt;	
+	font-size: 8.99pt;	
+	margin-bottom: 2px;
 }
 
 .step-one-bottom-text {
@@ -717,7 +722,7 @@ a.no-background-color:hover {
 
 .final-steps-section .shipping-instructions-content {
 	font-family: HelveticaNeueLite;
-	font-size: 10.99pt;
+	font-size: 8.99pt;
 }
 
 
@@ -725,18 +730,20 @@ a.no-background-color:hover {
 		border-top: 1px solid rgb(206,206,206);
 		text-align: justify;
 		padding: 15px 0;
+		width: 643px;
+		margin: 0 auto;
 	}
 
 	.container-left	{
 		display: inline-block;
-		width: 22em;
+		width: 15em;
 		text-align: right;
 		vertical-align: top;
 	}
 	.container-right {
 		display: inline-block;
 		vertical-align: top;
-		width: 51%;
+		width: 58%;
 		padding-left: 4em;
 	}
 	.container-right div:last {
@@ -751,5 +758,9 @@ a.no-background-color:hover {
 	margin-bottom: 2px;
 }
 .prod-desc .sku-title {
+	margin-bottom: 2px;
+}
+
+.order-item-desc p.sub-section-header {
 	margin-bottom: 2px;
 }
