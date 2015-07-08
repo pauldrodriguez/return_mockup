@@ -202,7 +202,7 @@
 	}
 	.container > .header {
 		font-family: AbrilDisplayItalic;
-		font-size: 26pt;
+		font-size: 20pt;
 		text-align: center;
 		display: block;
 		margin-top: 10px;
@@ -302,49 +302,50 @@
 
 	
 	div.container > hr {
-		width: 27em;
-		border: 1px solid #F4F2F3;
+		width: 23em;
+		border: 1px solid #d5d4d4;
 		background: rgb(213,213,213);
 	}
 
 div.form-wrapper {
 	margin:	0 auto;
-	width: 34em;
-	border: 1px solid #bbb;
+	width: 29em;
+	border: 1px solid #d5d4d4;
 	text-align: center;
 	background: rgb(244,242,243);/*#F4F2F3;*/
 	margin-top: 29px;
 }
 
 .links-block {
-	margin-bottom: 1.9em;
+	margin-bottom: 2.3em;
 	color: #808080;
 	text-decoration: underline;
 	cursor: pointer;
 }
 .links-block p {
-	font-size: 11pt;
+	font-size: 8pt;
+	color: #d5d4d4;
 }
 .form-header {
 	font-family: AbrilDisplayItalic;
-	font-size: 14.99pt;
-	margin-top: 1.5em;
+	font-size: 12.99pt;
+	margin-top: 1.6em;
 	margin-bottom: 1.5em;	
 }
 .field-container {
-	margin-bottom: 1.7em;
+	margin-bottom: 2.5em;
 }
 .index-page-header {
 	text-align: center;
 	font-family: AbrilDisplayRegular;
-	font-size: 14.99pt;
+	font-size: 13pt;
 }
 #order-return-form button {
 	font-size: 10pt;
 	background: rgb(244,242,243);
 	border: none;
 	color: white;
-	padding: 0 10px;
+	padding: 0 4px;
 	cursor: pointer;
 }
 
@@ -352,6 +353,9 @@ div.form-wrapper {
 	font-size: 10.1pt;
 	padding: 3.5px 10px;
 	vertical-align: top;
+	border: 1px solid #dfdfdf;
+	height: 30px;
+	width: 192px;
 }
 
 #header {
@@ -704,7 +708,7 @@ a.no-background-color:hover {
 }
 
 .step-one-bottom-text {
-	font-size: 10.99pt;
+	font-size: 8pt;
 	font-family: HelveticaNeueLite;
 	text-align: center;
 	margin-top: 18px;
