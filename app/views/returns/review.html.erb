@@ -63,7 +63,7 @@
 										<li>
 											<label class="checkbox-label-reason"></label>
 											<span><%= cobj[:attr_name] %></span>
-											<input type="checkbox" name="return_attributes[<%= item[:id]%>][<%= times %>][]" value="<%= cobj[:id] %>" data-attr_name="<%= cobj[:code_name] %>" />
+											<input class="<%= cobj[:code_name] %>" type="checkbox" name="return_attributes[<%= item[:id]%>][<%= times %>][]" value="<%= cobj[:id] %>" data-attr_name="<%= cobj[:code_name] %>" />
 											
 										</li>
 									<% end %>
@@ -82,7 +82,7 @@
 
 			<div class="fit-issues-container review-box" id="fit-issues-box" data-order-item-id="" data-quantity-counter="">
 				<div class="instructions">
-					<span>Drop a Pin</span>
+					<span>Drop a Pin <img class="pin-img" src="<%= image_url("pin.gif"); %>" height="25" width="25" /></span>
 					<ul>
 						<li>Click where it doesnt fit to drop a pin.</li>
 						<li>Select fit issue(s) from pop-up menu.</li>
@@ -105,7 +105,9 @@
 	</div>
 	<div id="footer">
 			<a href="#" class='previous-options review-page no-background-color'><img src="<%= image_url("arrow_Previous.gif") %>" /></a>
-			<button id="continue-btn" class="next-btn review-page"><img src="<%= image_url("arrow_Continue.gif") %>" /></button></div>
+			<button id="continue-btn" class="next-btn review-page"><img class="continue-btn-img active" src="<%= image_url("arrow_Continue.gif") %>" />
+				<img class="last-review-box-img" src="<%= image_url("confirmAndShip.gif") %>" />
+			</button></div>
 			</div>
 </div>
 
@@ -221,6 +223,28 @@ function build_fields() {
 
 	$("#review-form").submit();
 }
+
+/***
+this will check if the current box is the last one displaying
+**/
+function is_active_box_last() {
+	var curr_box = $("div.review-box-active");
+
+	if(curr_box.length) {
+		if(curr_box.hasClass("product-container") && curr_box.hasClass("last-container") && curr_box.find("input.fitissues").length && !curr_box.find("input.fitissues").is(":checked")) {
+			$(".continue-btn-img").removeClass("active");
+			$(".last-review-box-img").addClass("active");
+		} 
+		else if(curr_box.hasClass("fit-issues-container") && curr_box.hasClass("last-container")) {
+			$(".continue-btn-img").removeClass("active");
+			$(".last-review-box-img").addClass("active");
+		}
+		else {
+			$(".continue-btn-img").addClass("active");
+			$(".last-review-box-img").removeClass("active");
+		}
+	}
+}
 //var groups_selected = Ar;
 </script>
 
@@ -302,6 +326,7 @@ $(document).ready(function () {
 		canvas_ctrl.clear_canvas();
 		canvas_ctrl.redraw();
 		canvas_ctrl.draw_images();
+		is_active_box_last();
 	});
 
 	// if active box is for product checkbox review, check if at least one is filled out
@@ -324,6 +349,12 @@ $(document).ready(function () {
 				});
 
 				if(show_fit_issues) {
+					if(curr_box.hasClass("last-container")) {
+						$("#fit-issues-box").addClass("last-container");
+					} else {
+						$("#fit-issues-box").removeClass("last-container");
+
+					}
 						/*
 						Code to show instructions. dont need it now
 						if(can_show_instructions) {
@@ -396,6 +427,7 @@ $(document).ready(function () {
 				}
 			}
 		}
+		is_active_box_last();
 	});
 	
 	$(".checkbox-label-reason").on("click",function() {
@@ -406,6 +438,7 @@ $(document).ready(function () {
 			$(this).addClass("active");
 			$(this).closest("li").find("input").prop("checked",true);
 		}
+		is_active_box_last();
 
 		/*if($("#review-form").find("input[type='checkbox']:checked").length) {
 			$("#review-form button").prop("disabled",false);
@@ -414,7 +447,7 @@ $(document).ready(function () {
 			$("#review-form button").prop("disabled",true);
 		}*/
 	});
-
+is_active_box_last();
 	//squares_ctrl.recompute_pos();
 	//	squares_ctrl.draw_areas();
 
@@ -430,7 +463,7 @@ $(document).ready(function() {
 
 		canvas_ctrl.resize_canvas();
 		squares_ctrl.recompute_pos();
-		squares_ctrl.draw_areas();
+	//	squares_ctrl.draw_areas();
 	}
 });
 </script>

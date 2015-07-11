@@ -125,7 +125,9 @@
 		$("#items-form").submit();
 	});
 
-	$(".checkbox-label").on("click",function() {
+	$(".checkbox-label").on("click",function(e) {
+		//console.log("test");
+		e.stopPropagation();
 		if($(this).hasClass("active")) {
 			$(this).removeClass("active");
 			$(this).prev("input").prop("checked",false);
@@ -140,7 +142,30 @@
 		else {
 			$("#submit-btn").prop("disabled",true);
 		}
+
 		//console.log($("#items-form").find("input[type='checkbox']:checked"));
+	});
+
+
+	$(".product-order-item .img-container").on("click",function(e) {
+		//console.log("checkbix label in img container");
+		e.stopPropagation();
+		var label = $(this).find(".checkbox-label");
+		if(!label.length) {return;}
+		if(label.hasClass("active")) {
+			label.removeClass("active");
+			label.prev("input").prop("checked",false);
+		} else {
+			label.addClass("active");
+			label.prev("input").prop("checked",true);
+		}
+		console.log($("#items-form").find("input[type='checkbox']:checked").length);
+		if($("#items-form").find("input[type='checkbox']:checked").length) {
+			$("#submit-btn").prop("disabled",false);
+		}
+		else {
+			$("#submit-btn").prop("disabled",true);
+		}
 	});
 </script>
 

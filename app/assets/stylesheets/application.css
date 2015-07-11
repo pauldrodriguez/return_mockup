@@ -240,7 +240,10 @@
 	}
 
 	.product-order-item .img-container .checkbox-label.active:before {
-		background: #000;
+		/*background: #000;*/
+		background: url("CHECK.png");
+		background-size: 16px 13px;
+		background-repeat: no-repeat;
 	}
 
 
@@ -263,6 +266,7 @@
 		width: 100%;
 		position: relative;
 		vertical-align: top;
+		cursor: pointer;
 	}
 
 	.product-order-item img {
@@ -671,7 +675,9 @@ a.no-background-color:hover {
 		visibility: hidden;
 		position: absolute;
 	}
-
+	.checkbox-label-reason {
+		cursor: pointer;
+	}
 	.checkbox-label-reason+span {
 		font-family: HelveticaNeueLite;
 		font-size: 8.99pt;
@@ -765,3 +771,16 @@ a.no-background-color:hover {
 .order-item-desc p.sub-section-header {
 	margin-bottom: 2px;
 }
+
+.pin-img {
+	margin-bottom: 5px;
+}
+
+.continue-btn-img.active {
+	display: inline-block;
+}
+.continue-btn-img {display:none;}
+.last-review-box-img.active {
+	display: inline-block;
+}
+.last-review-box-img{display: none;}
