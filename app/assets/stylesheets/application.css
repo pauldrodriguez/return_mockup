@@ -241,9 +241,9 @@
 
 	.product-order-item .img-container .checkbox-label.active:before {
 		/*background: #000;*/
-		background: url("CHECK.png");
+		/*background: url("CHECK.png");
 		background-size: 16px 13px;
-		background-repeat: no-repeat;
+		background-repeat: no-repeat;*/
 	}
 
 
@@ -784,3 +784,14 @@ a.no-background-color:hover {
 	display: inline-block;
 }
 .last-review-box-img{display: none;}
+
+.product-order-item img.checkbox-label-img {
+	display: none;
+}
+.product-order-item img.checkbox-label-img.active {
+	display: inline-block;
+	position: absolute;
+	right: 0;
+	top: 1px;
+	z-index: 11;
+}

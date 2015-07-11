@@ -65,6 +65,7 @@
 								<img width="260" height="390" src="<%= image_url(item.product.image_front) %>" />
 								<input type="checkbox" name="order_items[]" value="<%= item[:id] %>" />
 								<label class="checkbox-label"></label>
+								<img class="checkbox-label-img" width="20" height="17" src="<%= image_url("CHECK.png") %>" />
 							</div>
 							<div class="prod-desc">
 								<p class="sub-section-header"><b><%= item.product_name %></b></p>
@@ -128,12 +129,15 @@
 	$(".checkbox-label").on("click",function(e) {
 		//console.log("test");
 		e.stopPropagation();
-		if($(this).hasClass("active")) {
-			$(this).removeClass("active");
-			$(this).prev("input").prop("checked",false);
+		var label = $(this);
+		if(label.hasClass("active")) {
+			label.removeClass("active");
+			label.prev("input").prop("checked",false);
+			label.next("img").removeClass("active");
 		} else {
-			$(this).addClass("active");
-			$(this).prev("input").prop("checked",true);
+			label.addClass("active");
+			label.prev("input").prop("checked",true);
+			label.next("img").addClass("active");
 		}
 		console.log($("#items-form").find("input[type='checkbox']:checked").length);
 		if($("#items-form").find("input[type='checkbox']:checked").length) {
@@ -155,9 +159,11 @@
 		if(label.hasClass("active")) {
 			label.removeClass("active");
 			label.prev("input").prop("checked",false);
+			label.next(".checkbox-label-img").removeClass("active");
 		} else {
 			label.addClass("active");
 			label.prev("input").prop("checked",true);
+			label.next(".checkbox-label-img").addClass("active");
 		}
 		console.log($("#items-form").find("input[type='checkbox']:checked").length);
 		if($("#items-form").find("input[type='checkbox']:checked").length) {
