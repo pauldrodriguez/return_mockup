@@ -21,17 +21,98 @@
 
 
 <script type="text/javascript">
+var Rectangle = function() {
+	var oThis = this;
+	this.x = 0;
+	this.y = 0;
+	this.width = 1;
+	this.height = 1;
+	this.canvas_width = 0;
+	this.canvas_height = 0;
+	this.fill = '#444444';
+	this.id = 0;
+	this.print = function() {
+		console.log(oThis.x);
+		console.log(oThis.y);
+		console.log(oThis.width);
+		console.log(oThis.height);
+	};
+
+	this.draw = function(ctx) {
+		ctx.fillStyle = oThis.fill;
+		ctx.fillRect(oThis.x,oThis.y,oThis.width,oThis.height);
+	};
+};
+
+var SelectedRectangle = function() {
+	this.rect    = null;
+	this.color   = '#CC0000';
+	this.width   = 2;
+	this.offsetx = 0;
+	this.offsety = 0;
+	this.index   = -1;
+};
+
 var CanvasBlock = function() {
 	var oThis = this;
-	this.curr_point_draw = 0;
-	this.first_point_draw = null;
-	this.second_point_draw = null;
 
-	this.rectangles = Array();
-	this.canvas_id = null;
-	
+	this.curr_point_draw    = 0;
+	this.first_point_draw   = null;
+	this.second_point_draw  = null;
+
+	this.rectangles   = Array();
+	this.canvas_id    = null;
+	this.sel_rect     = null;
+
+	this.dragging   = false;
+
+	this.canvas_valid = false;
+
+	this.draw_rectangles = function() {
+		if(oThis.canvas_valid) {return;}
+		//console.log(oThis.canvas_valid);
+		//console.log("draw");
+		var context = document.getElementById(oThis.canvas_id).getContext("2d");
+		//clear(context);
+		context.clearRect(0, 0, 1000, 1000);
+		//console.log('draw');
+		//context.clear();
+		for(var i = 0; i < oThis.rectangles.length; i++) {
+			oThis.rectangles[i].draw(context);
+			
+		}
+
+		if(oThis.sel_rect!==null) {
+			console.log("no selected rectangle");
+			context.strokeStyle = oThis.sel_rect.color;
+			context.lineWidth = oThis.sel_rect.width;
+			context.strokeRect(oThis.sel_rect.rect.x, oThis.sel_rect.rect.y,oThis.sel_rect.rect.width,oThis.sel_rect.rect.height);
+		}
+
+		/*if(oThis.first_point_draw!==null) {
+			context.beginPath();
+			context.arc(oThis.first_point_draw.x,oThis.first_point_draw.y,5,0,2*Math.PI);
+			context.stroke();
+		}
+		if(oThis.second_point_draw!==null) {
+			context.beginPath();
+			context.arc(oThis.second_point_draw.x,oThis.second_point_draw.y,5,0,2*Math.PI);
+			context.stroke();
+		}*/
+		oThis.canvas_valid = true;
+		//console.log("canvas valid: " +oThis.canvas_valid);
+	};
+
+	this.draw_rectangle = function(rect) {
+		rect.print();
+		var context = document.getElementById(oThis.canvas_id).getContext("2d");
+		console.log(context);
+		context.fillStyle = rect.fill;
+		context.fillRect(rect.x,rect.y,rect.width,rect.height);
+	};
 
 	this.get_mouse_pos = function(canvas, evt) {
+		console.log(canvas);
 	    var rect = canvas.getBoundingClientRect();
 	    return {
 	      x: evt.clientX - rect.left,
@@ -42,84 +123,133 @@ var CanvasBlock = function() {
 	this.calculate_vector = function(p1,p2) {
 		var vx = p2.x-p1.x;
 		var vy = p2.y-p1.y;
-		return {vecx: vx, vecy: vy};
+		return {vx: vx, vy: vy};
 	};
 
-	this.calculate_upper_left = function(p1,p2) {
+	this.create_rectangle = function(p1,p2) {
 		var vector = oThis.calculate_vector(p1,p2);
-		var upper_left = {};
+
+		var rect = new Rectangle();
+	
 		//  first point is upper left
 		if(vector.vx>0 && vector.vy>0)  {
-			upper_left.x = p1.x;
-			upper_left.y = p1.y;
-			upper_left.canvas_width = $("#"+oThis.canvas_id).attr("width");
-			upper_left.canvas_height = $("#"+oThis.canvas_id).attr("height");
-			upper_left.width = Math.abs(vx);
-			upper_left.height = Math.abs(vy);
+			rect.x = p1.x;
+			rect.y = p1.y;
+			rect.canvas_width  = $("#"+oThis.canvas_id).attr("width");
+			rect.canvas_height = $("#"+oThis.canvas_id).attr("height");
+			rect.width  = Math.abs(vector.vx);
+			rect.height = Math.abs(vector.vy);
 		}
 		// second point is upper left
 		else if(vector.vx<0 && vector.vy<0) {
-			upper_left.x = p2.x;
-			upper_left.y = p2.y;
-			upper_left.canvas_width = $("#"+oThis.canvas_id).attr("width");
-			upper_left.canvas_height = $("#"+oThis.canvas_id).attr("height");
-			upper_left.width = Math.abs(vx);
-			upper_left.height = Math.abs(vy);
+			rect.x = p2.x;
+			rect.y = p2.y;
+			rect.canvas_width  = $("#"+oThis.canvas_id).attr("width");
+			rect.canvas_height = $("#"+oThis.canvas_id).attr("height");
+			rect.width  = Math.abs(vector.vx);
+			rect.height = Math.abs(vector.vy);
+
 		}
 
 		// points are at lower left and upper right with arrow pointing to upper right
 		else if(vector.vx>0 && vector.vy<0) {
-
-			upper_left.x = p1.x;
-			upper_left.y = p1.y+vector.vy;
-			upper_left.canvas_width = $("#"+oThis.canvas_id).attr("width");
-			upper_left.canvas_height = $("#"+oThis.canvas_id).attr("height");
-			upper_left.width = Math.abs(vx);
-			upper_left.height = Math.abs(vy);
+			rect.x = p1.x;
+			rect.y = p1.y+vector.vy;
+			rect.canvas_width  = $("#"+oThis.canvas_id).attr("width");
+			rect.canvas_height = $("#"+oThis.canvas_id).attr("height");
+			rect.width  = Math.abs(vector.vx);
+			rect.height = Math.abs(vector.vy);
 		}
 		// points are at lower left and upper right with arrow pointing to lower left
 		else if(vector.vx<0 && vector.vy>0) {
-			upper_left.x = p2.x;
-			upper_left.y = p2.y+vector.vy;
-			upper_left.canvas_width = $("#"+oThis.canvas_id).attr("width");
-			upper_left.canvas_height = $("#"+oThis.canvas_id).attr("height");
-			upper_left.width = Math.abs(vx);
-			upper_left.height = Math.abs(vy);
+			rect.x = p2.x;
+			rect.y = p2.y-vector.vy;
+			rect.canvas_width  = $("#"+oThis.canvas_id).attr("width");
+			rect.canvas_height = $("#"+oThis.canvas_id).attr("height");
+			rect.width  = Math.abs(vector.vx);
+			rect.height = Math.abs(vector.vy);
 		}
+		//rect.print();
+		return rect;
 	};
 
+	this.click_inside_rectangle = function(canvas,evt) {
+		var mouse_pos = oThis.get_mouse_pos(canvas,evt);
+		for(var i = 0; i < oThis.rectangles.length; i++) {
+			var rect = oThis.rectangles[i];
+			console.log(rect);
+			if(mouse_pos.x > rect.x && mouse_pos.y > rect.y && mouse_pos.x<(rect.x+rect.width) && mouse_pos.y < (rect.y+rect.height) ) {
+				oThis.sel_rect = new SelectedRectangle();
+				oThis.sel_rect.index = i;
+				oThis.sel_rect.rect = rect;
+
+				offsetx = mouse_pos.x - rect.x;
+				offsety = mouse_pos.y - rect.y;
+
+				oThis.sel_rect.rect.x  = mouse_pos.x - offsetx;
+				oThis.sel_rect.rect.y  = mouse_pos.y - offsety;
+				oThis.sel_rect.offsety = offsetx;
+				oThis.sel_rect.offsety = offsety;
+				oThis.canvas_valid = false;
+				oThis.dragging = true;
+				console.log("found rectangle");
+				return 1;
+			}
+		}
+		oThis.sel_rect = null;
+		oThis.dragging = false;
+		oThis.canvas_valid = false;
+		return 0;
+	};
 
 	this.init = function() {
-		$("#"+oThis.canvas_id).on("click",function(evt) {
+		setInterval(oThis.draw_rectangles,100);
+		$("#"+oThis.canvas_id).on("mousedown",function(evt) {
+			var canvas = document.getElementById(oThis.canvas_id);
+	
+			if(oThis.click_inside_rectangle(canvas,evt)) {return;}
+			if(oThis.dragging) {return;}
 			if(oThis.curr_point_draw === 0 ) {
 				oThis.curr_point_draw++;
-				oThis.first_point_draw = oThis.get_mouse_pos($(this)[0],evt);
+				oThis.first_point_draw = oThis.get_mouse_pos(canvas,evt);
 			} else if(oThis.curr_point_draw === 1) {
 				oThis.curr_point_draw++;
-				oThis.second_point_draw = oThis.get_mouse_pos($(this)[0],evt);
+				oThis.second_point_draw = oThis.get_mouse_pos(canvas,evt);
 				if(oThis.second_point_draw.x==oThis.first_point_draw.x && oThis.first_point_draw.y==oThis.second_point_draw.y) {
 					oThis.curr_point_draw--;
 					oThis.second_point_draw=null;
 				}
 			}
 
-			if(oThis.curr_point_draw==2) {
-				console.log("need to draw square here");
-				console.log(oThis.first_point_draw);
-				console.log(oThis.second_point_draw);
-				oThis.calculate_upper_left(oThis.first_point_draw,oThis.second_point_draw);
+			if(oThis.curr_point_draw===2) {
+				var rect = oThis.create_rectangle(oThis.first_point_draw,oThis.second_point_draw);
+				oThis.rectangles.push(rect);
+				oThis.canvas_valid = false;
 				oThis.curr_point_draw = 0;
 				oThis.first_point_draw = null;
 				oThis.second_point_draw = null;
 			}
+			
+			
 
+		});
+
+		$("#"+oThis.canvas_id).on("mousemove",function(evt) {
+			if(oThis.dragging) {
+				var mouse_pos = oThis.get_mouse_pos($(this)[0],evt);
+				oThis.sel_rect.rect.x = mouse_pos.x - oThis.sel_rect.offsetx;
+				oThis.sel_rect.rect.y = mouse_pos.y - oThis.sel_rect.offsety;
+				oThis.canvas_valid = false;
+			}
 		});
 
 		
 	};
-}
+};
 
-var canvas_front = new CanvasBlock();
-canvas_front.canvas_id = "image-front";
-canvas_front.init();
+$(document).ready(function() {
+	var canvas_front = new CanvasBlock();
+	canvas_front.canvas_id = "image-front";
+	canvas_front.init();
+});
 </script>
