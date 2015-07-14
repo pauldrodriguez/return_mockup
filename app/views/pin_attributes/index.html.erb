@@ -1,9 +1,9 @@
 <h1>Listing pin_attributes</h1>
 
-<table>
+<table class="table">
   <thead>
     <tr>
-      <th>Name</th>
+      <th>Group Name</th>
       <th></th>
       <th></th>
       <th></th>
@@ -14,11 +14,23 @@
     <% @pin_attributes.each do |pin_attribute| %>
       <tr>
         <td><%= pin_attribute.name %></td>
-        <td><%= pin_attribute.parent_id%></td>
+     
         <td><%= link_to 'Show', pin_attribute %></td>
         <td><%= link_to 'Edit', edit_pin_attribute_path(pin_attribute) %></td>
         <td><%= link_to 'Destroy', pin_attribute, method: :delete, data: { confirm: 'Are you sure?' } %></td>
       </tr>
+      <% if(pin_attribute.child_attributes.length) %>
+      
+         <tr><th style="text-align:center;">Child attributes</th><td colspan="3"></td></tr>
+         <% pin_attribute.child_attributes.each do |child_attr| %>
+         <tr>
+          <td colspan="2" style="text-align:center"><%= child_attr.name %></td>
+            <td><%= link_to 'Edit', edit_pin_attribute_path(child_attr) %></td>
+            <td><%= link_to 'Destroy', child_attr, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+         </tr>
+         <% end %>
+        
+      <% end %>
     <% end %>
   </tbody>
 </table>

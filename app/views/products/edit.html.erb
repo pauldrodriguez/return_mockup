@@ -243,6 +243,9 @@ var CanvasBlock = function() {
 			}
 		});
 
+		$("#"+oThis.canvas_id).on("mouseup",function(e) {
+			oThis.dragging = false;
+		});
 		
 	};
 };

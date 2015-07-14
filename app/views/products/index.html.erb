@@ -10,6 +10,7 @@
 			<th>Name</th>
 			<th>SKU</th>
 			<th>View</th>
+			<th>Edit</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -19,6 +20,7 @@
 			<td><%= obj.name %></td>
 			<td><%= obj.sku %></td>
 			<td><%= link_to "View", product_path(obj) %></td>
+			<td><%= link_to "Edit", edit_product_path(obj) %></td>
 		</tr>
 		<% end %>
 	</tbody>

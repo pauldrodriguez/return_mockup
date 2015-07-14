@@ -4,7 +4,7 @@ class PinAttributesController < ApplicationController
   # GET /pin_attributes
   # GET /pin_attributes.json
   def index
-    @pin_attributes = PinAttribute.all
+    @pin_attributes = PinAttribute.where("parent_id=?",0)
   end
 
   # GET /pin_attributes/1
