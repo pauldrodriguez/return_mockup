@@ -8,7 +8,9 @@
 		<% end %>
 	<% end %>
 <% end %>
+<%  box_areas = Hash.new %>
 
+<%= box_areas.inspect %>
 <div id="header">
 	<img src="<%= image_url("stepBar_2_2.gif") %>" />
 </div>
@@ -26,7 +28,20 @@
 		
 
 			<% @order_items.each do |item| %>
-			
+		
+			<% item.product.box_areas.each do |box_area_item| %>
+				
+				<%
+				if(!box_areas.has_key?(item.id))
+					box_areas[item.id] = {:front=>[], :back=>[]}
+				end
+				if(box_area_item[:area_box_type]=="front")
+				box_areas[item.id][:front] << {x: box_area_item[:posx], y: box_area_item[:posy], group: box_area_item[:group_id], width: box_area_item[:width], height: box_area_item[:height], cw: box_area_item[:canvas_width], ch: box_area_item[:canvas_height] }
+				elsif (box_area_item[:area_box_type]=="back")
+					box_areas[item.id][:back] << {x: box_area_item[:posx], y: box_area_item[:posy], group: box_area_item[:group_id], width: box_area_item[:width], height: box_area_item[:height], cw: box_area_item[:canvas_width], ch: box_area_item[:canvas_height] }
+				end	
+			end
+			%>
 			<% (1..@counts[item[:id]]).to_a.each do |times| %>
 
 			
@@ -150,15 +165,17 @@
 
  <%= javascript_include_tag "options_ctrl", "data-turbolinks-track" => true %>
 
+<%
 
+%>
 <script type="text/javascript">
-
-var squares = {1: { front: [{x: 145,y: 95,group: 2,width: 83, height: 100,cw: 384.8,ch: 577.2},{x: 145,y: 95,group: 3,width: 83, height: 14,cw: 384.8,ch: 577.2},{x: 145,y: 200,group: 2,width: 83, height: 30,cw: 384.8,ch: 577.2}],back:[] }
+var squares = <%= box_areas.to_json.html_safe%>;
+/*var squares = {1: { front: [{x: 145,y: 95,group: 2,width: 83, height: 100,cw: 384.8,ch: 577.2},{x: 145,y: 95,group: 3,width: 83, height: 14,cw: 384.8,ch: 577.2},{x: 145,y: 200,group: 2,width: 83, height: 30,cw: 384.8,ch: 577.2}],back:[] }
 
 ,2: { front: [{x: 140,y: 95,group: 2,width: 104, height: 100,cw: 384.8,ch: 577.2},{x: 140,y: 127,group: 3,width: 104, height: 35,cw: 384.8,ch: 577.2}],back:[] },
 
 	3: { front: [{x: 160,y: 95,group: 2,width: 80, height: 40,cw: 384.8,ch: 577.2},{x: 158,y: 122,group: 3,width: 74, height: 25,cw: 384.8,ch: 577.2}], back:[] },
-};
+};*/
 
 var images = {1: {front: "<%= image_path('img_test_front.jpeg')%>",back:"<%= image_path('img_test_back.jpeg') %>"},2: {front: "<%= image_path('img_test_front2.jpeg')%>",back:"<%= image_path('img_test_back2.jpeg') %>"},3: {front: "<%= image_path('img_test_front3.jpeg')%>",back:"<%= image_path('img_test_back3.jpeg') %>"}};
 var pins = {};
@@ -464,7 +481,7 @@ $(document).ready(function() {
 
 		canvas_ctrl.resize_canvas();
 		squares_ctrl.recompute_pos();
-	//	squares_ctrl.draw_areas();
+		//squares_ctrl.draw_areas();
 	}
 });
 </script>
