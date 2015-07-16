@@ -1,3 +1,12 @@
+<style type="text/css">
+.canvas-sidebar {
+	float: right;
+	margin-right: 285px;
+}
+.canvas-sidebar div {
+	margin-bottom: 10px;
+}
+</style>
 <h1>Products#edit</h1>
 <p>Find me in app/views/products/edit.html.erb</p>
 
@@ -13,14 +22,42 @@
 <%= f.label :name %>
 <%= f.text_field :name %>
 </div>
+<div>
+	<div class="canvas-sidebar">
+		<div>
+	<select id="pin_attribute_front">
+		<option value="0">select a group for the area</option>
+		<% @pin_attributes.each do |pin_group| %>
+			<option value="<%= pin_group.id%>"><%= pin_group.name %></option>
+		<% end %>
+	</select></div>
+	<div>
+	<button id="delete_front_area">Delete Area</button></div>
+	<div><input class="color" id="color_area_front" value="444444" /></div>
+</div>
+	<canvas id="image-front" width="480" height="720" style="background:url('<%= image_path(@product.image_front) %>') no-repeat"></canvas>
+</div>
 
-<canvas id="image-front" width="480" height="720" style="background:url('<%= image_path(@product.image_front) %>') no-repeat"></canvas>
-
+<div>
+	<div class="canvas-sidebar">
+		<div>
+	<select id="pin_attribute_back">
+		<option value="0">select a group for the area</option>
+		<% @pin_attributes.each do |pin_group| %>
+			<option value="<%= pin_group.id%>"><%= pin_group.name %></option>
+		<% end %>
+	</select></div>
+	<div>
+	<button id="delete_back_area">Delete Area</button></div>
+	<div><input class="color" id="color_area_back" value="444444" /></div>
+</div>
 <canvas id="image-back" width="480" height="720"  style="background:url('<%= image_path(@product.image_back) %>') no-repeat"></canvas>
+</div>
 <% end %>
 
-
+ <%= javascript_include_tag "jscolor/jscolor", "data-turbolinks-track" => true %>
 <script type="text/javascript">
+var box_area_data = <%= @box_areas.to_json.html_safe %>;
 var Rectangle = function() {
 	var oThis = this;
 	this.x = 0;
@@ -31,6 +68,7 @@ var Rectangle = function() {
 	this.canvas_height = 0;
 	this.fill = '#444444';
 	this.id = 0;
+	this.pin_group_id = 0;
 	this.print = function() {
 		console.log(oThis.x);
 		console.log(oThis.y);
@@ -40,6 +78,7 @@ var Rectangle = function() {
 
 	this.draw = function(ctx) {
 		ctx.fillStyle = oThis.fill;
+		ctx.globalAlpha=0.5;
 		ctx.fillRect(oThis.x,oThis.y,oThis.width,oThis.height);
 	};
 };
@@ -59,14 +98,59 @@ var CanvasBlock = function() {
 	this.curr_point_draw    = 0;
 	this.first_point_draw   = null;
 	this.second_point_draw  = null;
-
+	this.img_type = null;
 	this.rectangles   = Array();
 	this.canvas_id    = null;
 	this.sel_rect     = null;
-
+	this.pin_attribute_select_id = null;
+	this.colorpicker_id = null;
 	this.dragging   = false;
-
+	this.delete_btn_id = null;
 	this.canvas_valid = false;
+	this.deleted_box_areas = Array();
+	this.load_json_data = function(data) {
+		for(var i = 0; i < data.length; i++) {
+			if(data[i]["area_box_type"]==oThis.img_type) {
+				var rect = new Rectangle();
+				rect.x = data[i]["posx"];
+				rect.y = data[i]["posy"];
+				rect.width = data[i]["width"];
+				rect.height = data[i]["height"];
+				rect.canvas_width = data[i]["canvas_width"];
+				rect.canvas_height = data[i]["canvas_height"];
+				rect.fill = data[i]["fill"];
+				rect.id = data[i]["id"];
+				rect.pin_group_id = data[i]["group_id"];
+				oThis.rectangles.push(rect);
+			}
+		}
+		oThis.canvas_valid = false;
+
+	};
+
+	this.initialize_form_fields = function(form) {
+		var type = oThis.img_type;
+		for(var i = 0; i < oThis.rectangles.length; i++) {
+			var rect = oThis.rectangles[i];
+			var input_x = $("<input type='hidden' name='areas["+type+"]["+i+"][xpos]' value='"+rect.x+"' />");
+			var input_y = $("<input type='hidden' name='areas["+type+"]["+i+"][ypos]' value='"+rect.y+"' />");
+			var input_width = $("<input type='hidden' name='areas["+type+"]["+i+"][width]' value='"+rect.width+"' />");
+			var input_height = $("<input type='hidden' name='areas["+type+"]["+i+"][height]' value='"+rect.height+"' />");
+			var input_cwidth = $("<input type='hidden' name='areas["+type+"]["+i+"][canvas_width]' value='"+rect.canvas_width+"' />");
+			var input_cheight = $("<input type='hidden' name='areas["+type+"]["+i+"][canvas_height]' value='"+rect.canvas_height+"' />");
+
+			var pin_group = $("<input type='hidden' name='areas["+type+"]["+i+"][pin_group]' value='"+rect.pin_group_id+"' />");
+
+			var fill = $("<input type='hidden' name='areas["+type+"]["+i+"][fill]' value='"+rect.fill+"' />");
+			var curr_id = $("<input type='hidden' name='areas["+type+"]["+i+"][existing_id]' value='"+rect.id+"' />");
+
+			form.prepend(input_x,input_y,input_width,input_height,input_cwidth,input_cheight,pin_group,fill,curr_id);
+		}
+
+		var input_deleted_areas_ids = $("<input type='hidden' name='delete_area_ids' value='"+oThis.deleted_box_areas.join("_")+"' />");
+		form.prepend(input_deleted_areas_ids);
+
+	}
 
 	this.draw_rectangles = function() {
 		if(oThis.canvas_valid) {return;}
@@ -83,22 +167,12 @@ var CanvasBlock = function() {
 		}
 
 		if(oThis.sel_rect!==null) {
-			console.log("no selected rectangle");
+			//console.log("no selected rectangle");
 			context.strokeStyle = oThis.sel_rect.color;
 			context.lineWidth = oThis.sel_rect.width;
 			context.strokeRect(oThis.sel_rect.rect.x, oThis.sel_rect.rect.y,oThis.sel_rect.rect.width,oThis.sel_rect.rect.height);
 		}
 
-		/*if(oThis.first_point_draw!==null) {
-			context.beginPath();
-			context.arc(oThis.first_point_draw.x,oThis.first_point_draw.y,5,0,2*Math.PI);
-			context.stroke();
-		}
-		if(oThis.second_point_draw!==null) {
-			context.beginPath();
-			context.arc(oThis.second_point_draw.x,oThis.second_point_draw.y,5,0,2*Math.PI);
-			context.stroke();
-		}*/
 		oThis.canvas_valid = true;
 		//console.log("canvas valid: " +oThis.canvas_valid);
 	};
@@ -106,13 +180,13 @@ var CanvasBlock = function() {
 	this.draw_rectangle = function(rect) {
 		rect.print();
 		var context = document.getElementById(oThis.canvas_id).getContext("2d");
-		console.log(context);
+		//console.log(context);
 		context.fillStyle = rect.fill;
 		context.fillRect(rect.x,rect.y,rect.width,rect.height);
 	};
 
 	this.get_mouse_pos = function(canvas, evt) {
-		console.log(canvas);
+		//console.log(canvas);
 	    var rect = canvas.getBoundingClientRect();
 	    return {
 	      x: evt.clientX - rect.left,
@@ -135,8 +209,8 @@ var CanvasBlock = function() {
 		if(vector.vx>0 && vector.vy>0)  {
 			rect.x = p1.x;
 			rect.y = p1.y;
-			rect.canvas_width  = $("#"+oThis.canvas_id).attr("width");
-			rect.canvas_height = $("#"+oThis.canvas_id).attr("height");
+			rect.canvas_width  = parseFloat($("#"+oThis.canvas_id).attr("width"));
+			rect.canvas_height = parseFloat($("#"+oThis.canvas_id).attr("height"));
 			rect.width  = Math.abs(vector.vx);
 			rect.height = Math.abs(vector.vy);
 		}
@@ -144,8 +218,8 @@ var CanvasBlock = function() {
 		else if(vector.vx<0 && vector.vy<0) {
 			rect.x = p2.x;
 			rect.y = p2.y;
-			rect.canvas_width  = $("#"+oThis.canvas_id).attr("width");
-			rect.canvas_height = $("#"+oThis.canvas_id).attr("height");
+			rect.canvas_width  = parseFloat($("#"+oThis.canvas_id).attr("width"));
+			rect.canvas_height = parseFloat($("#"+oThis.canvas_id).attr("height"));
 			rect.width  = Math.abs(vector.vx);
 			rect.height = Math.abs(vector.vy);
 
@@ -155,8 +229,8 @@ var CanvasBlock = function() {
 		else if(vector.vx>0 && vector.vy<0) {
 			rect.x = p1.x;
 			rect.y = p1.y+vector.vy;
-			rect.canvas_width  = $("#"+oThis.canvas_id).attr("width");
-			rect.canvas_height = $("#"+oThis.canvas_id).attr("height");
+			rect.canvas_width  = parseFloat($("#"+oThis.canvas_id).attr("width"));
+			rect.canvas_height = parseFloat($("#"+oThis.canvas_id).attr("height"));
 			rect.width  = Math.abs(vector.vx);
 			rect.height = Math.abs(vector.vy);
 		}
@@ -164,8 +238,8 @@ var CanvasBlock = function() {
 		else if(vector.vx<0 && vector.vy>0) {
 			rect.x = p2.x;
 			rect.y = p2.y-vector.vy;
-			rect.canvas_width  = $("#"+oThis.canvas_id).attr("width");
-			rect.canvas_height = $("#"+oThis.canvas_id).attr("height");
+			rect.canvas_width  = parseFloat($("#"+oThis.canvas_id).attr("width"));
+			rect.canvas_height = parseFloat($("#"+oThis.canvas_id).attr("height"));
 			rect.width  = Math.abs(vector.vx);
 			rect.height = Math.abs(vector.vy);
 		}
@@ -177,25 +251,23 @@ var CanvasBlock = function() {
 		var mouse_pos = oThis.get_mouse_pos(canvas,evt);
 		for(var i = 0; i < oThis.rectangles.length; i++) {
 			var rect = oThis.rectangles[i];
-			console.log(rect);
+			//console.log(rect);
 			if(mouse_pos.x > rect.x && mouse_pos.y > rect.y && mouse_pos.x<(rect.x+rect.width) && mouse_pos.y < (rect.y+rect.height) ) {
 				oThis.sel_rect = new SelectedRectangle();
 				oThis.sel_rect.index = i;
 				oThis.sel_rect.rect = rect;
 
-				offsetx = mouse_pos.x - rect.x;
-				offsety = mouse_pos.y - rect.y;
+				oThis.sel_rect.offsetx = mouse_pos.x - rect.x;
+				oThis.sel_rect.offsety = mouse_pos.y - rect.y;
 
-				oThis.sel_rect.rect.x  = mouse_pos.x - offsetx;
-				oThis.sel_rect.rect.y  = mouse_pos.y - offsety;
-				oThis.sel_rect.offsety = offsetx;
-				oThis.sel_rect.offsety = offsety;
+				$("#pin_attribute_front").val(rect.pin_group_id);
 				oThis.canvas_valid = false;
 				oThis.dragging = true;
-				console.log("found rectangle");
+	
 				return 1;
 			}
 		}
+		console.log(oThis.rectangles);
 		oThis.sel_rect = null;
 		oThis.dragging = false;
 		oThis.canvas_valid = false;
@@ -244,7 +316,36 @@ var CanvasBlock = function() {
 		});
 
 		$("#"+oThis.canvas_id).on("mouseup",function(e) {
+			//console.log(oThis.rectangles);
 			oThis.dragging = false;
+			//console.log(oThis.sel_rect);
+		});
+
+		$("#"+oThis.pin_attribute_select_id).on("change",function(evt) {
+			if(oThis.sel_rect!==null) {
+				oThis.sel_rect.rect.pin_group_id = parseInt($(this).val());
+				//console.log(oThis.rectangles);
+			}
+		});
+
+		$("#"+oThis.colorpicker_id).on("change",function(evt) {
+			if(oThis.sel_rect!==null) {
+				oThis.sel_rect.rect.fill = '#'+$(this).val();
+				oThis.canvas_valid = false;
+			}
+		});
+
+		$("#"+oThis.delete_btn_id).on("click",function(evt) {
+			evt.preventDefault();
+			if(oThis.sel_rect!==null) {
+				if(oThis.sel_rect.rect.id!==0) {
+					oThis.deleted_box_areas.push(oThis.sel_rect.rect.id);
+					console.log(oThis.deleted_box_areas);
+				}
+				oThis.rectangles.splice(oThis.sel_rect.index,1);
+				oThis.sel_rect = null;
+				oThis.canvas_valid = false;
+			}
 		});
 		
 	};
@@ -253,6 +354,17 @@ var CanvasBlock = function() {
 $(document).ready(function() {
 	var canvas_front = new CanvasBlock();
 	canvas_front.canvas_id = "image-front";
+	canvas_front.img_type = "front";
+	canvas_front.pin_attribute_select_id = "pin_attribute_front";
+	canvas_front.colorpicker_id = "color_area_front";
+	canvas_front.delete_btn_id = "delete_front_area";
 	canvas_front.init();
+	canvas_front.load_json_data(box_area_data);
+
+	$("form").on("submit",function(evt) {
+		//evt.preventDefault();
+		canvas_front.initialize_form_fields($(this));
+
+	});
 });
 </script>

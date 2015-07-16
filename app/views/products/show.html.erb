@@ -1,8 +1,17 @@
 <h1>Products#show</h1>
 <p>Find me in app/views/products/show.html.erb</p>
 
+<%= session[:areas].inspect%><br><br><br>
+<% session[:areas].each do |k,f| %>
+	<% f.each do |k2,v|%>
+	v insepct <%= k2 %>
+	<%= v.inspect%><br/><br>
+	<%= v[:xpos]%>
+	<% end %>
 
-
+	first level<%= k%>
+	<%= f.inspect%>|||<br>
+<% end %>
 
 <div>
 SKU: <%= @product[:sku]%>

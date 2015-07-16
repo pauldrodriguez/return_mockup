@@ -11,7 +11,22 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150622212920) do
+ActiveRecord::Schema.define(version: 20150715235652) do
+
+  create_table "box_areas", force: true do |t|
+    t.float    "posx"
+    t.float    "posy"
+    t.float    "width"
+    t.float    "height"
+    t.float    "canvas_width"
+    t.float    "canvas_height"
+    t.string   "fill"
+    t.integer  "group_id"
+    t.integer  "product_id"
+    t.string   "area_box_type"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "order_items", force: true do |t|
     t.integer  "order_num"
