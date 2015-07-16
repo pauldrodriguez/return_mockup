@@ -361,9 +361,19 @@ $(document).ready(function() {
 	canvas_front.init();
 	canvas_front.load_json_data(box_area_data);
 
+	var canvas_back = new CanvasBlock();
+	canvas_back.canvas_id = "image-back";
+	canvas_back.img_type = "back";
+	canvas_back.pin_attribute_select_id = "pin_attribute_back";
+	canvas_back.colorpicker_id = "color_area_back";
+	canvas_back.delete_btn_id = "delete_back_area";
+	canvas_back.init();
+	canvas_back.load_json_data(box_area_data);
+
 	$("form").on("submit",function(evt) {
 		//evt.preventDefault();
 		canvas_front.initialize_form_fields($(this));
+		canvas_back.initialize_form_fields($(this));
 
 	});
 });
