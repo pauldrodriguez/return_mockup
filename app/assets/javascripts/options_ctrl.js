@@ -106,7 +106,7 @@ var OptionsCtrl = function() {
 
 				//oThis.options_elem.append($("<li />").append($("<a href=\"#0\" class=\"cd-popup-close\" data-group-id=\""+group_id+"\" data-attribute-id=\""+attribute_id+"\" />").html(oThis.options[group_id]["children"][attribute_id])));
 			}
-			oThis.options_elem.append($("<li />").append($("<a href=\"#0\" class=\"cd-popup-close clear-choice\" data-group-id=\""+group_id+"\" data-attribute-id=\""+attribute_id+"\" />").html("clear")));
+			oThis.options_elem.append($("<li />").append($("<a href=\"#0\" class=\"cd-popup-close clear-choice\" data-group-id=\""+group_id+"\" data-attribute-id=\""+attribute_id+"\" />").html("clear X")));
 			oThis.options_elem.closest(".cd-popup").addClass("is-visible");
 
 		};
