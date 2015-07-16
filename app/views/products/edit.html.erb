@@ -260,7 +260,7 @@ var CanvasBlock = function() {
 				oThis.sel_rect.offsetx = mouse_pos.x - rect.x;
 				oThis.sel_rect.offsety = mouse_pos.y - rect.y;
 
-				$("#pin_attribute_front").val(rect.pin_group_id);
+				$("#"+oThis.pin_attribute_select_id).val(rect.pin_group_id);
 				oThis.canvas_valid = false;
 				oThis.dragging = true;
 	
