@@ -107,7 +107,11 @@ var CanvasBlock = function() {
 	this.dragging   = false;
 	this.delete_btn_id = null;
 	this.canvas_valid = false;
+	this.is_resize_drag = false; // if we are resizing
+	this.expect_resize = -1; // we are over one of the resize handles
+	this.selection_handles = Array();
 	this.deleted_box_areas = Array();
+	this.handle_box_size = 8;
 	this.load_json_data = function(data) {
 		for(var i = 0; i < data.length; i++) {
 			if(data[i]["area_box_type"]==oThis.img_type) {
@@ -132,6 +136,14 @@ var CanvasBlock = function() {
 		var type = oThis.img_type;
 		for(var i = 0; i < oThis.rectangles.length; i++) {
 			var rect = oThis.rectangles[i];
+			if(rect.width<0) {
+				rect.x += rect.width;
+				rect.width = Math.abs(rect.width);
+			}
+			if(rect.height<0) {
+				rect.y += rect.height;
+				rect.height = Math.abs(rect.height);
+			}
 			var input_x = $("<input type='hidden' name='areas["+type+"]["+i+"][xpos]' value='"+rect.x+"' />");
 			var input_y = $("<input type='hidden' name='areas["+type+"]["+i+"][ypos]' value='"+rect.y+"' />");
 			var input_width = $("<input type='hidden' name='areas["+type+"]["+i+"][width]' value='"+rect.width+"' />");
@@ -151,7 +163,39 @@ var CanvasBlock = function() {
 		form.prepend(input_deleted_areas_ids);
 
 	}
+	this.set_handles_pos = function(sel_rect) {
+		var half = oThis.handle_box_size/2;
+		
+		oThis.selection_handles[0].x = sel_rect.x - half;
+		oThis.selection_handles[0].y = sel_rect.y - half;
+		
+		oThis.selection_handles[1].x = sel_rect.x + sel_rect.width/2 - half;
+		oThis.selection_handles[1].y = sel_rect.y - half;
 
+		oThis.selection_handles[2].x = sel_rect.x + sel_rect.width - half;
+		oThis.selection_handles[2].y = sel_rect.y - half;
+
+		//middle left
+		oThis.selection_handles[3].x = sel_rect.x - half;
+		oThis.selection_handles[3].y = sel_rect.y + sel_rect.height/2- half;
+
+
+		//middle right
+		oThis.selection_handles[4].x = sel_rect.x + sel_rect.width - half;
+		oThis.selection_handles[4].y = sel_rect.y + sel_rect.height/2- half;
+
+		oThis.selection_handles[5].x = sel_rect.x - half;
+		oThis.selection_handles[5].y = sel_rect.y + sel_rect.height- half;
+
+		oThis.selection_handles[6].x = sel_rect.x + sel_rect.width/2 - half;
+		oThis.selection_handles[6].y = sel_rect.y + sel_rect.height- half;
+
+		oThis.selection_handles[7].x = sel_rect.x + sel_rect.width - half;
+		oThis.selection_handles[7].y = sel_rect.y + sel_rect.height- half;
+
+		
+
+	}
 	this.draw_rectangles = function() {
 		if(oThis.canvas_valid) {return;}
 		//console.log(oThis.canvas_valid);
@@ -171,6 +215,13 @@ var CanvasBlock = function() {
 			context.strokeStyle = oThis.sel_rect.color;
 			context.lineWidth = oThis.sel_rect.width;
 			context.strokeRect(oThis.sel_rect.rect.x, oThis.sel_rect.rect.y,oThis.sel_rect.rect.width,oThis.sel_rect.rect.height);
+
+			oThis.set_handles_pos(oThis.sel_rect.rect);
+
+			for(var i = 0; i <8;i++) {
+			oThis.selection_handles[i].draw(context);
+		}
+
 		}
 
 		oThis.canvas_valid = true;
@@ -275,10 +326,17 @@ var CanvasBlock = function() {
 	};
 
 	this.init = function() {
+		for(var i = 0; i < 8; i++) {
+			var sbox = new Rectangle();
+			sbox.width = oThis.handle_box_size;
+			sbox.height = oThis.handle_box_size;
+			//sbox.fill = "#";
+			oThis.selection_handles.push(sbox);
+		}
 		setInterval(oThis.draw_rectangles,100);
 		$("#"+oThis.canvas_id).on("mousedown",function(evt) {
 			var canvas = document.getElementById(oThis.canvas_id);
-	
+			if(oThis.expect_resize!==-1) {console.log("about to resize");oThis.is_resize_drag = true;return;}
 			if(oThis.click_inside_rectangle(canvas,evt)) {return;}
 			if(oThis.dragging) {return;}
 			if(oThis.curr_point_draw === 0 ) {
@@ -307,17 +365,112 @@ var CanvasBlock = function() {
 		});
 
 		$("#"+oThis.canvas_id).on("mousemove",function(evt) {
+			var mouse_pos = oThis.get_mouse_pos($(this)[0],evt);
 			if(oThis.dragging) {
-				var mouse_pos = oThis.get_mouse_pos($(this)[0],evt);
 				oThis.sel_rect.rect.x = mouse_pos.x - oThis.sel_rect.offsetx;
 				oThis.sel_rect.rect.y = mouse_pos.y - oThis.sel_rect.offsety;
 				oThis.canvas_valid = false;
+			} else if(oThis.is_resize_drag && oThis.sel_rect!==null) {
+				var oldx = oThis.sel_rect.rect.x;
+				var oldy = oThis.sel_rect.rect.y;
+				switch(oThis.expect_resize) {
+					case 0:
+						oThis.sel_rect.rect.x = mouse_pos.x;
+						oThis.sel_rect.rect.y = mouse_pos.y;
+						oThis.sel_rect.rect.width += oldx - mouse_pos.x;
+						oThis.sel_rect.rect.height += oldy - mouse_pos.y;
+						break;
+					case 1:
+						//oThis.sel_rect.rect.x = mouse_pos.x;
+						oThis.sel_rect.rect.y = mouse_pos.y;
+						//oThis.sel_rect.rect.width = oldx - mouse_pos.x;
+						oThis.sel_rect.rect.height += oldy - mouse_pos.y;
+						break;
+					case 2:
+						//oThis.sel_rect.rect.x = mouse_pos.x;
+						oThis.sel_rect.rect.y = mouse_pos.y;
+						oThis.sel_rect.rect.width = mouse_pos.x - oldx;
+						oThis.sel_rect.rect.height += oldy - mouse_pos.y;
+						break;
+					case 3:
+						oThis.sel_rect.rect.x = mouse_pos.x;
+						//oThis.sel_rect.rect.y = mouse_pos.y;
+						oThis.sel_rect.rect.width += oldx - mouse_pos.x;
+						//oThis.sel_rect.rect.height = oldy - mouse_pos.y;
+						break;
+					case 4:
+						oThis.sel_rect.rect.width =  mouse_pos.x - oldx;
+						break;
+					case 5:
+						oThis.sel_rect.rect.x = mouse_pos.x;
+						//oThis.sel_rect.rect.y = mouse_pos.y;
+						oThis.sel_rect.rect.width += oldx - mouse_pos.x;
+						oThis.sel_rect.rect.height =  mouse_pos.y - oldy;
+						break;
+					case 6:
+						//oThis.sel_rect.rect.x = mouse_pos.x;
+						//oThis.sel_rect.rect.y = mouse_pos.y;
+						//oThis.sel_rect.rect.width = oldx - mouse_pos.x;
+						oThis.sel_rect.rect.height = mouse_pos.y-oldy;
+						break;
+					case 7:
+						//oThis.sel_rect.rect.x = mouse_pos.x;
+						//oThis.sel_rect.rect.y = mouse_pos.y;
+						oThis.sel_rect.rect.width = mouse_pos.x - oldx;
+						oThis.sel_rect.rect.height = mouse_pos.y - oldy;
+						break;
+				}
+				oThis.canvas_valid = false;
+			}
+
+			if(oThis.sel_rect!==null && !oThis.is_resize_drag) {
+				for(var i = 0; i <8;i++) {
+					var curr = oThis.selection_handles[i];
+
+					if(mouse_pos.x>=curr.x && mouse_pos.x<=curr.x+oThis.handle_box_size 
+						&& mouse_pos.y>=curr.y && mouse_pos.y<=curr.y+oThis.handle_box_size) {
+						oThis.expect_resize = i;
+						var canvas = document.getElementById(oThis.canvas_id);
+						switch(i) {
+							case 0:
+								canvas.style.cursor = "nw-resize";
+								break;
+							case 1:
+								canvas.style.cursor = "n-resize";
+								break;
+							case 2:
+								canvas.style.cursor = "ne-resize";
+								break;
+							case 3:
+								canvas.style.cursor = "w-resize";
+								break;
+							case 4:
+								canvas.style.cursor = "e-resize";
+								break;
+							case 5:
+								canvas.style.cursor = "sw-resize";
+								break;
+							case 6:
+								canvas.style.cursor = "s-resize";
+								break;
+							case 7:
+								canvas.style.cursor = "se-resize";
+								break;
+						}
+						return;
+					}
+				}
+				oThis.is_resize_drag = false;
+				oThis.expect_resize = -1;
+				document.getElementById(oThis.canvas_id).style.cursor = "auto";
 			}
 		});
 
 		$("#"+oThis.canvas_id).on("mouseup",function(e) {
 			//console.log(oThis.rectangles);
 			oThis.dragging = false;
+			oThis.is_resize_drag = false;
+			oThis.expect_resize = -1;
 			//console.log(oThis.sel_rect);
 		});
 
