@@ -3,7 +3,7 @@
 	float: right;
 	margin-right: 285px;
 }
-.canvas-sidebar div {
+.canvas-sidebar > div {
 	margin-bottom: 10px;
 }
 </style>
@@ -33,7 +33,7 @@
 	</select></div>
 	<div>
 	<button id="delete_front_area">Delete Area</button></div>
-	<div><input class="color" id="color_area_front" value="444444" /></div>
+	<div><input type="text" id="color_area_front" value="444444" /></div>
 </div>
 	<canvas id="image-front" width="480" height="720" style="background:url('<%= image_path(@product.image_front) %>') no-repeat"></canvas>
 </div>
@@ -55,7 +55,6 @@
 </div>
 <% end %>
 
- <%= javascript_include_tag "jscolor/jscolor", "data-turbolinks-track" => true %>
 <script type="text/javascript">
 var box_area_data = <%= @box_areas.to_json.html_safe %>;
 var Rectangle = function() {
@@ -310,7 +309,7 @@ var CanvasBlock = function() {
 
 				oThis.sel_rect.offsetx = mouse_pos.x - rect.x;
 				oThis.sel_rect.offsety = mouse_pos.y - rect.y;
-
+				$("#"+oThis.colorpicker_id).spectrum("set",rect.fill);
 				$("#"+oThis.pin_attribute_select_id).val(rect.pin_group_id);
 				oThis.canvas_valid = false;
 				oThis.dragging = true;
@@ -481,12 +480,12 @@ var CanvasBlock = function() {
 			}
 		});
 
-		$("#"+oThis.colorpicker_id).on("change",function(evt) {
+		/*$("#"+oThis.colorpicker_id).on("change",function(evt) {
 			if(oThis.sel_rect!==null) {
 				oThis.sel_rect.rect.fill = '#'+$(this).val();
 				oThis.canvas_valid = false;
 			}
-		});
+		});*/
 
 		$("#"+oThis.delete_btn_id).on("click",function(evt) {
 			evt.preventDefault();
@@ -500,11 +499,30 @@ var CanvasBlock = function() {
 				oThis.canvas_valid = false;
 			}
 		});
+
+		$("#"+oThis.colorpicker_id).spectrum({
+			color: "#444444",
+			showInput: true,
+			showAlpha:true,
+			change:function(color) {
+				console.log(color.toRgb());
+				if(oThis.sel_rect!==null) {
+					oThis.sel_rect.rect.fill =color.toHexString();
+					oThis.canvas_valid = false;
+					//console.log(color.toHexString());
+				}
+			}
+		});
 		
 	};
 };
 
 $(document).ready(function() {
+	/*$("#color_area_front").spectrum({
+		color: '#444444',
+		flat:true,
+		showInput:true
+	});*/
 	var canvas_front = new CanvasBlock();
 	canvas_front.canvas_id = "image-front";
 	canvas_front.img_type = "front";
