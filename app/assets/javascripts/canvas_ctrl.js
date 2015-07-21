@@ -217,7 +217,7 @@ var CanvasCtrl = function(canvas_container) {
 					ctx_b.fillStyle = "#FD0000";
 		    		ctx_b.beginPath();
 		   
-		    		ctx_b.arc(e.x,e.y, 8, 0, 2*Math.PI);
+		    		ctx_b.arc(e.x,e.y, oThis.radius, 0, 2*Math.PI);
 		    		ctx_b.fill();
 				});
 				

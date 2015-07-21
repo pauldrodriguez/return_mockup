@@ -472,11 +472,11 @@ var CanvasBlock = function() {
 				if(oThis.sel_rect.rect.width<0) {
 				oThis.sel_rect.rect.x += oThis.sel_rect.rect.width;
 				oThis.sel_rect.rect.width = Math.abs(oThis.sel_rect.rect.width);
-			}
-			if(oThis.sel_rect.rect.height<0) {
-				oThis.sel_rect.rect.y += oThis.sel_rect.rect.height;
-				oThis.sel_rect.rect.height = Math.abs(oThis.sel_rect.rect.height);
-			}
+				}
+				if(oThis.sel_rect.rect.height<0) {
+					oThis.sel_rect.rect.y += oThis.sel_rect.rect.height;
+					oThis.sel_rect.rect.height = Math.abs(oThis.sel_rect.rect.height);
+				}
 			}
 			oThis.dragging = false;
 			oThis.is_resize_drag = false;
