@@ -24,8 +24,11 @@ class ProductsController < ApplicationController
         format.html { render action: 'edit' }
         format.json { render json: @product.errors, status: :unprocessable_entity }
       end
+      
     end
-
+    @product =  Product.find(params[:id])
+    @pin_attributes = PinAttribute.where("parent_id=?",0)
+    @box_areas = BoxArea.where("product_id=?",params[:id])
   end
 
   def edit
