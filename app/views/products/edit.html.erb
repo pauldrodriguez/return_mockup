@@ -569,7 +569,7 @@ $(document).ready(function() {
 	canvas_back.load_json_data(box_area_data);
 
 	$("form").on("submit",function(evt) {
-		evt.preventDefault();
+		//evt.preventDefault();
 		canvas_front.initialize_form_fields($(this));
 		canvas_back.initialize_form_fields($(this));
 
