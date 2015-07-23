@@ -68,6 +68,7 @@ var Rectangle = function() {
 	this.fill = '#444444';
 	this.id = 0;
 	this.pin_group_id = 0;
+	this.dirty = false;
 	this.print = function() {
 		console.log(oThis.x);
 		console.log(oThis.y);
@@ -135,27 +136,29 @@ var CanvasBlock = function() {
 		var type = oThis.img_type;
 		for(var i = 0; i < oThis.rectangles.length; i++) {
 			var rect = oThis.rectangles[i];
-			if(rect.width<0) {
-				rect.x += rect.width;
-				rect.width = Math.abs(rect.width);
+			if(rect.dirty) {
+				if(rect.width<0) {
+					rect.x += rect.width;
+					rect.width = Math.abs(rect.width);
+				}
+				if(rect.height<0) {
+					rect.y += rect.height;
+					rect.height = Math.abs(rect.height);
+				}
+				var input_x = $("<input type='hidden' name='areas["+type+"]["+i+"][xpos]' value='"+rect.x+"' />");
+				var input_y = $("<input type='hidden' name='areas["+type+"]["+i+"][ypos]' value='"+rect.y+"' />");
+				var input_width = $("<input type='hidden' name='areas["+type+"]["+i+"][width]' value='"+rect.width+"' />");
+				var input_height = $("<input type='hidden' name='areas["+type+"]["+i+"][height]' value='"+rect.height+"' />");
+				var input_cwidth = $("<input type='hidden' name='areas["+type+"]["+i+"][canvas_width]' value='"+rect.canvas_width+"' />");
+				var input_cheight = $("<input type='hidden' name='areas["+type+"]["+i+"][canvas_height]' value='"+rect.canvas_height+"' />");
+
+				var pin_group = $("<input type='hidden' name='areas["+type+"]["+i+"][pin_group]' value='"+rect.pin_group_id+"' />");
+
+				var fill = $("<input type='hidden' name='areas["+type+"]["+i+"][fill]' value='"+rect.fill+"' />");
+				var curr_id = $("<input type='hidden' name='areas["+type+"]["+i+"][existing_id]' value='"+rect.id+"' />");
+
+				form.prepend(input_x,input_y,input_width,input_height,input_cwidth,input_cheight,pin_group,fill,curr_id);
 			}
-			if(rect.height<0) {
-				rect.y += rect.height;
-				rect.height = Math.abs(rect.height);
-			}
-			var input_x = $("<input type='hidden' name='areas["+type+"]["+i+"][xpos]' value='"+rect.x+"' />");
-			var input_y = $("<input type='hidden' name='areas["+type+"]["+i+"][ypos]' value='"+rect.y+"' />");
-			var input_width = $("<input type='hidden' name='areas["+type+"]["+i+"][width]' value='"+rect.width+"' />");
-			var input_height = $("<input type='hidden' name='areas["+type+"]["+i+"][height]' value='"+rect.height+"' />");
-			var input_cwidth = $("<input type='hidden' name='areas["+type+"]["+i+"][canvas_width]' value='"+rect.canvas_width+"' />");
-			var input_cheight = $("<input type='hidden' name='areas["+type+"]["+i+"][canvas_height]' value='"+rect.canvas_height+"' />");
-
-			var pin_group = $("<input type='hidden' name='areas["+type+"]["+i+"][pin_group]' value='"+rect.pin_group_id+"' />");
-
-			var fill = $("<input type='hidden' name='areas["+type+"]["+i+"][fill]' value='"+rect.fill+"' />");
-			var curr_id = $("<input type='hidden' name='areas["+type+"]["+i+"][existing_id]' value='"+rect.id+"' />");
-
-			form.prepend(input_x,input_y,input_width,input_height,input_cwidth,input_cheight,pin_group,fill,curr_id);
 		}
 
 		var input_deleted_areas_ids = $("<input type='hidden' name='delete_area_ids' value='"+oThis.deleted_box_areas.join("_")+"' />");
@@ -368,6 +371,7 @@ var CanvasBlock = function() {
 			if(oThis.dragging) {
 				oThis.sel_rect.rect.x = mouse_pos.x - oThis.sel_rect.offsetx;
 				oThis.sel_rect.rect.y = mouse_pos.y - oThis.sel_rect.offsety;
+				oThis.sel_rect.rect.dirty = true;
 				oThis.canvas_valid = false;
 			} else if(oThis.is_resize_drag && oThis.sel_rect!==null) {
 				var oldx = oThis.sel_rect.rect.x;
@@ -419,6 +423,7 @@ var CanvasBlock = function() {
 						oThis.sel_rect.rect.height = mouse_pos.y - oldy;
 						break;
 				}
+				oThis.sel_rect.rect.dirty = true;
 				oThis.canvas_valid = false;
 			}
 
@@ -472,10 +477,12 @@ var CanvasBlock = function() {
 				if(oThis.sel_rect.rect.width<0) {
 				oThis.sel_rect.rect.x += oThis.sel_rect.rect.width;
 				oThis.sel_rect.rect.width = Math.abs(oThis.sel_rect.rect.width);
+				oThis.sel_rect.rect.dirty = true;
 				}
 				if(oThis.sel_rect.rect.height<0) {
 					oThis.sel_rect.rect.y += oThis.sel_rect.rect.height;
 					oThis.sel_rect.rect.height = Math.abs(oThis.sel_rect.rect.height);
+					oThis.sel_rect.rect.dirty = true;
 				}
 			}
 			oThis.dragging = false;
@@ -487,6 +494,7 @@ var CanvasBlock = function() {
 		$("#"+oThis.pin_attribute_select_id).on("change",function(evt) {
 			if(oThis.sel_rect!==null) {
 				oThis.sel_rect.rect.pin_group_id = parseInt($(this).val());
+				oThis.sel_rect.rect.dirty = true;
 				//console.log(oThis.rectangles);
 			}
 		});
@@ -519,6 +527,7 @@ var CanvasBlock = function() {
 				console.log(color.toRgb());
 				if(oThis.sel_rect!==null) {
 					oThis.sel_rect.rect.fill =color.toHexString();
+					oThis.sel_rect.rect.dirty = true;
 					oThis.canvas_valid = false;
 					//console.log(color.toHexString());
 				}
