@@ -12,7 +12,7 @@ class ProductsController < ApplicationController
 
      respond_to do |format|
       if @product.update(product_params)
-        session[:areas] = params[:areas]
+        #session[:areas] = params[:areas]
         save_area_boxes(@product.id)
         if(params[:delete_area_ids]!="")
           ids_to_delete =params[:delete_area_ids].split("_")
