@@ -11,6 +11,9 @@ class ProductsController < ApplicationController
     
 
      respond_to do |format|
+       @product =  Product.find(params[:id])
+      @pin_attributes = PinAttribute.where("parent_id=?",0)
+      @box_areas = BoxArea.where("product_id=?",params[:id])
       if @product.update(product_params)
         #session[:areas] = params[:areas]
         save_area_boxes(@product.id)

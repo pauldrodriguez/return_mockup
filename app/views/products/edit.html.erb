@@ -268,7 +268,7 @@ var CanvasBlock = function() {
 		var vector = oThis.calculate_vector(p1,p2);
 
 		var rect = new Rectangle();
-	
+		rect.dirty = true;
 		//  first point is upper left
 		if(vector.vx>0 && vector.vy>0)  {
 			rect.x = p1.x;
