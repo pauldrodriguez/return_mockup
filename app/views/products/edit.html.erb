@@ -12,6 +12,7 @@
 
 
 <%= form_for(@product) do |f| %>
+<input type="hidden" id="areas-to-delete" name="delete_area_ids" value="" />
 <%= f.submit %>
 <div>
 <%= f.label :sku %>
@@ -160,9 +161,15 @@ var CanvasBlock = function() {
 				form.prepend(input_x,input_y,input_width,input_height,input_cwidth,input_cheight,pin_group,fill,curr_id);
 			}
 		}
-
-		var input_deleted_areas_ids = $("<input type='hidden' name='delete_area_ids' value='"+oThis.deleted_box_areas.join("_")+"' />");
-		form.prepend(input_deleted_areas_ids);
+		var areas_to_delete = $("#areas-to-delete").val();
+		if(areas_to_delete=="") {
+			areas_to_delete = oThis.deleted_box_areas.join("_");
+		} else {
+			areas_to_delete += "_" + oThis.deleted_box_areas.join("_");
+		}
+		$("#areas-to-delete").val(areas_to_delete);
+		/*var input_deleted_areas_ids = $("<input type='hidden' name='delete_area_ids' value='"+oThis.deleted_box_areas.join("_")+"' />");
+		form.prepend(input_deleted_areas_ids);*/
 
 	}
 	this.set_handles_pos = function(sel_rect) {
