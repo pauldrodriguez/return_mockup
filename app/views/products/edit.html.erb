@@ -161,13 +161,17 @@ var CanvasBlock = function() {
 				form.prepend(input_x,input_y,input_width,input_height,input_cwidth,input_cheight,pin_group,fill,curr_id);
 			}
 		}
-		var areas_to_delete = $("#areas-to-delete").val();
-		if(areas_to_delete=="") {
-			areas_to_delete = oThis.deleted_box_areas.join("_");
-		} else {
-			areas_to_delete += "_" + oThis.deleted_box_areas.join("_");
+		var del_box_areas = oThis.deleted_box_areas.join("_");
+
+		if(del_box_areas!="") {
+			var areas_to_delete = $("#areas-to-delete").val();
+			if(areas_to_delete=="") {
+				areas_to_delete = del_box_areas;
+			} else {
+				areas_to_delete += "_" + del_box_areas;
+			}
+			$("#areas-to-delete").val(areas_to_delete);
 		}
-		$("#areas-to-delete").val(areas_to_delete);
 		/*var input_deleted_areas_ids = $("<input type='hidden' name='delete_area_ids' value='"+oThis.deleted_box_areas.join("_")+"' />");
 		form.prepend(input_deleted_areas_ids);*/
 

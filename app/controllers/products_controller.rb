@@ -73,6 +73,9 @@ class ProductsController < ApplicationController
   end
   private
     def save_area_boxes(product_id)
+      if(!params.has_key?(:areas))
+        return
+      end
       areas = params[:areas]
 
       areas.each do |at_idx,items|
