@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150715235652) do
+ActiveRecord::Schema.define(version: 20150727203109) do
 
   create_table "box_areas", force: true do |t|
     t.float    "posx"
@@ -59,6 +59,7 @@ ActiveRecord::Schema.define(version: 20150715235652) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "parent_id"
+    t.string   "fill"
   end
 
   create_table "products", force: true do |t|

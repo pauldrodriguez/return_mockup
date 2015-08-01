@@ -21,7 +21,7 @@ class ProductsController < ApplicationController
           ids_to_delete =params[:delete_area_ids].split("_")
           BoxArea.destroy(ids_to_delete)
         end
-        format.html { render action: 'edit' }
+        format.html { redirect_to edit_product_path and return }
         format.json { head :no_content }
       else
         format.html { render action: 'edit' }

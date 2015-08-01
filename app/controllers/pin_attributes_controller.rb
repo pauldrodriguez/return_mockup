@@ -82,6 +82,6 @@ class PinAttributesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def pin_attribute_params
-      params.require(:pin_attribute).permit(:name,:parent_id)
+      params.require(:pin_attribute).permit(:name,:parent_id,:fill)
     end
 end

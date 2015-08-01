@@ -9,7 +9,9 @@
 </style>
 <h1>Products#edit</h1>
 <p>Find me in app/views/products/edit.html.erb</p>
-
+<% 
+pin_attribute_data = Hash.new
+%>
 
 <%= form_for(@product) do |f| %>
 <input type="hidden" id="areas-to-delete" name="delete_area_ids" value="" />
@@ -29,6 +31,7 @@
 	<select id="pin_attribute_front">
 		<option value="0">select a group for the area</option>
 		<% @pin_attributes.each do |pin_group| %>
+		<% pin_attribute_data[pin_group.id] = pin_group.fill %>
 			<option value="<%= pin_group.id%>"><%= pin_group.name %></option>
 		<% end %>
 	</select></div>
@@ -58,6 +61,7 @@
 
 <script type="text/javascript">
 var box_area_data = <%= @box_areas.to_json.html_safe %>;
+var pin_attribute_data = <%= pin_attribute_data.to_json.html_safe %>;
 var Rectangle = function() {
 	var oThis = this;
 	this.x = 0;
@@ -117,15 +121,15 @@ var CanvasBlock = function() {
 		for(var i = 0; i < data.length; i++) {
 			if(data[i]["area_box_type"]==oThis.img_type) {
 				var rect = new Rectangle();
-				rect.x = data[i]["posx"];
-				rect.y = data[i]["posy"];
-				rect.width = data[i]["width"];
-				rect.height = data[i]["height"];
-				rect.canvas_width = data[i]["canvas_width"];
-				rect.canvas_height = data[i]["canvas_height"];
+				rect.x = parseFloat(data[i]["posx"]);
+				rect.y = parseFloat(data[i]["posy"]);
+				rect.width = parseFloat(data[i]["width"]);
+				rect.height = parseFloat(data[i]["height"]);
+				rect.canvas_width = parseFloat(data[i]["canvas_width"]);
+				rect.canvas_height = parseFloat(data[i]["canvas_height"]);
 				rect.fill = data[i]["fill"];
-				rect.id = data[i]["id"];
-				rect.pin_group_id = data[i]["group_id"];
+				rect.id = parseInt(data[i]["id"]);
+				rect.pin_group_id = parseInt(data[i]["group_id"]);
 				oThis.rectangles.push(rect);
 			}
 		}
@@ -504,8 +508,16 @@ var CanvasBlock = function() {
 
 		$("#"+oThis.pin_attribute_select_id).on("change",function(evt) {
 			if(oThis.sel_rect!==null) {
+				var pin_group_id = $(this).val();
 				oThis.sel_rect.rect.pin_group_id = parseInt($(this).val());
 				oThis.sel_rect.rect.dirty = true;
+				if(pin_group_id in pin_attribute_data) {
+					if(pin_attribute_data[pin_group_id]!==null) {
+						oThis.sel_rect.rect.fill = pin_attribute_data[pin_group_id];
+						$("#"+oThis.colorpicker_id).spectrum("set",pin_attribute_data[pin_group_id]);
+					}
+				}
+				oThis.canvas_valid = false;
 				//console.log(oThis.rectangles);
 			}
 		});

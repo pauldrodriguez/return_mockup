@@ -19,7 +19,21 @@
     <%= f.label :parent %>
     <%= f.collection_select :parent_id, @parent_pin_attributes, :id, :name, :include_blank=>"Select an option or leave blank" %>
   </div>
+  <div class="field">
+    <%= f.text_field :fill, :id=>"color_fill" %>
+
+  </div>
   <div class="actions">
     <%= f.submit %>
   </div>
 <% end %>
+
+<script type="text/javascript">
+    $("#color_fill").spectrum({
+      showInput: true,
+      showAlpha:true,
+      change: function(color) {
+        $("#color_fill").val(color.toHexString());
+      }
+    });
+</script>
