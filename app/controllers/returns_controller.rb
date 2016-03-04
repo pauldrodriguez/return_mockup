@@ -20,9 +20,9 @@ class ReturnsController < ApplicationController
 	  		redirect_to action:"index", controller:"returns" and return
   			#add another check for when time of when order was created is more than 40 days
   			#add another check if all items have been returned
-		elsif (DateTime.now.to_date-@order[:created_at].to_date).to_i > 40
-			flash[:error] = "You cannot return items for orders older than 40 days"
-			redirect_to action:"index", controller:"returns" and return
+		#elsif (DateTime.now.to_date-@order[:created_at].to_date).to_i > 40
+		#	flash[:error] = "You cannot return items for orders older than 40 days"
+		#	redirect_to action:"index", controller:"returns" and return
   		else
   			can_continue = false
   			# in here, want to get all items that have been put for return and all items that have shipped to compare
